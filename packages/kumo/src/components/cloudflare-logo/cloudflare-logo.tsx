@@ -5,8 +5,8 @@ import { cn } from "../../utils/cn";
 // Brand Colors (internal)
 // =============================================================================
 
-const CLOUDFLARE_ORANGE = "#F48120";
-const CLOUDFLARE_YELLOW = "#FAAD3F";
+const CLOUDFLARE_ORANGE = "#FF5E1F";
+const CLOUDFLARE_YELLOW = "#FF9911";
 const CLOUDFLARE_TEXT_GRAY = "#404041";
 
 // =============================================================================

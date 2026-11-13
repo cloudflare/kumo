@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vite-plus/test";
 import { createElement, forwardRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { Link, KUMO_LINK_VARIANTS, linkVariants } from "./link";
+import { Badge } from "../badge/badge";
 import { LinkProvider } from "../../utils/link-provider";
 
 describe("Link", () => {
@@ -76,6 +77,18 @@ describe("Link", () => {
       children: "Custom link",
     };
     expect(() => createElement(Link, props)).not.toThrow();
+  });
+
+  it("matches the pill shape of a direct Badge child", () => {
+    render(
+      <Link href="/changelog" variant="plain">
+        <Badge variant="outline">View changelog</Badge>
+      </Link>,
+    );
+
+    expect(screen.getByRole("link").classList).toContain(
+      "has-[>[data-kumo-component=Badge]]:rounded-full",
+    );
   });
 
   it("should generate variant classes via linkVariants helper", () => {

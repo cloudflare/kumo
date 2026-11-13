@@ -32,7 +32,7 @@ export function CollapseSizeExample({
             preserveContentSize ? "w-64" : "w-full min-w-0",
           )}
         >
-          <Text as="h3" variant="heading3">
+          <Text as="h3" variant="heading">
             Web Analytics
           </Text>
           <Text variant="secondary">

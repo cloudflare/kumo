@@ -1,0 +1,93 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Tag Input"
+description: "A creatable multi-value input for values that do not come from a predefined option list."
+sourceFile: "components/tag-input"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TagInputDemo,
+  TagInputFormDemo,
+  TagInputLimitedDemo,
+  TagInputReadOnlyDemo,
+  TagInputLocalizationDemo,
+  TagInputUnrestrictedDemo,
+} from "~/components/demos/TagInputDemo";
+
+<ComponentSection><ComponentExample demo="TagInputDemo"><TagInputDemo client:load /></ComponentExample></ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+<CodeBlock code={`import { TagInput } from "@cloudflare/kumo";`} lang="tsx" />
+
+## Usage
+
+Use `value` with `onValueChange` to control the tags. Use `defaultValue` for uncontrolled usage.
+
+```tsx
+const [tags, setTags] = useState<string[]>([]);
+
+<TagInput
+  label="Labels"
+  value={tags}
+  onValueChange={setTags}
+  placeholder="Add a label"
+/>
+```
+</ComponentSection>
+
+<ComponentSection>
+
+## Examples
+
+### Unrestricted values
+<ComponentExample demo="TagInputUnrestrictedDemo"><TagInputUnrestrictedDemo client:load /></ComponentExample>
+
+### Maximum values
+<ComponentExample demo="TagInputLimitedDemo"><TagInputLimitedDemo client:load /></ComponentExample>
+
+### Forms
+Set `name` to submit each tag as a separate form value, so `FormData.getAll(name)` returns the tags. Text still in the input becomes a tag when focus leaves it, so clicking a submit button includes it. `required` passes once there's at least one tag.
+<ComponentExample demo="TagInputFormDemo"><TagInputFormDemo client:load /></ComponentExample>
+
+### Read-only
+`readOnly` shows the tags and keeps the input focusable, but tags can't be added or removed. Like a native read-only input, it's skipped by form validation, even when `required` is set.
+<ComponentExample demo="TagInputReadOnlyDemo"><TagInputReadOnlyDemo client:load /></ComponentExample>
+
+### Localization
+<ComponentExample demo="TagInputLocalizationDemo"><TagInputLocalizationDemo client:load /></ComponentExample>
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Behavior
+
+Press Enter, comma, or Tab to create a tag. Blur also commits the current value. Pasting comma- or newline-separated text inserts it into the current text at the cursor, then creates each value synchronously. Pasting text without a separator works like a normal paste. Duplicate values are ignored.
+
+## Localization
+
+Use `labels` to translate all TagInput-generated text: the fallback input name, tag removal action, invalid-value feedback, and maximum-value feedback.
+
+```tsx
+<TagInput
+  label="Etiquetas"
+  labels={{
+    input: "Agregar etiqueta",
+    removeValue: (value) => `Eliminar ${value}`,
+    invalidValue: (value) => `${value} no es valido.`,
+    maxValuesReached: (maxValues) => `Maximo de ${maxValues} etiquetas.`,
+  }}
+/>
+```
+
+## API Reference
+
+<PropsTable component="TagInput" />
+</ComponentSection>

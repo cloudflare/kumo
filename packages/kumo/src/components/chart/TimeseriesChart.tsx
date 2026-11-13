@@ -65,6 +65,8 @@ export interface TimeseriesChartProps {
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
   xAxisTickCount?: number;
+  /** Whether overlapping x-axis labels are automatically hidden. Defaults to `true`. */
+  xAxisHideLabelOverlap?: boolean;
   /**
    * Custom formatter for x-axis tick labels.
    * Receives the raw timestamp in milliseconds and returns a display string,
@@ -87,12 +89,30 @@ export interface TimeseriesChartProps {
   /** Number of ticks to display on the y-axis */
   yAxisTickCount?: number;
   /**
+   * Minimum interval between y-axis ticks. Set to `1` for discrete count data
+   * so ECharts does not render fractional tick marks.
+   */
+  yAxisMinInterval?: number;
+  /**
    * Custom formatter for tooltip values.
    * Receives the raw y-value and returns a display string.
    * When omitted, the raw value is shown. Takes precedence over the
    * deprecated `yAxisTickLabelFormat` prop.
    */
   tooltipValueFormat?: (value: number) => string;
+  /**
+   * Custom formatter for tooltip timestamps.
+   * Receives the raw timestamp in milliseconds and returns a display string.
+   * Applies to standard series and marker tooltips. When omitted, timestamps
+   * are formatted using the browser's locale and time zone.
+   */
+  tooltipTimestampFormat?: (timestamp: number) => string;
+  /**
+   * Footer text rendered below the series rows in the tooltip.
+   * Intended for brief context such as data freshness or aggregation details.
+   * Available for every `TimeseriesChart` configuration.
+   */
+  tooltipFooter?: string;
   /**
    * Controls which series are shown in the tooltip.
    * - `"all"` — show all series at the hovered timestamp (default)
@@ -213,6 +233,11 @@ const DEFAULT_X_AXIS_TICK_COUNT = 5;
  *   yAxisName="Count"
  *   yAxisTickFormat={(value) => `${value / 1000}k`}
  *   tooltipValueFormat={(value) => `${value.toFixed(2)} req/s`}
+ *   tooltipTimestampFormat={(timestamp) => new Intl.DateTimeFormat(undefined, {
+ *     timeZone: "UTC",
+ *     dateStyle: "medium",
+ *     timeStyle: "medium",
+ *   }).format(timestamp)}
  *   onTimeRangeChange={(from, to) => setRange([from, to])}
  * />
  * ```
@@ -229,12 +254,16 @@ export const TimeseriesChart = forwardRef<
     thresholds,
     xAxisName,
     xAxisTickCount,
+    xAxisHideLabelOverlap = true,
     xAxisTickFormat,
     yAxisTickFormat,
     yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
+    yAxisMinInterval,
     tooltipValueFormat,
+    tooltipTimestampFormat,
+    tooltipFooter,
     onTimeRangeChange,
     height = 350,
     incomplete,
@@ -362,13 +391,15 @@ export const TimeseriesChart = forwardRef<
       buildTimeseriesThresholdAnnotations(thresholds);
     const thresholdExtent = getThresholdValueExtent(thresholds);
 
-    const markerClusters = clusterTimeseriesMarkers(
-      markers,
-      getApproximateMarkerClusterInterval(
-        getTimestamps(data, markers),
-        xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
-      ),
-    );
+    const markerClusters = markers?.length
+      ? clusterTimeseriesMarkers(
+          markers,
+          getApproximateMarkerClusterInterval(
+            getTimestamps(data, markers),
+            xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
+          ),
+        )
+      : [];
     const markerAnnotations = buildTimeseriesMarkerAnnotations(markerClusters, {
       color: markerColor,
       labelBackgroundColor: markerLabelBackgroundColor,
@@ -497,6 +528,7 @@ export const TimeseriesChart = forwardRef<
         splitNumber: xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
         axisLabel: {
           color: axisTextColor,
+          hideOverlap: xAxisHideLabelOverlap,
           ...(xAxisTickFormat && {
             formatter: (value: number) => xAxisTickFormat(value),
           }),
@@ -525,6 +557,9 @@ export const TimeseriesChart = forwardRef<
           },
         },
         splitNumber: yAxisTickCount,
+        ...(yAxisMinInterval !== undefined && {
+          minInterval: yAxisMinInterval,
+        }),
         ...(thresholdExtent && {
           min: (value: { min: number }) =>
             Math.min(value.min, thresholdExtent.min),
@@ -544,10 +579,12 @@ export const TimeseriesChart = forwardRef<
     data,
     xAxisName,
     xAxisTickCount,
+    xAxisHideLabelOverlap,
     xAxisTickFormat,
     yAxisTickFormat,
     yAxisName,
     yAxisTickCount,
+    yAxisMinInterval,
     incompleteBefore,
     incompleteAfter,
     type,
@@ -761,12 +798,15 @@ export const TimeseriesChart = forwardRef<
           >
             <TooltipPrimitive.Popup
               data-mode={isDarkMode ? "dark" : "light"}
-              className="max-w-xs min-w-[150px] rounded-lg bg-kumo-base p-2 shadow-lg shadow-kumo-tip-shadow outline-1 outline-kumo-fill"
+              className="max-w-xs min-w-[150px] rounded-lg bg-kumo-base p-2 shadow-md outline-1 outline-kumo-line"
             >
               <TooltipContent
                 state={tooltipState}
                 formatValue={formatFn}
-                formatTimestamp={formatTimestamp}
+                formatTimestamp={
+                  tooltipTimestampFormat ?? formatDefaultTimestamp
+                }
+                footer={tooltipFooter}
               />
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>
@@ -796,14 +836,14 @@ function findNearest(data: [number, number][], ts: number): number | null {
   return data[lo][1];
 }
 
-function getTimestamps(
+function* getTimestamps(
   data: TimeseriesData[],
-  markers: TimeseriesMarker[] | undefined,
-): number[] {
-  return [
-    ...data.flatMap((series) => series.data.map(([timestamp]) => timestamp)),
-    ...(markers?.map((marker) => marker.timestamp) ?? []),
-  ];
+  markers: TimeseriesMarker[],
+): Generator<number> {
+  for (const series of data) {
+    for (const [timestamp] of series.data) yield timestamp;
+  }
+  for (const marker of markers) yield marker.timestamp;
 }
 
 function getAllTooltipRowsAtTimestamp(
@@ -1097,9 +1137,8 @@ const tooltipDateFormat = new Intl.DateTimeFormat(undefined, {
 });
 
 /**
- * Formats a timestamp for use in chart tooltips using the browser's locale.
- * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
+ * Formats a Unix timestamp in milliseconds using the browser's locale and time zone.
  */
-function formatTimestamp(ts: number | string | Date): string {
-  return tooltipDateFormat.format(new Date(ts));
+function formatDefaultTimestamp(timestamp: number): string {
+  return tooltipDateFormat.format(timestamp);
 }

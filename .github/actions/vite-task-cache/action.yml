@@ -8,7 +8,10 @@ runs:
       with:
         path: node_modules/.vite/task-cache
         # The per-run key never pre-exists, so every successful job saves.
-        # The prefix restore falls back to the newest prior cache.
-        key: vite-task-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+        # Prefer this job's outputs, then main's complete warmed task graph.
+        # v2 discards fingerprints collected before explicit build inputs.
+        key: vite-task-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
         restore-keys: |
-          vite-task-${{ runner.os }}-${{ runner.arch }}-
+          vite-task-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-
+          vite-task-v2-${{ runner.os }}-${{ runner.arch }}-warm-
+          vite-task-v2-${{ runner.os }}-${{ runner.arch }}-

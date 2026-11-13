@@ -10,12 +10,12 @@
  * - Wrap your app with the kumo CSS import: `import "@cloudflare/kumo/styles"`.
  *
  * **Component categories:**
- * - **Action:** Button, ClipboardText
+ * - **Action:** Button, ClipboardText, InlineCopyText
  * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Surface (deprecated), Text
  * - **Feedback:** Banner, Loader, Toast
  * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
  * - **Layout:** Grid, Surface
- * - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
+ * - **Navigation:** CommandPalette, MenuBar (deprecated), Pagination, Tabs
  * - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
  * - **Other:** Label, Link
  *
@@ -50,6 +50,14 @@ export {
   type CheckboxChangeEventDetails,
 } from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
+export {
+  InlineCopyText,
+  KUMO_INLINE_COPY_TEXT_DEFAULT_VARIANTS,
+  KUMO_INLINE_COPY_TEXT_STYLING,
+  KUMO_INLINE_COPY_TEXT_VARIANTS,
+  type InlineCopyTextLabels,
+  type InlineCopyTextProps,
+} from "./components/inline-copy-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
 export {
@@ -59,6 +67,7 @@ export {
   type ToolbarProps,
   type ToolbarSize,
   type ToolbarButtonProps,
+  type ToolbarLinkProps,
   type ToolbarInputProps,
   type ToolbarInputGroupProps,
 } from "./components/toolbar";
@@ -126,6 +135,9 @@ export {
   type DeleteResourceProps,
 } from "./blocks/delete-resource";
 export { Loader, SkeletonLine } from "./components/loader";
+/**
+ * @deprecated Use {@link Tabs} with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
+ */
 export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
@@ -251,6 +263,7 @@ export {
   ChartLegend,
   BubbleMap,
   ChoroplethMap,
+  GlobeMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
@@ -262,6 +275,8 @@ export {
   type MapStyle,
   type BubbleMapProps,
   type ChoroplethMapProps,
+  type GlobeMapProps,
+  type GlobeMapMarker,
 } from "./components/chart";
 export {
   Autocomplete,
@@ -311,6 +326,9 @@ export {
   type SidebarContextValue,
   type SidebarProviderProps,
   type SidebarRootProps,
+  type SidebarScrollAlign,
+  type SidebarScrollToItemOptions,
+  type SidebarMenuItemProps,
   type SidebarMenuButtonSize,
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
@@ -329,6 +347,42 @@ export {
   type UseTableOfContentsActiveIdOptions,
   type UseTableOfContentsActiveIdResult,
 } from "./components/table-of-contents";
+export {
+  ButtonGroup,
+  KUMO_BUTTON_GROUP_VARIANTS,
+  KUMO_BUTTON_GROUP_DEFAULT_VARIANTS,
+  KUMO_BUTTON_GROUP_STYLING,
+  type ButtonGroupProps,
+} from "./components/button-group";
+export {
+  TagInput,
+  type TagInputLabels,
+  type TagInputProps,
+} from "./components/tag-input";
+export {
+  LayerDialog,
+  type LayerDialogProps,
+  type LayerDialogActionProps,
+  type LayerDialogActionsProps,
+  type LayerDialogBodyProps,
+  type LayerDialogContentProps,
+  type LayerDialogDescriptionProps,
+  type LayerDialogPrimaryProps,
+  type LayerDialogRootProps,
+  type LayerDialogTitleProps,
+  type KumoLayerDialogPrimaryVariant,
+  type KumoLayerDialogSize,
+  type KumoLayerDialogVerticalAlign,
+} from "./components/layer-dialog";
+export {
+  Slider,
+  sliderVariants,
+  KUMO_SLIDER_VARIANTS,
+  KUMO_SLIDER_DEFAULT_VARIANTS,
+  type SliderProps,
+  type KumoSliderSize,
+  type KumoSliderVariantsProps,
+} from "./components/slider";
 // PLOP_INJECT_EXPORT
 
 // Utils
@@ -342,6 +396,12 @@ export {
   KumoPortalProvider,
   type PortalContainer,
 } from "./utils/portal-provider";
+export {
+  KumoLocaleProvider,
+  type KumoLocaleProviderProps,
+  type KumoTranslations,
+  type KumoTranslationsPartial,
+} from "./utils/locale-provider";
 
 // Registry types (for consuming packages to type registry JSON)
 export type {

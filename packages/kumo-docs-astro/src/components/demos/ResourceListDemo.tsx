@@ -39,11 +39,11 @@ function ResourceListPage({
           </p>
         </div>
 
-        <div className="flex flex-col-reverse gap-6 xl:flex-row xl:gap-8">
-          <div className="min-w-0 grow">{children}</div>
+        <div className="flex flex-col-reverse gap-6 xl:grid xl:grid-cols-[1fr_2fr] xl:gap-8">
+          <div className="min-w-0">{children}</div>
 
           {(usage || additionalContent) && (
-            <div className="top-22 flex h-fit w-full shrink-0 flex-col gap-4 xl:sticky xl:w-[380px]">
+            <div className="top-22 flex h-fit w-full min-w-0 flex-col gap-4 xl:sticky">
               {usage}
               {additionalContent && (
                 <div className={usage ? "mt-6" : ""}>{additionalContent}</div>
@@ -82,6 +82,7 @@ export function ResourceListWithUsageDemo() {
             Generate an API key to authenticate your requests
           </p>
           <Code
+            className="overflow-x-auto"
             lang="bash"
             code='curl -H "Authorization: Bearer YOUR_API_KEY" https://api.example.com'
           />
@@ -105,6 +106,7 @@ export function ResourceListCompleteDemo() {
         <Surface className="p-4">
           <h3 className="mb-2 font-semibold">Usage Example</h3>
           <Code
+            className="overflow-x-auto"
             lang="ts"
             code={`// Read from KV
 const value = await KV.get('key');
@@ -125,11 +127,11 @@ await KV.put('key', 'value');`}
     >
       <div className="space-y-4">
         <Surface className="p-6">
-          <h4 className="mb-2 font-semibold">production-kv</h4>
+          <h4 className="mb-2 truncate font-semibold">production-kv</h4>
           <p className="text-sm text-kumo-subtle">Created 2 days ago</p>
         </Surface>
         <Surface className="p-6">
-          <h4 className="mb-2 font-semibold">staging-kv</h4>
+          <h4 className="mb-2 truncate font-semibold">staging-kv</h4>
           <p className="text-sm text-kumo-subtle">Created 1 week ago</p>
         </Surface>
       </div>

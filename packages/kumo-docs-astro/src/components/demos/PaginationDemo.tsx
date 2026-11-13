@@ -23,6 +23,21 @@ export function PaginationSimpleDemo() {
   );
 }
 
+/** Pagination for an API that reports whether another page exists, but not a total. */
+export function PaginationUnknownTotalDemo() {
+  const [page, setPage] = useState(1);
+  const hasNextPage = page < 3;
+
+  return (
+    <Pagination
+      text={() => `Page ${page}`}
+      page={page}
+      setPage={setPage}
+      hasNextPage={hasNextPage}
+    />
+  );
+}
+
 export function PaginationFullDemo() {
   const [page, setPage] = useState(1);
 
@@ -42,6 +57,15 @@ export function PaginationMidPageDemo() {
 
   return (
     <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
+  );
+}
+
+/** An empty result set renders a single empty page with navigation disabled. */
+export function PaginationEmptyDemo() {
+  const [page, setPage] = useState(1);
+
+  return (
+    <Pagination page={page} setPage={setPage} perPage={10} totalCount={0} />
   );
 }
 

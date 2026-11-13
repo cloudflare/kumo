@@ -1,0 +1,41 @@
+name: Package Preview (PR)
+
+on:
+  pull_request:
+  # Also trigger on push to PR branches (for bots that push via API)
+  push:
+    branches:
+      - "opencode/**"
+      - "changeset-release/main"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: package-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pkg-preview:
+    name: Package Preview
+    if: ${{ github.repository_owner == 'cloudflare' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          filter: "@cloudflare/kumo..."
+
+      - uses: ./.github/actions/vite-task-cache
+      - name: Build @cloudflare/kumo
+        run: vp run build:kumo
+
+      - name: Publish preview package
+        run: vp dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo

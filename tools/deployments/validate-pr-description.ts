@@ -43,17 +43,18 @@ export function validateDescription(
     return [];
   }
 
-  // Validate bonk review
+  // Validate automated review
   // Flexible: allows optional leading whitespace/indentation
   // Uses [ \t]* (space/tab only) after colon to require justification on same line
+  // "bonk" is accepted for PRs opened before the Bonk reviewer was removed
   if (!(
-    /^\s*-\s*\[x\]\s*bonk has reviewed the change/im.test(body) ||
+    /^\s*-\s*\[x\]\s*(?:clanky|bonk) has reviewed the change/im.test(body) ||
     /^\s*-\s*\[x\]\s*automated review not possible because:[ \t]*\S/im.test(
       body,
     )
   )) {
     errors.push(
-      "Your PR must have bonk review, or provide justification for why automated review is not possible. " +
+      "Your PR must have automated review from clanky, or provide justification for why automated review is not possible. " +
         "If providing a justification, it must be on the same line as the checkbox (e.g., '- [x] automated review not possible because: reason here').",
     );
   }
@@ -78,11 +79,18 @@ export function validateDescription(
 
   // Validate changeset
   const changedFiles = JSON.parse(changedFilesJson) as string[];
+  const hasKumoChanges = changedFiles.some((f) =>
+    f.startsWith("packages/kumo/"),
+  );
   const changesetIncluded = changedFiles.some((f) =>
     f.startsWith(".changeset/"),
   );
 
-  if (!changesetIncluded && !parsedLabels.includes("no-changeset-required")) {
+  if (
+    hasKumoChanges &&
+    !changesetIncluded &&
+    !parsedLabels.includes("no-changeset-required")
+  ) {
     errors.push(
       "Your PR doesn't include a changeset. Either include one (following the instructions in CONTRIBUTING.md) or add the 'no-changeset-required' label to bypass this check. See https://github.com/cloudflare/kumo/blob/main/CONTRIBUTING.md#changesets for more details.",
     );

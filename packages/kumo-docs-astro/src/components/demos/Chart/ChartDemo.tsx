@@ -111,6 +111,40 @@ export function BasicLineChartDemo() {
   );
 }
 
+/**
+ * Discrete request-count chart with whole-number y-axis ticks.
+ */
+export function IntegerYAxisChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(() => {
+    const end = Date.now();
+    const values = [0, 1, 3, 2, 5, 4, 7, 3, 6, 2, 4, 1];
+
+    return [
+      {
+        name: "Requests",
+        data: values.map((value, index): [number, number] => [
+          end - (values.length - index - 1) * 60_000,
+          value,
+        ]),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+    ];
+  }, [isDarkMode]);
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Requests"
+      yAxisMinInterval={1}
+    />
+  );
+}
+
 export function ReferenceMarkersChartDemo() {
   const isDarkMode = useIsDarkMode();
 
@@ -201,9 +235,7 @@ export function ThresholdsChartDemo() {
   );
 }
 
-/**
- * Timeseries chart with custom axis tick label formats for both x-axis (HH:MM) and y-axis (compact numbers).
- */
+/** Timeseries chart with custom UTC timestamps and compact value formats. */
 export function CustomAxisLabelFormatDemo() {
   const isDarkMode = useIsDarkMode();
 
@@ -225,15 +257,25 @@ export function CustomAxisLabelFormatDemo() {
       data={data}
       xAxisName="Time (UTC)"
       yAxisName="Requests"
-      xAxisTickFormat={(ts) => {
-        const d = new Date(ts);
-        return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
-      }}
+      xAxisTickFormat={(timestamp) =>
+        new Intl.DateTimeFormat(undefined, {
+          timeZone: "UTC",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(timestamp)
+      }
       yAxisTickFormat={(value) => {
         if (value >= 1000) return `${value / 1000}k`;
         return value.toString();
       }}
       tooltipValueFormat={(value) => `${(value / 1000).toFixed(1)}k requests`}
+      tooltipTimestampFormat={(timestamp) =>
+        new Intl.DateTimeFormat(undefined, {
+          timeZone: "UTC",
+          dateStyle: "medium",
+          timeStyle: "medium",
+        }).format(timestamp)
+      }
     />
   );
 }
@@ -720,6 +762,7 @@ export function ChartExampleDemo() {
           isDarkMode={isDarkMode}
           data={data}
           height={300}
+          tooltipFooter="Percentiles use a five-minute rolling window."
         />
       </LayerCard.Primary>
     </LayerCard>

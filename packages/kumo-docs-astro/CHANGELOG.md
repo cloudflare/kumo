@@ -1,5 +1,210 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.27
+
+### Patch Changes
+
+- Updated dependencies [8729c71]
+- Updated dependencies [63d0398]
+- Updated dependencies [aede2c3]
+- Updated dependencies [68ead88]
+- Updated dependencies [27f8615]
+- Updated dependencies [ac1cbbf]
+- Updated dependencies [8c058ff]
+  - @cloudflare/kumo@2.18.1
+
+## 1.5.26
+
+### Patch Changes
+
+- Updated dependencies [39d33de]
+- Updated dependencies [99e73d6]
+- Updated dependencies [12cd0fa]
+- Updated dependencies [d8a668e]
+- Updated dependencies [a813d01]
+- Updated dependencies [3450917]
+- Updated dependencies [1c85bb3]
+- Updated dependencies [cbb7fe8]
+- Updated dependencies [9d8b6e5]
+- Updated dependencies [33bdabd]
+- Updated dependencies [085332b]
+  - @cloudflare/kumo@2.18.0
+
+## 1.5.25
+
+### Patch Changes
+
+- Updated dependencies [c2b2fc4]
+- Updated dependencies [7d1c776]
+- Updated dependencies [06726b0]
+- Updated dependencies [595463b]
+- Updated dependencies [40eaa25]
+- Updated dependencies [3aa0d59]
+- Updated dependencies [890a6ab]
+- Updated dependencies [4185bb1]
+  - @cloudflare/kumo@2.17.0
+
+## 1.5.24
+
+### Patch Changes
+
+- Updated dependencies [99b17fb]
+- Updated dependencies [6a093a5]
+- Updated dependencies [e16f41f]
+- Updated dependencies [fedc8a7]
+- Updated dependencies [947065a]
+- Updated dependencies [810d820]
+  - @cloudflare/kumo@2.16.0
+
+## 1.5.23
+
+### Patch Changes
+
+- Updated dependencies [2c53422]
+- Updated dependencies [09a9dae]
+- Updated dependencies [df14b5d]
+- Updated dependencies [cdb7e0f]
+- Updated dependencies [88850d5]
+- Updated dependencies [dc7c513]
+- Updated dependencies [5282710]
+- Updated dependencies [3d93312]
+- Updated dependencies [f7d6829]
+- Updated dependencies [03aa5ae]
+- Updated dependencies [dae9cdd]
+- Updated dependencies [1846759]
+- Updated dependencies [7e0ff40]
+- Updated dependencies [81b0ef4]
+- Updated dependencies [a8c946a]
+- Updated dependencies [c3b0294]
+- Updated dependencies [49317c6]
+- Updated dependencies [86af1a1]
+- Updated dependencies [d97d751]
+- Updated dependencies [bfb4140]
+- Updated dependencies [1cb4773]
+- Updated dependencies [aef723c]
+- Updated dependencies [6701f40]
+- Updated dependencies [462516f]
+- Updated dependencies [17d094e]
+- Updated dependencies [85afbd0]
+- Updated dependencies [543dc8a]
+- Updated dependencies [2f9b17f]
+- Updated dependencies [72b3346]
+- Updated dependencies [5ee4a03]
+- Updated dependencies [7d91721]
+- Updated dependencies [828866a]
+- Updated dependencies [f46e8bc]
+  - @cloudflare/kumo@2.15.0
+
+## 1.5.22
+
+### Patch Changes
+
+- Updated dependencies [da41be5]
+- Updated dependencies [9ad4c57]
+- Updated dependencies [d0b18d6]
+- Updated dependencies [de80043]
+- Updated dependencies [1175556]
+- Updated dependencies [cd119ab]
+- Updated dependencies [5d19dee]
+- Updated dependencies [5b1e222]
+- Updated dependencies [9c970e3]
+- Updated dependencies [cfffa4e]
+- Updated dependencies [6e7bd82]
+- Updated dependencies [77489b5]
+- Updated dependencies [6989681]
+- Updated dependencies [06321ce]
+- Updated dependencies [78d05b6]
+- Updated dependencies [86029e4]
+- Updated dependencies [d4a3e71]
+  - @cloudflare/kumo@2.14.0
+
+## 1.5.21
+
+### Patch Changes
+
+- Updated dependencies [36fc155]
+  - @cloudflare/kumo@2.13.2
+
+## 1.5.20
+
+### Patch Changes
+
+- Updated dependencies [7d5241d]
+  - @cloudflare/kumo@2.13.1
+
+## 1.5.19
+
+### Patch Changes
+
+- Updated dependencies [4066307]
+- Updated dependencies [d004940]
+- Updated dependencies [f74936f]
+- Updated dependencies [8f0a1f0]
+- Updated dependencies [1ede8bf]
+- Updated dependencies [8482c50]
+- Updated dependencies [7526a6a]
+- Updated dependencies [b094a5a]
+- Updated dependencies [20b7880]
+  - @cloudflare/kumo@2.13.0
+
+## 1.5.18
+
+### Patch Changes
+
+- d66dbe1: - Adds a custom 404 page using a wireframe grid and animated dashed Kumo logo
+  - Adds an easter egg that reverses the logo animation direction
+  - Configures static assets to serve the custom 404 page
+- Updated dependencies [716e5b8]
+- Updated dependencies [d7a7a35]
+- Updated dependencies [0db4f66]
+- Updated dependencies [c64183b]
+- Updated dependencies [ef13cb4]
+- Updated dependencies [51d0f03]
+- Updated dependencies [d586bf3]
+  - @cloudflare/kumo@2.12.0
+
+## 1.5.17
+
+### Patch Changes
+
+- Updated dependencies [bba0f5e]
+- Updated dependencies [aa6edff]
+- Updated dependencies [c2c8d42]
+- Updated dependencies [0ad1926]
+  - @cloudflare/kumo@2.11.0
+
+## 1.5.16
+
+### Patch Changes
+
+- ccb9686: Fix the home page CommandPalette demo so it opens when clicked.
+- Updated dependencies [4b9a4dc]
+- Updated dependencies [65db2e6]
+- Updated dependencies [0c58325]
+- Updated dependencies [528d5ff]
+- Updated dependencies [75c3b14]
+- Updated dependencies [1d9b588]
+  - @cloudflare/kumo@2.10.0
+
+## 1.5.15
+
+### Patch Changes
+
+- Updated dependencies [188a82c]
+- Updated dependencies [c5ad709]
+  - @cloudflare/kumo@2.9.2
+
+## 1.5.14
+
+### Patch Changes
+
+- 6bdbeeb: Use a light favicon in dark-themed browsers.
+- Updated dependencies [ff76f30]
+- Updated dependencies [7468623]
+- Updated dependencies [d7639f2]
+- Updated dependencies [c599590]
+  - @cloudflare/kumo@2.9.1
+
 ## 1.5.13
 
 ### Patch Changes

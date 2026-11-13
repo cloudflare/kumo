@@ -13,6 +13,8 @@ import {
   SkeletonLineHeightDemo,
   SkeletonLineBlockHeightDemo,
   SkeletonLineCardDemo,
+  SkeletonLineSketchDemo,
+  SkeletonLineSketchCardDemo,
 } from "~/components/demos/SkeletonLineDemo";
 
 {/* Hero Demo */}
@@ -81,6 +83,31 @@ import { SkeletonLine } from "@cloudflare/kumo";
   </ComponentExample>
 </ComponentSection>
 
+{/* Sketch Variant */}
+
+<ComponentSection>
+
+## Sketch Variant
+
+  <p class="mb-4">
+    Set <code>variant="sketch"</code> for a wireframe-style placeholder: a
+    rounded fill with the same sliding shimmer, a 1px outline, and lighter
+    construction strokes that overshoot each corner by 4px. Leave 4px of room
+    around the line so a parent with <code>overflow: hidden</code> doesn't clip
+    the strokes. The shimmer stops when reduced motion is preferred.
+  </p>
+  <ComponentExample demo="SkeletonLineSketchDemo">
+    <SkeletonLineSketchDemo client:visible />
+  </ComponentExample>
+  <p class="mt-6 mb-4">
+    Give it a height and fixed width through <code>className</code> to stand in
+    for buttons, icons and badges alongside text lines.
+  </p>
+  <ComponentExample demo="SkeletonLineSketchCardDemo">
+    <SkeletonLineSketchCardDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
 {/* Card Loading State */}
 
 <ComponentSection>
@@ -111,6 +138,11 @@ import { SkeletonLine } from "@cloudflare/kumo";
         </tr>
       </thead>
       <tbody>
+        <tr class="border-b border-kumo-hairline">
+          <td class="px-4 py-3 font-mono text-xs">variant</td>
+          <td class="px-4 py-3 font-mono text-xs">"default" | "sketch"</td>
+          <td class="px-4 py-3 font-mono text-xs">"default"</td>
+        </tr>
         <tr class="border-b border-kumo-hairline">
           <td class="px-4 py-3 font-mono text-xs">minWidth</td>
           <td class="px-4 py-3 font-mono text-xs">number</td>

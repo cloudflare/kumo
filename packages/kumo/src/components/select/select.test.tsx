@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { useState } from "react";
+import { createRef, useState } from "react";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
+import { Input } from "../input/input";
 import { Select } from "./select";
 
 describe("Select", () => {
@@ -20,7 +22,80 @@ describe("Select", () => {
     });
   });
 
+  describe("surface styling", () => {
+    it("uses the same default surface color as Input", () => {
+      render(
+        <>
+          <Input aria-label="Text field" />
+          <Select aria-label="Select field">
+            <Select.Option value="a">Option A</Select.Option>
+          </Select>
+        </>,
+      );
+
+      const inputClasses = screen.getByRole("textbox").className.split(" ");
+      const selectClasses = screen.getByRole("combobox").className.split(" ");
+      const inputSurface = inputClasses.find((className) =>
+        className.startsWith("bg-kumo-"),
+      );
+      const selectSurface = selectClasses.find((className) =>
+        className.startsWith("bg-kumo-"),
+      );
+
+      expect(selectSurface).toBe(inputSurface);
+    });
+
+    it("does not revert to the Button surface when open or disabled", () => {
+      render(
+        <Select aria-label="Pick one" disabled>
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.className).toContain("data-[state=open]:bg-kumo-control");
+      expect(trigger.className).toContain("disabled:bg-kumo-control/50");
+      expect(trigger.className).not.toContain("data-[state=open]:bg-kumo-base");
+      expect(trigger.className).not.toContain("disabled:bg-kumo-base/50");
+    });
+
+    it("allows className to override the default surface without important", () => {
+      render(
+        <Select aria-label="Pick one" className="bg-kumo-elevated">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      const classes = trigger.className.split(" ");
+      expect(classes).toContain("bg-kumo-elevated");
+      expect(classes).not.toContain("bg-kumo-control");
+    });
+  });
+
   describe("label visibility (new behavior)", () => {
+    it("forwards translated label text", () => {
+      render(
+        <KumoLocaleProvider
+          translations={{
+            label: {
+              optional: "(opcional)",
+              tooltip: "Mais informações",
+            },
+          }}
+        >
+          <Select label="País" required={false} labelTooltip="Ajuda">
+            <Select.Option value="br">Brasil</Select.Option>
+          </Select>
+        </KumoLocaleProvider>,
+      );
+
+      expect(screen.getByText("(opcional)")).toBeTruthy();
+      expect(
+        screen.getByRole("button", { name: "Mais informações" }),
+      ).toBeTruthy();
+    });
+
     it("shows visible label by default when label prop is provided", () => {
       render(
         <Select label="Database" description="Select your preferred database">
@@ -63,6 +138,30 @@ describe("Select", () => {
 
       const trigger = document.querySelector('[role="combobox"]');
       expect(trigger?.getAttribute("aria-label")).toBe("Select a database");
+    });
+
+    it("names the trigger from a ReactNode label", () => {
+      render(
+        <Select label={<span>Database</span>} placeholder="Choose one">
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      expect(screen.getByRole("combobox", { name: "Database" })).toBeTruthy();
+    });
+
+    it("keeps the label name when the consumer sets the trigger id", () => {
+      render(
+        <Select
+          label={<span>Database</span>}
+          render={(props) => <button {...props} id="database-trigger" />}
+        >
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Database" });
+      expect(trigger.id).toBe("database-trigger");
     });
   });
 
@@ -471,10 +570,12 @@ describe("Select", () => {
     });
 
     it("renders Select.Separator as a visual divider", async () => {
+      const separatorRef = createRef<HTMLDivElement>();
+
       render(
         <Select aria-label="Pick one">
           <Select.Option value="a">Option A</Select.Option>
-          <Select.Separator />
+          <Select.Separator ref={separatorRef} />
           <Select.Option value="b">Option B</Select.Option>
         </Select>,
       );
@@ -483,20 +584,20 @@ describe("Select", () => {
         fireEvent.click(screen.getByRole("combobox"));
       });
 
-      // Separator is inside the portaled popup — query from document
-      const separator = document.querySelector('[role="separator"]');
-      expect(separator).toBeTruthy();
-      expect(separator?.className).toContain("bg-kumo-hairline");
+      expect(separatorRef.current).toBeTruthy();
+      expect(separatorRef.current?.className).toContain("bg-kumo-hairline");
     });
 
     it("renders multiple groups with separators", async () => {
+      const separatorRef = createRef<HTMLDivElement>();
+
       render(
         <Select aria-label="Pick a food">
           <Select.Group>
             <Select.GroupLabel>Fruits</Select.GroupLabel>
             <Select.Option value="apple">Apple</Select.Option>
           </Select.Group>
-          <Select.Separator />
+          <Select.Separator ref={separatorRef} />
           <Select.Group>
             <Select.GroupLabel>Vegetables</Select.GroupLabel>
             <Select.Option value="carrot">Carrot</Select.Option>
@@ -513,10 +614,7 @@ describe("Select", () => {
 
       expect(screen.getByText("Fruits")).toBeTruthy();
       expect(screen.getByText("Vegetables")).toBeTruthy();
-
-      // Separator is inside the portaled popup — query from document
-      const separator = document.querySelector('[role="separator"]');
-      expect(separator).toBeTruthy();
+      expect(separatorRef.current).toBeTruthy();
     });
   });
 
@@ -534,6 +632,35 @@ describe("Select", () => {
   });
 
   describe("popup structure", () => {
+    it("accepts Base UI positioner props", () => {
+      render(
+        <Select
+          aria-label="Select a country"
+          side="bottom"
+          sideOffset={() => 4}
+          align="start"
+          alignOffset={() => 0}
+          alignItemWithTrigger={false}
+          anchor={document.body}
+          arrowPadding={5}
+          positionMethod="fixed"
+          collisionAvoidance={{
+            side: "none",
+            align: "shift",
+            fallbackAxisSide: "none",
+          }}
+          collisionBoundary="clipping-ancestors"
+          collisionPadding={10}
+          sticky={false}
+          disableAnchorTracking={false}
+        >
+          <Select.Option value="af">Afghanistan</Select.Option>
+        </Select>,
+      );
+
+      expect(screen.getByRole("combobox")).toBeTruthy();
+    });
+
     it("opens a listbox popup from the trigger", async () => {
       render(
         <Select aria-label="Select a country">
@@ -568,6 +695,8 @@ describe("Select", () => {
       const popup = listbox.parentElement;
       expect(popup?.getAttribute("role")).toBe("presentation");
       expect(popup?.className).toContain("max-h-[var(--available-height)]");
+      expect(popup?.className).toContain("bg-kumo-base");
+      expect(popup?.className).not.toContain("bg-kumo-control");
       expect(popup?.className).not.toContain("overscroll");
     });
 

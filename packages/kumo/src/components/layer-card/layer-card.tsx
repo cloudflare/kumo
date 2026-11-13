@@ -15,10 +15,13 @@ const LAYER_CARD_SURFACE_CLASSES =
   "overflow-hidden rounded-lg bg-kumo-base shadow-xs ring ring-kumo-line";
 const LAYER_CARD_LAYERED_ROOT_CLASSES =
   "flex w-full flex-col overflow-hidden rounded-lg bg-kumo-elevated text-base ring ring-kumo-hairline";
+// Sections are flex items of the layered root. Keep their natural height when
+// the root is height-capped (e.g. inside Dialog); `overflow-hidden` would
+// otherwise let them shrink and clip. Override per section with `flex-1 min-h-0`.
 const LAYER_CARD_SECONDARY_CLASSES =
-  "-my-2 flex items-center gap-2 bg-kumo-elevated p-4 text-base font-medium text-kumo-subtle";
+  "-my-2 flex shrink-0 items-center gap-2 bg-kumo-elevated p-4 text-base font-medium text-kumo-subtle";
 const LAYER_CARD_PRIMARY_CLASSES =
-  "relative flex flex-col gap-2 overflow-hidden rounded-lg bg-kumo-base p-4 pr-3 text-inherit no-underline ring ring-kumo-fill";
+  "relative flex shrink-0 flex-col gap-2 overflow-hidden rounded-lg bg-kumo-base p-4 pr-3 text-inherit no-underline ring ring-kumo-fill";
 
 /** LayerCard variant definitions (currently empty, reserved for future additions). */
 export const KUMO_LAYER_CARD_VARIANTS = {

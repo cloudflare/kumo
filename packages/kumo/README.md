@@ -288,11 +288,11 @@ Beta releases allow you to test changes before publishing to production. Beta ve
 
 ### Automated Beta Releases
 
-Beta releases are automatically triggered for pull requests through GitHub Actions (`.github/workflows/preview.yml`):
+Beta releases are automatically triggered for pull requests through GitHub Actions (`.github/workflows/package-preview-pr.yml`):
 
 **Workflow Configuration:**
 
-- **Workflow**: `preview.yml`
+- **Workflow**: `package-preview-pr.yml`
 - **Triggers**: Pull requests with changes to `packages/kumo/**` or `.changeset/**`
 - **Dependencies**: Requires changeset to exist for `@cloudflare/kumo`
 

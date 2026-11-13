@@ -161,7 +161,7 @@ const CollapsibleDefaultTrigger = forwardRef<
         // Defensive resets to prevent global button styles from polluting the trigger
         "m-0 border-none bg-transparent p-0 shadow-none",
         // Base styles for the trigger
-        "flex cursor-pointer items-center gap-1 text-base text-kumo-link select-none",
+        "flex cursor-pointer items-center gap-1 text-base font-medium text-kumo-default select-none",
         className,
       )}
     >

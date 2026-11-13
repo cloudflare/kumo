@@ -1,5 +1,7 @@
+import { version, type ReactElement, type ReactNode } from "react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { Badge, badgeVariants, KUMO_BADGE_VARIANTS } from "./badge";
 
 describe("Badge", () => {
@@ -12,6 +14,7 @@ describe("Badge", () => {
     render(<Badge>Status</Badge>);
     const el = screen.getByText("Status");
     expect(el.tagName).toBe("SPAN");
+    expect(el.getAttribute("data-kumo-component")).toBe("Badge");
   });
 
   it("merges custom className", () => {
@@ -19,6 +22,38 @@ describe("Badge", () => {
     const el = screen.getByText("Tag");
     expect(el.className).toContain("my-custom");
   });
+
+  it("shows a ring when an ancestor link is hovered", () => {
+    render(
+      <a href="/docs">
+        <Badge>Docs</Badge>
+      </a>,
+    );
+    const badge = screen.getByText("Docs");
+    expect(badge.classList.contains("[a:hover_&]:ring")).toBe(true);
+    expect(badge.classList.contains("[a:hover_&]:ring-current")).toBe(true);
+  });
+
+  it("renders an icon", () => {
+    render(<Badge icon={ArrowRightIcon}>Next</Badge>);
+    expect(screen.getByText("Next").querySelector("svg")).toBeTruthy();
+  });
+
+  // React Flight (RSC) can deliver an element prop as a lazy reference whose
+  // resolved value is an element, not a component (#891).
+  it.skipIf(version.startsWith("18."))(
+    "renders an icon element delivered as an RSC lazy reference",
+    () => {
+      const lazyElement = {
+        $$typeof: Symbol.for("react.lazy"),
+        _payload: <ArrowRightIcon />,
+        _init: (payload: ReactElement) => payload,
+      } as unknown as ReactNode;
+
+      render(<Badge icon={lazyElement}>Next</Badge>);
+      expect(screen.getByText("Next").querySelector("svg")).toBeTruthy();
+    },
+  );
 
   describe("filled appearance (default)", () => {
     it("applies variant classes for filled badges", () => {

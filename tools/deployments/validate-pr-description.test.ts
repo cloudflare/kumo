@@ -5,10 +5,27 @@ import { validateDescription } from "./validate-pr-description.ts";
 const NO_LABELS = "[]";
 const NO_FILES = "[]";
 const WITH_CHANGESET = '[".changeset/some-change.md"]';
+const WITH_KUMO_CHANGE = '["packages/kumo/src/index.ts"]';
 
 describe("validateDescription", () => {
   describe("Reviews section", () => {
-    it("passes when bonk has reviewed", () => {
+    it("passes when clanky has reviewed", () => {
+      const body = `
+- Reviews
+- [x] clanky has reviewed the change
+- Tests
+- [x] Tests included/updated
+      `;
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        NO_LABELS,
+        WITH_CHANGESET,
+      );
+      assert.deepStrictEqual(errors, []);
+    });
+
+    it("passes with the legacy bonk checkbox", () => {
       const body = `
 - Reviews
 - [x] bonk has reviewed the change
@@ -55,7 +72,7 @@ describe("validateDescription", () => {
       );
       assert.ok(
         errors.some(
-          (e) => e.includes("bonk review") && e.includes("same line"),
+          (e) => e.includes("automated review") && e.includes("same line"),
         ),
       );
     });
@@ -75,7 +92,7 @@ describe("validateDescription", () => {
       );
       assert.ok(
         errors.some(
-          (e) => e.includes("bonk review") && e.includes("same line"),
+          (e) => e.includes("automated review") && e.includes("same line"),
         ),
       );
     });
@@ -83,7 +100,7 @@ describe("validateDescription", () => {
     it("fails when no review checkbox is checked", () => {
       const body = `
 - Reviews
-- [ ] bonk has reviewed the change
+- [ ] clanky has reviewed the change
 - [ ] automated review not possible because:
 - Tests
 - [x] Tests included/updated
@@ -94,13 +111,13 @@ describe("validateDescription", () => {
         NO_LABELS,
         WITH_CHANGESET,
       );
-      assert.ok(errors.some((e) => e.includes("bonk review")));
+      assert.ok(errors.some((e) => e.includes("automated review")));
     });
 
     it("allows indented checkboxes", () => {
       const body = `
 - Reviews
-  - [x] bonk has reviewed the change
+  - [x] clanky has reviewed the change
 - Tests
   - [x] Tests included/updated
       `;
@@ -116,7 +133,7 @@ describe("validateDescription", () => {
     it("allows extra whitespace around checkbox", () => {
       const body = `
 - Reviews
--  [x]  bonk has reviewed the change
+-  [x]  clanky has reviewed the change
 - Tests
 -  [x]  Tests included/updated
       `;
@@ -131,7 +148,7 @@ describe("validateDescription", () => {
 
     it("allows tabs in indentation", () => {
       const body =
-        "- Reviews\n\t- [x] bonk has reviewed the change\n- Tests\n\t- [x] Tests included/updated";
+        "- Reviews\n\t- [x] clanky has reviewed the change\n- Tests\n\t- [x] Tests included/updated";
       const errors = validateDescription(
         "Test PR",
         body,
@@ -146,7 +163,7 @@ describe("validateDescription", () => {
     it("passes when tests are included", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Tests included/updated
       `;
@@ -162,7 +179,7 @@ describe("validateDescription", () => {
     it("passes when manual testing is described", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Automated tests not possible - manual testing has been completed as follows: tested in browser
       `;
@@ -178,7 +195,7 @@ describe("validateDescription", () => {
     it("passes when testing is not necessary with justification", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Additional testing not necessary because: docs only change
       `;
@@ -194,7 +211,7 @@ describe("validateDescription", () => {
     it("fails when manual testing description is empty", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Automated tests not possible - manual testing has been completed as follows:
       `;
@@ -212,7 +229,7 @@ describe("validateDescription", () => {
     it("fails when testing not necessary justification is empty", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Additional testing not necessary because:
       `;
@@ -230,7 +247,7 @@ describe("validateDescription", () => {
     it("fails when no test checkbox is checked", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [ ] Tests included/updated
 - [ ] Automated tests not possible - manual testing has been completed as follows:
@@ -250,7 +267,7 @@ describe("validateDescription", () => {
     it("passes when changeset is included", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Tests included/updated
       `;
@@ -263,26 +280,52 @@ describe("validateDescription", () => {
       assert.deepStrictEqual(errors, []);
     });
 
-    it("fails when changeset is missing", () => {
+    it("fails when a Kumo change is missing a changeset", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Tests included/updated
       `;
-      const errors = validateDescription("Test PR", body, NO_LABELS, NO_FILES);
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        NO_LABELS,
+        WITH_KUMO_CHANGE,
+      );
       assert.ok(errors.some((e) => e.includes("changeset")));
+    });
+
+    it("passes without a changeset when Kumo is unchanged", () => {
+      const body = `
+- Reviews
+- [x] clanky has reviewed the change
+- Tests
+- [x] Tests included/updated
+      `;
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        NO_LABELS,
+        '["ci/utils/git-operations.ts"]',
+      );
+      assert.deepStrictEqual(errors, []);
     });
 
     it("passes when no-changeset-required label is applied", () => {
       const body = `
 - Reviews
-- [x] bonk has reviewed the change
+- [x] clanky has reviewed the change
 - Tests
 - [x] Tests included/updated
       `;
       const labels = '["no-changeset-required"]';
-      const errors = validateDescription("Test PR", body, labels, NO_FILES);
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        labels,
+        WITH_KUMO_CHANGE,
+      );
       assert.deepStrictEqual(errors, []);
     });
   });
@@ -305,7 +348,7 @@ Some changes here.
 ---
 
 - Reviews
-  - [ ] bonk has reviewed the change
+  - [ ] clanky has reviewed the change
   - [x] automated review not possible because: simple prop type change
 - Tests
   - [ ] Tests included/updated
@@ -323,7 +366,7 @@ Some changes here.
 
     it("handles Windows line endings", () => {
       const body =
-        "- Reviews\r\n- [x] bonk has reviewed the change\r\n- Tests\r\n- [x] Tests included/updated";
+        "- Reviews\r\n- [x] clanky has reviewed the change\r\n- Tests\r\n- [x] Tests included/updated";
       const errors = validateDescription(
         "Test PR",
         body,

@@ -14,12 +14,14 @@ import {
   ToastDescriptionOnlyDemo,
   ToastSuccessDemo,
   ToastMultipleDemo,
+  ToastDeduplicatedDemo,
   ToastErrorDemo,
   ToastWarningDemo,
   ToastInfoDemo,
   ToastCustomContentDemo,
   ToastActionsDemo,
   ToastPromiseDemo,
+  ToastFunctionalUpdateDemo,
 } from "~/components/demos/ToastDemo";
 
 {/* Hero Demo */}
@@ -157,6 +159,27 @@ export function Layout({ children }) {
   <ToastMultipleDemo client:visible />
 </ComponentExample>
 
+### Deduplicated Toast
+
+<p>
+  Give repeated notifications a stable <code>id</code> to keep one toast on
+  screen. Click quickly: each trigger bumps the current toast instead of
+  stacking another copy.
+</p>
+<ComponentExample demo="ToastDeduplicatedDemo">
+  <ToastDeduplicatedDemo client:visible />
+</ComponentExample>
+
+### Functional Updates
+
+<p>
+  Update a toast in place from its current state. This example changes the
+  deployment toast to success after it is created.
+</p>
+<ComponentExample demo="ToastFunctionalUpdateDemo">
+  <ToastFunctionalUpdateDemo client:load />
+</ComponentExample>
+
 ### Error Variant
 
 <p>Use the error variant for critical issues that need attention.</p>
@@ -224,6 +247,11 @@ const toastManager = useKumoToastManager();
 
 // Add a toast
 toastManager.add(options);
+
+// Update from the current toast state
+toastManager.update(toastId, (toast) => ({
+  description: `Updated after ${toast.timeout ?? 5000}ms`,
+}));
 
 // Promise-based toast
 toastManager.promise(asyncFn(), {

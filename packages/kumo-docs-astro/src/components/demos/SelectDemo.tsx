@@ -558,3 +558,80 @@ export function SelectLongListDemo() {
     </Select>
   );
 }
+
+const planets = {
+  mercury: "Mercury",
+  venus: "Venus",
+  earth: "Earth",
+  mars: "Mars",
+  jupiter: "Jupiter",
+  saturn: "Saturn",
+  uranus: "Uranus",
+};
+
+/**
+ * Use `side` and `align` to pin the popup. Placement still flips automatically
+ * when the chosen side runs out of room.
+ */
+export function SelectPlacementDemo() {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Select
+        label="side=bottom (default)"
+        className="w-[200px]"
+        defaultValue="earth"
+        items={planets}
+      />
+      <Select
+        label="side=top"
+        side="top"
+        className="w-[200px]"
+        defaultValue="earth"
+        items={planets}
+      />
+      <Select
+        label="align=end"
+        align="end"
+        className="w-[200px]"
+        defaultValue="earth"
+        items={planets}
+      />
+      <Select
+        label="sideOffset=12"
+        sideOffset={12}
+        className="w-[200px]"
+        defaultValue="earth"
+        items={planets}
+      />
+    </div>
+  );
+}
+
+/**
+ * `alignItemWithTrigger` overlays the popup on the trigger so the selected
+ * option sits directly on top of it, like a native `<select>`. Options before
+ * the selection render above the trigger and the rest below. Open the second
+ * select — "Mars" is selected mid-list, so the popup extends in both
+ * directions. Falls back to normal anchored placement when space runs out.
+ */
+export function SelectDynamicPlacementDemo() {
+  return (
+    <div className="flex flex-wrap items-start gap-8">
+      <Select
+        label="Anchored (default)"
+        description="Opens below the trigger"
+        className="w-[200px]"
+        defaultValue="mars"
+        items={planets}
+      />
+      <Select
+        label="Aligned to selection"
+        description="Selected option lands on the trigger"
+        alignItemWithTrigger
+        className="w-[200px]"
+        defaultValue="mars"
+        items={planets}
+      />
+    </div>
+  );
+}

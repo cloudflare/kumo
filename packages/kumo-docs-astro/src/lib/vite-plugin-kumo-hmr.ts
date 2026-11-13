@@ -48,6 +48,10 @@ const aliases: Record<string, string> = {
     kumoRoot,
     "scripts/theme-generator/types.ts",
   ),
+
+  // Code highlighting has separate client and server entry points.
+  "@cloudflare/kumo/code": resolve(kumoSrc, "code/index.ts"),
+  "@cloudflare/kumo/code/server": resolve(kumoSrc, "code/server.tsx"),
 };
 
 /**

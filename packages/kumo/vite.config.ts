@@ -35,6 +35,10 @@ const packEntries = {
   "components/badge": resolve(__dirname, "src/components/badge/index.ts"),
   "components/banner": resolve(__dirname, "src/components/banner/index.ts"),
   "components/button": resolve(__dirname, "src/components/button/index.ts"),
+  "components/button-group": resolve(
+    __dirname,
+    "src/components/button-group/index.ts",
+  ),
   "components/date-range-picker": resolve(
     __dirname,
     "src/components/date-range-picker/index.ts",
@@ -55,7 +59,10 @@ const packEntries = {
     "src/components/collapsible/index.ts",
   ),
   "components/field": resolve(__dirname, "src/components/field/index.ts"),
-
+  "components/inline-copy-text": resolve(
+    __dirname,
+    "src/components/inline-copy-text/index.ts",
+  ),
   "components/input": resolve(__dirname, "src/components/input/index.ts"),
   "components/input-group": resolve(
     __dirname,
@@ -64,6 +71,10 @@ const packEntries = {
   "components/layer-card": resolve(
     __dirname,
     "src/components/layer-card/index.ts",
+  ),
+  "components/layer-dialog": resolve(
+    __dirname,
+    "src/components/layer-dialog/index.ts",
   ),
   "components/label": resolve(__dirname, "src/components/label/index.ts"),
   "components/loader": resolve(__dirname, "src/components/loader/index.ts"),
@@ -116,6 +127,11 @@ const packEntries = {
     __dirname,
     "src/components/table-of-contents/index.ts",
   ),
+  "components/tag-input": resolve(
+    __dirname,
+    "src/components/tag-input/index.ts",
+  ),
+  "components/slider": resolve(__dirname, "src/components/slider/index.ts"),
   // PLOP_INJECT_COMPONENT_ENTRY
   // Utils entry point
   utils: resolve(__dirname, "src/utils/index.ts"),
@@ -274,7 +290,7 @@ export default defineConfig({
         },
         advancedChunks: {
           groups: [
-            { name: "vendor-styling", test: /node_modules\/.*cnfast/ },
+            { name: "vendor-styling", test: /node_modules\/cn/ },
             {
               name: "vendor-floating-ui",
               test: /node_modules\/.*@floating-ui/,

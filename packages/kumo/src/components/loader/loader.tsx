@@ -92,13 +92,12 @@ export const Loader = ({
   const sizeValue = loaderVariants({ size });
   return (
     <svg
-      width="24"
-      height="24"
+      width={sizeValue}
+      height={sizeValue}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       stroke="currentColor"
       className={className}
-      style={{ height: sizeValue, width: sizeValue }}
       role="status"
       aria-label={ariaLabel}
     >

@@ -228,13 +228,21 @@ function List({
   );
 }
 
-function Item({ children, ...props }: AutocompleteBase.Item.Props) {
+function Item({
+  children,
+  className,
+  ...props
+}: AutocompleteBase.Item.Props & { className?: string }) {
   return (
     <AutocompleteBase.Item
       data-kumo-component="Autocomplete"
       data-kumo-part="item"
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay data-selected:font-medium"
+      className={cn(
+        "group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base",
+        "data-highlighted:bg-kumo-tint data-selected:font-medium",
+        className,
+      )}
     >
       <div className="col-start-1">{children}</div>
       <span className="col-start-2 hidden items-center group-data-selected:flex">

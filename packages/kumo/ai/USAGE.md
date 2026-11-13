@@ -136,6 +136,12 @@ import { PlusIcon, TrashIcon, GearIcon } from "@phosphor-icons/react";
 <DropdownMenu.Item icon={TrashIcon} variant="danger">Delete</DropdownMenu.Item>
 ```
 
+`icon` props also accept a rendered element, including one passed from a React Server Component:
+
+```tsx
+<Button icon={<PlusIcon weight="bold" />}>Add Worker</Button>
+```
+
 ## Controlled State Reference
 
 | Component        | Value Prop | Change Callback   | Default Prop     |

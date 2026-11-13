@@ -51,6 +51,10 @@ coverage/
 # Codex
 .codex/environments
 
+# OpenCode generated files
+.opencode/plans/
+.opencode/package-lock.json
+
 # Generated component registry files (built during CI)
 packages/kumo/ai/component-registry.json
 packages/kumo/ai/component-registry.md
@@ -59,3 +63,11 @@ packages/kumo/ai/schemas.ts
 # Vitest browser-mode artifacts (attachments, failure screenshots)
 .vitest-attachments/
 __screenshots__/
+
+# Browser visual-contract baselines are intentional test fixtures. Keep them
+# alongside their component tests so snapshot updates are visible in review.
+!packages/kumo/src/components/**/__screenshots__/
+!packages/kumo/src/components/**/__screenshots__/**
+
+# CI report artifacts
+ci/reports/

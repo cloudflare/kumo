@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, type Icon } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
 
 describe("Button", () => {
@@ -59,6 +59,20 @@ describe("Button", () => {
     expect(button.hasAttribute("disabled")).toBe(true);
   });
 
+  it("prevents text selection", () => {
+    render(<Button>Save</Button>);
+    const button = screen.getByRole("button");
+    expect(button.classList.contains("select-none")).toBe(true);
+    expect(button.classList.contains("select-text")).toBe(false);
+  });
+
+  it("does not paint a resting background for ghost buttons", () => {
+    const className = buttonVariants({ variant: "ghost" });
+
+    expect(className).toContain("hover:bg-kumo-tint");
+    expect(className).not.toContain("bg-inherit");
+  });
+
   it("forwards ref to the <button> DOM node", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
@@ -98,11 +112,100 @@ describe("Button", () => {
       expect(svgs[0].getAttribute("role")).toBe("status");
     });
 
+    it("trims leading padding when an icon precedes text", () => {
+      render(<Button icon={Plus}>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("pl-2.5");
+    });
+
+    it.each(["square", "circle"] as const)(
+      "keeps %s icon-only buttons untouched",
+      (shape) => {
+        render(<Button shape={shape} icon={Plus} aria-label="Add" />);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pl-");
+        expect(button.className).not.toContain("pb-");
+      },
+    );
+
+    it("keeps symmetric padding without an icon", () => {
+      render(<Button>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("px-3");
+      expect(button.className).not.toContain("pl-2.5");
+    });
+
+    it.each(["xs", "sm", "base", "lg"] as const)(
+      "does not shift %s text off the line box center",
+      (size) => {
+        render(
+          <Button size={size} icon={Plus}>
+            Add
+          </Button>,
+        );
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pb-");
+        expect(button.className).not.toContain("translate-y");
+      },
+    );
+
+    it.each(["base", "lg"] as const)(
+      "uses a 20px line box at %s so the label gap is a whole pixel",
+      (size) => {
+        render(<Button size={size}>Add</Button>);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).toContain("text-base");
+        expect(button.className).toContain("leading-5");
+      },
+    );
+
+    it.each([false, "", [null, false]])(
+      "keeps symmetric padding when children render nothing (%j)",
+      (children) => {
+        render(
+          <Button icon={Plus} aria-label="Add">
+            {children}
+          </Button>,
+        );
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pl-2.5");
+      },
+    );
+
     it("accepts a React element via icon prop", () => {
       render(<Button icon={<Plus data-testid="plus-icon" />}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
       const svg = button.querySelector("svg");
       expect(svg).toBeTruthy();
+    });
+
+    // React Flight (RSC) can deliver an element prop as a lazy reference whose
+    // resolved value is an element, not a component (#891).
+    it.skipIf(React.version.startsWith("18."))(
+      "accepts an element delivered as an RSC lazy reference",
+      () => {
+        const lazyElement = {
+          $$typeof: Symbol.for("react.lazy"),
+          _payload: <Plus data-testid="plus-icon" />,
+          _init: (payload: React.ReactElement) => payload,
+        } as unknown as React.ReactNode;
+
+        render(<Button icon={lazyElement}>Add</Button>);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.querySelector("svg")).toBeTruthy();
+      },
+    );
+
+    it("accepts a React.lazy icon component", async () => {
+      const LazyPlus = React.lazy(() => Promise.resolve({ default: Plus }));
+
+      render(
+        <React.Suspense fallback={null}>
+          <Button icon={LazyPlus as unknown as Icon}>Add</Button>
+        </React.Suspense>,
+      );
+      const button = await screen.findByRole("button", { name: "Add" });
+      expect(button.querySelector("svg")).toBeTruthy();
     });
   });
 
@@ -207,6 +310,13 @@ describe("LinkButton", () => {
     expect(link.getAttribute("href")).toBe("/home");
   });
 
+  it("allows text selection", () => {
+    render(<LinkButton href="/home">Home</LinkButton>);
+    const link = screen.getByRole("link");
+    expect(link.classList.contains("select-text")).toBe(true);
+    expect(link.classList.contains("select-none")).toBe(false);
+  });
+
   it("external sets target='_blank' and rel='noopener noreferrer'", () => {
     render(
       <LinkButton href="https://example.com" external>
@@ -281,6 +391,17 @@ describe("LinkButton", () => {
       );
       const button = screen.getByRole("button", { name: "Home" });
       expect(button.getAttribute("data-kumo-component")).toBe("LinkButton");
+    });
+
+    it("allows text selection", () => {
+      render(
+        <LinkButton href="/home" disabled>
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(button.classList.contains("select-text")).toBe(true);
+      expect(button.classList.contains("select-none")).toBe(false);
     });
 
     it("wraps a title in an enabled tooltip trigger around the disabled button", () => {

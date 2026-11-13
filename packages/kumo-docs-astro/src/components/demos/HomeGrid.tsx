@@ -4,8 +4,10 @@ import {
   Badge,
   Banner,
   Button,
+  ButtonGroup,
   Checkbox,
   ClipboardText,
+  CloudflareLogo,
   Collapsible,
   Combobox,
   DatePicker,
@@ -18,9 +20,9 @@ import {
   InputArea,
   Label,
   LayerCard,
+  LayerDialog,
   Link,
   Loader,
-  MenuBar,
   Meter,
   Pagination,
   Popover,
@@ -28,9 +30,11 @@ import {
   Select,
   SensitiveInput,
   SkeletonLine,
+  Slider,
   Switch,
   Table,
   TableOfContents,
+  TagInput,
   Tabs,
   Text,
   Toolbar,
@@ -40,15 +44,16 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+import { CommandPaletteBasicDemo } from "~/components/demos/CommandPaletteDemo";
 import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
+  CaretDownIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-  TextBolderIcon,
-  TextItalicIcon,
   TranslateIcon,
   WarningIcon,
   WarningOctagonIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 
 const componentRoutes: Record<string, string> = {
@@ -56,8 +61,10 @@ const componentRoutes: Record<string, string> = {
   banner: "/components/banner",
   breadcrumbs: "/components/breadcrumbs",
   button: "/components/button",
+  "button-group": "/components/button-group",
   checkbox: "/components/checkbox",
   "clipboard-text": "/components/clipboard-text",
+  "cloudflare-logo": "/components/cloudflare-logo",
   "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
   autocomplete: "/components/autocomplete",
@@ -72,11 +79,12 @@ const componentRoutes: Record<string, string> = {
   input: "/components/input",
   "input-area": "/components/input-area",
   "input-group": "/components/input-group",
+  "tag-input": "/components/tag-input",
   label: "/components/label",
   "layer-card": "/components/layer-card",
+  "layer-dialog": "/components/layer-dialog",
   link: "/components/link",
   loader: "/components/loader",
-  "menu-bar": "/components/menu-bar",
   meter: "/components/meter",
   pagination: "/components/pagination",
   popover: "/components/popover",
@@ -84,6 +92,7 @@ const componentRoutes: Record<string, string> = {
   select: "/components/select",
   "sensitive-input": "/components/sensitive-input",
   "skeleton-line": "/components/skeleton-line",
+  slider: "/components/slider",
   switch: "/components/switch",
   table: "/components/table",
   "table-of-contents": "/components/table-of-contents",
@@ -115,7 +124,6 @@ export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
-  const [menuBarActive, setMenuBarActive] = useState<number | undefined>(0);
   const [paginationPage, setPaginationPage] = useState(1);
   const [value, setValue] = useState<{ id: string; value: string } | null>(
     null,
@@ -140,6 +148,18 @@ export function HomeGrid() {
       ),
     },
     {
+      name: "Button Group",
+      id: "button-group",
+      Component: (
+        <ButtonGroup>
+          <Button variant="primary">Deploy</Button>
+          <Button variant="primary" shape="square" aria-label="More options">
+            <CaretDownIcon />
+          </Button>
+        </ButtonGroup>
+      ),
+    },
+    {
       name: "Input",
       id: "input",
       Component: (
@@ -147,6 +167,17 @@ export function HomeGrid() {
           <Input placeholder="Type something..." />
           <Input variant="error" value="Invalid!" />
         </div>
+      ),
+    },
+    {
+      name: "Tag Input",
+      id: "tag-input",
+      Component: (
+        <TagInput
+          className="w-[280px] max-w-full"
+          defaultValue={["frontend", "priority"]}
+          placeholder="Add a label"
+        />
       ),
     },
     {
@@ -177,7 +208,7 @@ export function HomeGrid() {
       name: "Toolbar",
       id: "toolbar",
       Component: (
-        <Toolbar className="w-[260px]">
+        <Toolbar className="max-w-full">
           <Toolbar.Input
             aria-label="Search DNS records"
             placeholder="Search..."
@@ -248,31 +279,49 @@ export function HomeGrid() {
       ),
     },
     {
-      name: "Input (with validation)",
-      id: "input",
-      Component: (
-        <Input
-          label="Email"
-          placeholder="name@example.com"
-          type="email"
-          variant="error"
-          error={{
-            message: "Please enter a valid email.",
-            match: "typeMismatch",
-          }}
-          description="The email to send notifications to."
-        />
-      ),
-    },
-    {
       name: "Dialog",
       id: "dialog",
       Component: (
         <Dialog.Root>
-          <Dialog.Trigger render={(p) => <Button {...p}>Click me!</Button>} />
-          <Dialog>
-            <Dialog.Title>Hello!</Dialog.Title>
-            <Dialog.Description>I'm a dialog.</Dialog.Description>
+          <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
+          <Dialog className="p-8">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <Dialog.Title className="text-2xl font-semibold">
+                Delete Resource?
+              </Dialog.Title>
+              <Dialog.Close
+                aria-label="Close"
+                render={(props) => (
+                  <Button
+                    {...props}
+                    variant="secondary"
+                    shape="square"
+                    icon={<XIcon />}
+                    aria-label="Close"
+                  />
+                )}
+              />
+            </div>
+            <Dialog.Description className="text-kumo-subtle">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Dialog.Description>
+            <div className="mt-8 flex justify-end gap-2">
+              <Dialog.Close
+                render={(props) => (
+                  <Button variant="secondary" {...props}>
+                    Cancel
+                  </Button>
+                )}
+              />
+              <Dialog.Close
+                render={(props) => (
+                  <Button variant="destructive" {...props}>
+                    Delete
+                  </Button>
+                )}
+              />
+            </div>
           </Dialog>
         </Dialog.Root>
       ),
@@ -356,6 +405,41 @@ export function HomeGrid() {
       ),
     },
     {
+      name: "LayerDialog",
+      id: "layer-dialog",
+      Component: (
+        <LayerDialog.Root>
+          <LayerDialog.Trigger
+            render={(props) => <Button {...props}>Open dialog</Button>}
+          />
+          <LayerDialog.Content size="sm">
+            <LayerDialog.Title>Keyboard shortcuts</LayerDialog.Title>
+            <LayerDialog.Description>
+              Search components and jump to a page.
+            </LayerDialog.Description>
+            <LayerDialog.Body>
+              <div className="flex items-center justify-between gap-4 rounded-lg bg-kumo-elevated px-3 py-2.5">
+                <Text size="sm" variant="secondary">
+                  Open command palette
+                </Text>
+                <span
+                  aria-label="Command K"
+                  className="flex shrink-0 items-center gap-1"
+                >
+                  <kbd className="min-w-6 rounded-md bg-kumo-base px-1.5 py-1 text-center text-xs font-medium text-kumo-default ring ring-kumo-line">
+                    ⌘
+                  </kbd>
+                  <kbd className="min-w-6 rounded-md bg-kumo-base px-1.5 py-1 text-center text-xs font-medium text-kumo-default ring ring-kumo-line">
+                    K
+                  </kbd>
+                </span>
+              </div>
+            </LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      ),
+    },
+    {
       name: "Loader",
       id: "loader",
       Component: <Loader />,
@@ -364,10 +448,10 @@ export function HomeGrid() {
       name: "SkeletonLine",
       id: "skeleton-line",
       Component: (
-        <div className="flex w-[200px] flex-col gap-2">
+        <div className="mr-auto flex w-full max-w-[200px] flex-col gap-2">
           <SkeletonLine minWidth={50} maxWidth={100} />
           <SkeletonLine minWidth={100} />
-          <SkeletonLine minWidth={50} maxWidth={150} />
+          <SkeletonLine minWidth={50} maxWidth={75} />
         </div>
       ),
     },
@@ -431,6 +515,11 @@ export function HomeGrid() {
       ),
     },
     {
+      name: "CloudflareLogo",
+      id: "cloudflare-logo",
+      Component: <CloudflareLogo className="w-48 max-w-full" />,
+    },
+    {
       name: "Toast",
       id: "toast",
       Component: (
@@ -472,25 +561,13 @@ export function HomeGrid() {
       ),
     },
     {
-      name: "MenuBar",
-      id: "menu-bar",
+      name: "Slider",
+      id: "slider",
       Component: (
-        <MenuBar
-          isActive={menuBarActive}
-          options={[
-            {
-              icon: <TextBolderIcon />,
-              onClick: () =>
-                setMenuBarActive(menuBarActive === 0 ? undefined : 0),
-              tooltip: "Bold",
-            },
-            {
-              icon: <TextItalicIcon />,
-              onClick: () =>
-                setMenuBarActive(menuBarActive === 1 ? undefined : 1),
-              tooltip: "Italic",
-            },
-          ]}
+        <Slider
+          defaultValue={[25, 75]}
+          getAriaLabel={(index) => (index === 0 ? "Minimum" : "Maximum")}
+          className="w-48"
         />
       ),
     },
@@ -524,9 +601,7 @@ export function HomeGrid() {
     {
       name: "CommandPalette",
       id: "command-palette",
-      Component: (
-        <Button icon={MagnifyingGlassIcon}>Open Command Palette</Button>
-      ),
+      Component: <CommandPaletteBasicDemo />,
     },
     {
       name: "Flow",
@@ -628,28 +703,42 @@ export function HomeGrid() {
       name: "Table",
       id: "table",
       Component: (
-        <Table className="w-[200px] text-sm">
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Name</Table.Head>
-              <Table.Head>Status</Table.Head>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>Worker 1</Table.Cell>
-              <Table.Cell>Active</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>Worker 2</Table.Cell>
-              <Table.Cell>Paused</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>Worker 3</Table.Cell>
-              <Table.Cell>Active</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
+        <LayerCard className="w-full max-w-[280px] p-0">
+          <Table className="text-sm">
+            <Table.Header variant="compact">
+              <Table.Row>
+                <Table.Head>Name</Table.Head>
+                <Table.Head className="text-center">Status</Table.Head>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell>Worker 1</Table.Cell>
+                <Table.Cell className="text-center">
+                  <Badge appearance="dot" variant="success">
+                    Active
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Worker 2</Table.Cell>
+                <Table.Cell className="text-center">
+                  <Badge appearance="dot" variant="neutral">
+                    Paused
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Worker 3</Table.Cell>
+                <Table.Cell className="text-center">
+                  <Badge appearance="dot" variant="success">
+                    Active
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          </Table>
+        </LayerCard>
       ),
     },
     {
@@ -684,12 +773,15 @@ export function HomeGrid() {
   ];
 
   return (
-    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-hairline md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul
+      data-vr-home-grid
+      className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-hairline md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+    >
       {components.map((c) => {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-canvas"
+            className="relative flex aspect-square w-full min-w-0 items-center justify-center self-stretch bg-kumo-canvas"
             key={c.name}
           >
             {route ? (
@@ -704,7 +796,7 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            <div className="flex w-full items-center justify-center p-8 leading-normal tracking-normal">
+            <div className="flex w-full min-w-0 items-center justify-center p-8 leading-normal tracking-normal">
               {c.Component ?? (
                 <p className="text-base font-medium text-kumo-subtle">TBD</p>
               )}

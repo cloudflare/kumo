@@ -1,4 +1,4 @@
-export { cn } from "cnfast";
+export { cn } from "cn";
 
 const toHex = (n: number) => n.toString(16).padStart(2, "0");
 

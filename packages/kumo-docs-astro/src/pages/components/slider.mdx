@@ -1,0 +1,142 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Slider"
+description: "An input for picking a number, or a range between two numbers, by dragging a thumb along a track."
+sourceFile: "components/slider"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  SliderBasicDemo,
+  SliderRangeDemo,
+  SliderStepDemo,
+  SliderFormatDemo,
+  SliderSizesDemo,
+  SliderControlledDemo,
+  SliderDisabledDemo,
+} from "~/components/demos/SliderDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="SliderRangeDemo">
+    <SliderRangeDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { Slider } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { Slider } from "@cloudflare/kumo/components/slider";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+```tsx
+import { Slider } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Slider label="Volume" defaultValue={40} />;
+}
+```
+
+`Slider` is built on [Base UI's Slider](https://base-ui.com/react/components/slider). Props such as `value`, `defaultValue`, `min`, `max`, `step`, `format`, and `onValueChange` are passed through to it.
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+
+## Examples
+
+### Basic Slider
+
+<p>A single thumb, with the value in a badge below it and the minimum and maximum at either end.</p>
+<ComponentExample demo="SliderBasicDemo">
+  <SliderBasicDemo client:visible />
+</ComponentExample>
+
+### Range
+
+<p>Pass an array to `value` or `defaultValue` to render one thumb per value. Use `getAriaLabel` to give each thumb its own accessible name.</p>
+<ComponentExample demo="SliderRangeDemo">
+  <SliderRangeDemo client:visible />
+</ComponentExample>
+
+### Custom Range and Step
+
+<p>Set `min`, `max`, and `step` to constrain the values.</p>
+<ComponentExample demo="SliderStepDemo">
+  <SliderStepDemo client:visible />
+</ComponentExample>
+
+### Formatted Values
+
+<p>`format` takes `Intl.NumberFormat` options and applies to the badges, the range labels, and the value announced to assistive technology.</p>
+<ComponentExample demo="SliderFormatDemo">
+  <SliderFormatDemo client:visible />
+</ComponentExample>
+
+### Sizes
+
+<p>Use `size="sm"` for dense layouts.</p>
+<ComponentExample demo="SliderSizesDemo">
+  <SliderSizesDemo client:visible />
+</ComponentExample>
+
+### Controlled
+
+<p>Pass `value` and `onValueChange` to control the slider.</p>
+<ComponentExample demo="SliderControlledDemo">
+  <SliderControlledDemo client:visible />
+</ComponentExample>
+
+### Disabled
+
+<ComponentExample demo="SliderDisabledDemo">
+  <SliderDisabledDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Accessibility */}
+
+<ComponentSection>
+
+## Accessibility
+
+- Each thumb is a native range input, so arrow keys, <kbd>Page Up</kbd>/<kbd>Page Down</kbd>, and <kbd>Home</kbd>/<kbd>End</kbd> work by default.
+- `label` names the slider and its thumb. Without a visible label, pass `getAriaLabel`.
+- The value badges and range labels are hidden from assistive technology, because each thumb already announces its formatted value.
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="Slider" />
+</ComponentSection>

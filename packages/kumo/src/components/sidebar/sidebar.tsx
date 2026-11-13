@@ -11,12 +11,14 @@ import React, {
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
+import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
 import { Button } from "../button";
@@ -95,29 +97,92 @@ const SIDEBAR_WIDTH = "16.25rem";
 const SIDEBAR_WIDTH_ICON = "57px";
 const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
+const TRANSITION_FALLBACK_GRACE_MS = 50;
 const MOBILE_BREAKPOINT = 768;
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function useOpenChangeComplete(
+  open: boolean,
+  duration: number,
+  onComplete?: (open: boolean) => void,
+  active = true,
+) {
+  const enabled = active && onComplete !== undefined;
+  const callbackRef = useRef(onComplete);
+  const durationRef = useRef(duration);
+  const previousOpenRef = useRef(open);
+  const previousActiveRef = useRef(active);
+  const pendingOpenRef = useRef<boolean | undefined>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  callbackRef.current = onComplete;
+  durationRef.current = duration;
+
+  const complete = useCallback(() => {
+    const pendingOpen = pendingOpenRef.current;
+    if (pendingOpen === undefined) return;
+
+    pendingOpenRef.current = undefined;
+    clearTimeout(timeoutRef.current);
+    callbackRef.current?.(pendingOpen);
+  }, []);
+
+  useEffect(() => {
+    const openChanged = previousOpenRef.current !== open;
+    const wasActive = previousActiveRef.current;
+    previousOpenRef.current = open;
+    previousActiveRef.current = active;
+    if (!enabled) {
+      pendingOpenRef.current = undefined;
+      clearTimeout(timeoutRef.current);
+      return;
+    }
+    if (!wasActive || !openChanged) return;
+
+    pendingOpenRef.current = open;
+    if (
+      durationRef.current === 0 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      complete();
+      return;
+    }
+    timeoutRef.current = setTimeout(
+      complete,
+      durationRef.current + TRANSITION_FALLBACK_GRACE_MS,
+    );
+    return () => clearTimeout(timeoutRef.current);
+  }, [active, complete, enabled, open]);
+
+  return complete;
+}
 
 // ============================================================================
 // Mobile detection hook
 // ============================================================================
 
 function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches;
-  });
+  const query = `(max-width: ${breakpoint - 1}px)`;
 
-  useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
-    const onChange = () => setIsMobile(mql.matches);
-    mql.addEventListener("change", onChange);
-    setIsMobile(mql.matches);
-    return () => mql.removeEventListener("change", onChange);
-  }, [breakpoint]);
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener("change", callback);
+      return () => mql.removeEventListener("change", callback);
+    },
+    [query],
+  );
 
-  return isMobile;
+  const getSnapshot = useCallback(
+    () => window.matchMedia(query).matches,
+    [query],
+  );
+
+  const getServerSnapshot = useCallback(() => false, []);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 // ============================================================================
@@ -150,6 +215,52 @@ export interface SidebarContextValue {
   stopPeek: () => void;
   contained: boolean;
   animationDuration: number;
+  /**
+   * Register a nav item so `scrollToItem(id)` can find it. Internal wiring —
+   * `Sidebar.MenuItem` and `Sidebar.MenuButton` call this via their `itemId`
+   * prop. Consumers do not call this directly.
+   */
+  registerItem: (id: string, node: HTMLElement | null) => void;
+  /**
+   * Scroll a tagged nav item into view. Tag items with `itemId` on
+   * `Sidebar.MenuItem` or `Sidebar.MenuButton`. Honors `prefers-reduced-motion`.
+   * No-op when the item isn't mounted.
+   *
+   * @param id — the `itemId` of the target item
+   * @param options.align — where the item lands in the viewport (default `"auto"`)
+   * @param options.behavior — `"auto"` for instant, `"smooth"` for animated (default `"auto"`)
+   */
+  scrollToItem: (id: string, options?: SidebarScrollToItemOptions) => void;
+  /**
+   * Scroll a tagged nav item only when it is outside its sidebar viewport.
+   * Explicit alignment controls where an offscreen item lands.
+   */
+  scrollItemIntoView: (
+    id: string,
+    options?: SidebarScrollToItemOptions,
+  ) => void;
+}
+
+/**
+ * Vertical alignment of the target item within the sidebar viewport.
+ *
+ * - `"start"` — align the item with the top of the viewport
+ * - `"center"` — center the item vertically in the viewport
+ * - `"end"` — align the item with the bottom of the viewport
+ * - `"auto"` — no-op if the item is already visible; otherwise scroll the
+ *   minimum distance (like native `scrollIntoView`'s `nearest`)
+ */
+export type SidebarScrollAlign = "start" | "center" | "end" | "auto";
+
+export interface SidebarScrollToItemOptions {
+  /** Where the item lands in the viewport. Defaults to `"auto"`. */
+  align?: SidebarScrollAlign;
+  /**
+   * Scroll behavior. `"auto"` jumps instantly (default) — best for
+   * cross-app landings so users don't watch the sidebar animate on entry.
+   * `"smooth"` animates the scroll. `prefers-reduced-motion` forces `"auto"`.
+   */
+  behavior?: "auto" | "smooth";
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
@@ -183,6 +294,8 @@ export interface SidebarProviderProps {
   open?: boolean;
   /** Callback when open state changes (controlled mode). */
   onOpenChange?: (open: boolean) => void;
+  /** Callback after the sidebar finishes its open or close transition. */
+  onOpenChangeComplete?: (open: boolean) => void;
   /** Sidebar layout variant. @default "sidebar" */
   variant?: SidebarVariant;
   /** Which side the sidebar is on. @default "left" */
@@ -249,6 +362,7 @@ function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  onOpenChangeComplete,
   variant = KUMO_SIDEBAR_DEFAULT_VARIANTS.variant,
   side = KUMO_SIDEBAR_DEFAULT_VARIANTS.side,
   collapsible = KUMO_SIDEBAR_DEFAULT_VARIANTS.collapsible,
@@ -334,6 +448,97 @@ function SidebarProvider({
 
   const sidebarWidthValue = resizable ? `${width}px` : SIDEBAR_WIDTH;
 
+  // Registry of tagged nav items keyed by `itemId`. Sidebar.SlidingViews can
+  // mount multiple viewports at once, so we resolve the OWNING viewport by
+  // walking up from the registered element rather than querying a single one.
+  const itemsRef = useRef(new Map<string, HTMLElement>());
+
+  const registerItem = useCallback((id: string, node: HTMLElement | null) => {
+    const items = itemsRef.current;
+    if (node) {
+      items.set(id, node);
+    } else {
+      items.delete(id);
+    }
+  }, []);
+
+  const scrollToItem = useCallback(
+    (id: string, options: SidebarScrollToItemOptions = {}) => {
+      const { align = "auto", behavior = "auto" } = options;
+      const target = itemsRef.current.get(id);
+      if (!target) return;
+      const viewport = target.closest<HTMLElement>('[data-sidebar="viewport"]');
+      if (!viewport) return;
+
+      // Manual scrollTop assignment on the viewport avoids `scrollIntoView`,
+      // which walks the ancestor chain and scrolls the document too.
+      const targetRect = target.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+      const viewportScaleY =
+        viewport.offsetHeight > 0 && viewportRect.height > 0
+          ? viewportRect.height / viewport.offsetHeight
+          : 1;
+      const itemScrollOffset =
+        (targetRect.top - viewportRect.top) / viewportScaleY +
+        viewport.scrollTop;
+
+      let desired: number;
+      if (align === "center") {
+        desired =
+          itemScrollOffset - (viewport.clientHeight - target.offsetHeight) / 2;
+      } else if (align === "end") {
+        desired =
+          itemScrollOffset - (viewport.clientHeight - target.offsetHeight);
+      } else if (align === "auto") {
+        const itemBottom = itemScrollOffset + target.offsetHeight;
+        const viewBottom = viewport.scrollTop + viewport.clientHeight;
+        if (itemScrollOffset < viewport.scrollTop) {
+          desired = itemScrollOffset;
+        } else if (itemBottom > viewBottom) {
+          desired = itemBottom - viewport.clientHeight;
+        } else {
+          return;
+        }
+      } else {
+        desired = itemScrollOffset;
+      }
+
+      const clamped = Math.max(
+        0,
+        Math.min(desired, viewport.scrollHeight - viewport.clientHeight),
+      );
+      const reducedMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      viewport.scrollTo({
+        top: clamped,
+        behavior: reducedMotion ? "auto" : behavior,
+      });
+    },
+    [],
+  );
+
+  const scrollItemIntoView = useCallback(
+    (id: string, options: SidebarScrollToItemOptions = {}) => {
+      const target = itemsRef.current.get(id);
+      if (!target) return;
+      const viewport = target.closest<HTMLElement>('[data-sidebar="viewport"]');
+      if (!viewport) return;
+
+      const targetRect = target.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+      if (
+        targetRect.top >= viewportRect.top &&
+        targetRect.bottom <= viewportRect.bottom
+      ) {
+        return;
+      }
+
+      scrollToItem(id, options);
+    },
+    [scrollToItem],
+  );
+
   // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
   // either stable (props, setters) or derived from state that triggers re-render
   const contextValue = useMemo<SidebarContextValue>(
@@ -361,8 +566,41 @@ function SidebarProvider({
       stopPeek,
       contained,
       animationDuration,
+      registerItem,
+      scrollToItem,
+      scrollItemIntoView,
     }),
     [state, open, openMobile, isMobile, width, isResizing, isPeeking],
+  );
+
+  const completeDesktopOpenChange = useOpenChangeComplete(
+    open,
+    animationDuration,
+    onOpenChangeComplete,
+    !isMobile,
+  );
+  const completeMobileOpenChange = useOpenChangeComplete(
+    openMobile,
+    animationDuration,
+    onOpenChangeComplete,
+    isMobile,
+  );
+  const completeOpenChange = isMobile
+    ? completeMobileOpenChange
+    : completeDesktopOpenChange;
+  const transitionProperty = isMobile ? "transform" : "width";
+  const handleOpenTransitionEnd = useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
+      if (
+        target.closest("[data-sidebar-wrapper]") === event.currentTarget &&
+        target.dataset.sidebar === "sidebar" &&
+        event.propertyName === transitionProperty
+      ) {
+        completeOpenChange();
+      }
+    },
+    [completeOpenChange, transitionProperty],
   );
 
   return (
@@ -371,6 +609,7 @@ function SidebarProvider({
         data-sidebar-wrapper=""
         data-state={state}
         data-side={side}
+        onTransitionEnd={handleOpenTransitionEnd}
         style={
           {
             "--sidebar-width": sidebarWidthValue,
@@ -494,6 +733,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const triggerRef = useRef<Element | null>(null);
     const mobileNodeRef = useRef<HTMLElement | null>(null);
     const shouldRestoreFocusRef = useRef(false);
+    const isPointerInPeekZoneRef = useRef(false);
 
     // Escape key closes the mobile sidebar
     useEffect(() => {
@@ -537,12 +777,25 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
 
     const handlePeekBlur = useCallback(
       (e: React.FocusEvent<HTMLDivElement>) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+        if (
+          !e.currentTarget.contains(e.relatedTarget as Node) &&
+          !isPointerInPeekZoneRef.current
+        ) {
           stopPeek();
         }
       },
       [stopPeek],
     );
+
+    const handlePeekMouseEnter = useCallback(() => {
+      isPointerInPeekZoneRef.current = true;
+      startPeek();
+    }, [startPeek]);
+
+    const handlePeekMouseLeave = useCallback(() => {
+      isPointerInPeekZoneRef.current = false;
+      stopPeek();
+    }, [stopPeek]);
 
     if (collapsible === "none") {
       return (
@@ -725,8 +978,8 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 <div
                   data-sidebar="peek-zone"
                   className="flex min-h-0 flex-1 flex-col"
-                  onMouseEnter={startPeek}
-                  onMouseLeave={stopPeek}
+                  onMouseEnter={handlePeekMouseEnter}
+                  onMouseLeave={handlePeekMouseLeave}
                   onFocus={startPeek}
                   onBlur={handlePeekBlur}
                 >
@@ -796,39 +1049,47 @@ SidebarHeader.displayName = "Sidebar.Header";
 const SidebarContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => (
-  <ScrollAreaBase.Root
-    ref={ref}
-    data-sidebar="content"
-    className={cn("relative min-w-0 flex-1 overflow-hidden", className)}
-    {...props}
-  >
-    <ScrollAreaBase.Viewport
-      tabIndex={-1}
-      className={cn(
-        "h-full px-[11px] py-3 group-not-data-[state=collapsed]/sidebar:px-3.5",
-        "transition-[padding] duration-(--sidebar-animation-duration)",
-        "overflow-x-hidden!",
-        // Scroll fade via CSS mask driven by Base UI overflow CSS variables
-        "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
-      )}
+>(({ className, children, ...props }, ref) => {
+  return (
+    <ScrollAreaBase.Root
+      ref={ref}
+      data-sidebar="content"
+      className={cn("relative min-w-0 flex-1 overflow-hidden", className)}
+      {...props}
     >
-      <ScrollAreaBase.Content className="flex min-w-0! flex-col">
-        {children}
-      </ScrollAreaBase.Content>
-    </ScrollAreaBase.Viewport>
-    <ScrollAreaBase.Scrollbar
-      orientation="vertical"
-      className={cn(
-        "flex w-1.5 touch-none p-px select-none",
-        "opacity-0 transition-opacity duration-150",
-        "data-[hovering]:opacity-100 data-[scrolling]:opacity-100",
-      )}
-    >
-      <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
-    </ScrollAreaBase.Scrollbar>
-  </ScrollAreaBase.Root>
-));
+      <ScrollAreaBase.Viewport
+        tabIndex={-1}
+        data-sidebar="viewport"
+        className={cn(
+          "h-full px-[11px] py-3 group-not-data-[state=collapsed]/sidebar:px-3.5",
+          "transition-[padding] duration-(--sidebar-animation-duration)",
+          "overflow-x-hidden!",
+          // Hide the native scrollbar with Kumo's CSS rather than relying on
+          // the <style> Base UI adds to <head>, which head-swapping client
+          // routers and strict CSPs can drop.
+          "no-scrollbar",
+          // Scroll fade via CSS mask driven by Base UI overflow CSS variables
+          "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
+        )}
+      >
+        <ScrollAreaBase.Content className="flex min-w-0! flex-col">
+          {children}
+        </ScrollAreaBase.Content>
+      </ScrollAreaBase.Viewport>
+      <ScrollAreaBase.Scrollbar
+        orientation="vertical"
+        className={cn(
+          "flex w-1.5 touch-none p-px select-none",
+          "opacity-0 transition-opacity duration-150",
+          "data-[hovering]:opacity-100 data-[scrolling]:opacity-100",
+          "group-data-[state=collapsed]/sidebar:hidden",
+        )}
+      >
+        <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
+      </ScrollAreaBase.Scrollbar>
+    </ScrollAreaBase.Root>
+  );
+});
 
 SidebarContent.displayName = "Sidebar.Content";
 
@@ -1104,24 +1365,43 @@ SidebarMenu.displayName = "Sidebar.Menu";
  * </Sidebar.MenuItem>
  * ```
  */
-const SidebarMenuItem = forwardRef<
-  HTMLLIElement,
-  ComponentPropsWithoutRef<"li">
->(({ className, children, ...props }, ref) => (
-  <MenuItemContext.Provider value={true}>
-    <li
-      ref={ref}
-      data-sidebar="menu-item"
-      className={cn(
-        "relative group-data-[state=collapsed]/sidebar:overflow-hidden",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </li>
-  </MenuItemContext.Provider>
-));
+export interface SidebarMenuItemProps extends ComponentPropsWithoutRef<"li"> {
+  /** Anchor id for `useSidebar().scrollToItem(id)`. */
+  itemId?: string;
+}
+
+const SidebarMenuItem = forwardRef<HTMLLIElement, SidebarMenuItemProps>(
+  ({ className, children, itemId, ...props }, ref) => {
+    const { registerItem } = useSidebar();
+    const setRef = useCallback(
+      (node: HTMLLIElement | null) => {
+        if (itemId) registerItem(itemId, node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLLIElement | null>).current = node;
+        }
+      },
+      [itemId, ref, registerItem],
+    );
+    return (
+      <MenuItemContext.Provider value={true}>
+        <li
+          ref={setRef}
+          data-sidebar="menu-item"
+          data-sidebar-item-id={itemId}
+          className={cn(
+            "relative group-data-[state=collapsed]/sidebar:overflow-hidden",
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </li>
+      </MenuItemContext.Provider>
+    );
+  },
+);
 
 SidebarMenuItem.displayName = "Sidebar.MenuItem";
 
@@ -1148,6 +1428,8 @@ export interface SidebarMenuButtonProps extends Omit<
   /** Link target — only meaningful when `href` is provided. */
   target?: React.HTMLAttributeAnchorTarget;
   tooltip?: string;
+  /** Anchor id for `useSidebar().scrollToItem(id)`. */
+  itemId?: string;
   className?: string;
   children?: ReactNode;
 }
@@ -1187,20 +1469,42 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       href,
       target,
       tooltip,
+      itemId,
       children,
       ...props
     },
     ref,
   ) => {
-    const { state, peekable } = useSidebar();
+    const { state, peekable, registerItem } = useSidebar();
     const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
 
+    const registerAutoWrap = useCallback(
+      (node: HTMLLIElement | null) => {
+        if (itemId && !isInsideMenuItem) registerItem(itemId, node);
+      },
+      [itemId, isInsideMenuItem, registerItem],
+    );
+
+    // Explicit MenuItem parents don't carry the itemId, so the button IS the target.
+    const registerInteractive = useCallback(
+      (node: HTMLElement | null) => {
+        if (itemId && isInsideMenuItem) registerItem(itemId, node);
+        if (typeof ref === "function") {
+          ref(node as HTMLButtonElement | null);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+        }
+      },
+      [itemId, isInsideMenuItem, ref, registerItem],
+    );
+
     // Render icon — supports both component types and React elements
     const iconNode = (() => {
-      if (!IconProp) return null;
-      if (React.isValidElement(IconProp)) return IconProp;
-      const Comp = IconProp as React.ComponentType<{ className?: string }>;
+      const icon = unwrapLazyElement(IconProp);
+      if (!icon) return null;
+      if (React.isValidElement(icon)) return icon;
+      const Comp = icon as React.ComponentType<{ className?: string }>;
       return (
         <Comp
           className={cn(
@@ -1251,28 +1555,32 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-(--sidebar-active-bg)",
       // Focus
-      "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
+      "focus:outline-hidden focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
       className,
     );
 
     let button: React.ReactNode;
 
+    // When inside an explicit SidebarMenuItem, `itemId` lands on the parent
+    // <li>. When auto-wrapping below, it lands on the wrapper <li>. Either way
+    // the DOM attribute is consistently on the <li>, matching SidebarMenuItem.
+    const itemIdOnButton = isInsideMenuItem ? itemId : undefined;
+
     if (href) {
       button = (
         <LinkComponent
-          ref={ref as React.Ref<HTMLAnchorElement>}
+          ref={registerInteractive}
+          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           className={cn(buttonClasses, "no-underline!")}
           href={href}
           to={href}
           target={target}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-sidebar-item-id={itemIdOnButton}
           data-kumo-component="Sidebar"
           data-kumo-part="menu-button-link"
           data-size={size}
-          onClick={
-            props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
-          }
         >
           {content}
         </LinkComponent>
@@ -1280,11 +1588,12 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     } else {
       button = (
         <button
-          ref={ref}
+          ref={registerInteractive}
           type="button"
           className={buttonClasses}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-sidebar-item-id={itemIdOnButton}
           data-kumo-component="Sidebar"
           data-kumo-part="menu-button"
           data-size={size}
@@ -1316,7 +1625,9 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     if (!isInsideMenuItem) {
       return (
         <li
+          ref={registerAutoWrap}
           data-sidebar="menu-item"
+          data-sidebar-item-id={itemId}
           className="relative group-data-[state=collapsed]/sidebar:overflow-hidden"
         >
           {button}
@@ -1397,7 +1708,10 @@ const SidebarMenuSub = forwardRef<
     )}
     {...props}
   >
-    <div className="absolute inset-y-px left-[19px] z-10 w-px bg-kumo-line" />
+    <li
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-y-px left-[19px] z-10 block w-px bg-kumo-line"
+    />
     {children}
   </ul>
 ));
@@ -1472,7 +1786,7 @@ const SidebarMenuSubButton = forwardRef<
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",
     active && "bg-(--sidebar-active-bg)",
-    "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
+    "focus:outline-hidden focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
     className,
   );
 
@@ -1494,6 +1808,7 @@ const SidebarMenuSubButton = forwardRef<
     button = (
       <LinkComponent
         ref={ref as React.Ref<HTMLAnchorElement>}
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         className={cn(buttonClasses, "no-underline!")}
         href={href}
         to={href}
@@ -1502,9 +1817,6 @@ const SidebarMenuSubButton = forwardRef<
         data-sidebar="menu-sub-button"
         data-kumo-component="Sidebar"
         data-kumo-part="menu-sub-button-link"
-        onClick={
-          props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
-        }
       >
         {content}
       </LinkComponent>
@@ -1632,7 +1944,7 @@ const SidebarTrigger = forwardRef<
       className={cn(
         "flex size-8.5 shrink-0 cursor-pointer items-center justify-center rounded-lg",
         "text-kumo-subtle hover:bg-(--sidebar-active-bg) hover:text-kumo-default",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
+        "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
         className,
       )}
       onClick={(e) => {
@@ -1869,7 +2181,7 @@ const SidebarResizeHandle = forwardRef<
         "after:absolute after:inset-y-0 after:w-0.5",
         "after:bg-transparent after:transition-colors",
         "hover:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline active:after:bg-kumo-hairline",
-        "focus:outline-none",
+        "focus:outline-hidden",
         side === "left" && "right-0 after:right-0",
         side === "right" && "left-0 after:left-0",
         className,
@@ -1893,7 +2205,13 @@ interface SidebarCollapseContextValue {
   isCollapsible: boolean;
   autoScrollOnOpen: boolean;
   toggle: () => void;
+  completeOpenChange: () => void;
 }
+
+const isCollapsibleContentShown = (
+  isOpen: boolean,
+  { isMobile, openMobile, state }: SidebarContextValue,
+) => isOpen && (isMobile ? openMobile : state !== "collapsed");
 
 const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   contentId: "",
@@ -1901,6 +2219,7 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   isCollapsible: false,
   autoScrollOnOpen: false,
   toggle: () => {},
+  completeOpenChange: () => {},
 });
 
 export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
@@ -1910,6 +2229,11 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
   open?: boolean;
   /** Callback when open state changes. */
   onOpenChange?: (open: boolean) => void;
+  /**
+   * Callback after the content finishes showing or hiding. Also fires when the
+   * sidebar expands or collapses an open section, including the mobile drawer.
+   */
+  onOpenChangeComplete?: (open: boolean) => void;
   /** Scroll the expanded content into view after opening. @default false */
   autoScrollOnOpen?: boolean;
 }
@@ -1942,6 +2266,7 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       defaultOpen = false,
       open: openProp,
       onOpenChange,
+      onOpenChangeComplete,
       autoScrollOnOpen = false,
       className,
       children,
@@ -1949,8 +2274,11 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     },
     ref,
   ) => {
+    const sidebar = useSidebar();
+    const { animationDuration } = sidebar;
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
     const isOpen = openProp ?? internalOpen;
+    const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
 
@@ -1962,6 +2290,12 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       keyboardExpandedRef.current = false;
     }, [isOpen, onOpenChange]);
 
+    const completeOpenChange = useOpenChangeComplete(
+      isContentShown,
+      animationDuration,
+      onOpenChangeComplete,
+    );
+
     const contextValue = useMemo<SidebarCollapseContextValue>(
       () => ({
         contentId,
@@ -1969,8 +2303,9 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
         isCollapsible: true,
         autoScrollOnOpen,
         toggle,
+        completeOpenChange,
       }),
-      [contentId, isOpen, autoScrollOnOpen, toggle],
+      [contentId, isOpen, autoScrollOnOpen, toggle, completeOpenChange],
     );
 
     const handleFocusIn = useCallback(
@@ -2071,18 +2406,21 @@ SidebarCollapsibleTrigger.displayName = "Sidebar.CollapsibleTrigger";
 const SidebarCollapsibleContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { contentId, isOpen: isCollapsibleOpen } = useContext(
-    SidebarCollapseContext,
-  );
-  const { state, animationDuration } = useSidebar();
-  const { autoScrollOnOpen } = useContext(SidebarCollapseContext);
+>(({ className, children, onTransitionEnd, ...props }, ref) => {
+  const {
+    contentId,
+    isOpen: isCollapsibleOpen,
+    autoScrollOnOpen,
+    completeOpenChange,
+  } = useContext(SidebarCollapseContext);
+  const sidebar = useSidebar();
+  const { animationDuration } = sidebar;
   const contentRef = useRef<HTMLDivElement | null>(null);
 
-  const isOpen = isCollapsibleOpen && state !== "collapsed";
+  const isContentShown = isCollapsibleContentShown(isCollapsibleOpen, sidebar);
 
   useEffect(() => {
-    if (!isOpen || !autoScrollOnOpen) return;
+    if (!isContentShown || !autoScrollOnOpen) return;
 
     const timeout = window.setTimeout(() => {
       const prefersReducedMotion = window.matchMedia(
@@ -2095,21 +2433,21 @@ const SidebarCollapsibleContent = forwardRef<
     }, animationDuration);
 
     return () => window.clearTimeout(timeout);
-  }, [isOpen, autoScrollOnOpen, animationDuration]);
+  }, [isContentShown, autoScrollOnOpen, animationDuration]);
 
   // Imperatively set inert — React 18 doesn't reliably forward
   // the inert attribute as a JSX prop on initial mount.
   const inertRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (node) {
-        if (!isOpen) {
+        if (!isContentShown) {
           node.setAttribute("inert", "");
         } else {
           node.removeAttribute("inert");
         }
       }
     },
-    [isOpen],
+    [isContentShown],
   );
 
   const mergedRef = useCallback(
@@ -2125,17 +2463,31 @@ const SidebarCollapsibleContent = forwardRef<
     [ref, inertRef],
   );
 
+  const handleOpenTransitionEnd = useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      onTransitionEnd?.(event);
+      if (
+        event.target === event.currentTarget &&
+        event.propertyName === "grid-template-rows"
+      ) {
+        completeOpenChange();
+      }
+    },
+    [completeOpenChange, onTransitionEnd],
+  );
+
   return (
     <div
       ref={mergedRef}
       id={contentId}
       role="region"
-      aria-hidden={!isOpen}
+      aria-hidden={!isContentShown}
+      onTransitionEnd={handleOpenTransitionEnd}
       className={cn(
         "grid",
         "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
         "motion-reduce:transition-none",
-        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        isContentShown ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
         className,
       )}
       {...props}

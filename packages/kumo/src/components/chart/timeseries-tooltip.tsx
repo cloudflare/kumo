@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Text } from "../text";
 import type { TimeseriesMarker } from "./timeseries-markers";
 
 export interface TooltipRow {
@@ -28,34 +29,43 @@ export type TooltipState = SeriesTooltipState | MarkerTooltipState;
 export interface TooltipContentProps {
   state: TooltipState;
   formatValue?: (v: number) => string;
-  formatTimestamp: (ts: number | string | Date) => string;
+  formatTimestamp: (timestamp: number) => string;
+  footer?: string;
 }
 
 export const TooltipContent = memo(function TooltipContent({
   state,
   formatValue,
   formatTimestamp,
+  footer,
 }: TooltipContentProps) {
-  if (state.type === "marker") {
-    return (
-      <MarkerTooltipContent
-        state={state}
-        formatValue={formatValue}
-        formatTimestamp={formatTimestamp}
-      />
-    );
-  }
-
   return (
     <>
-      <div className="mb-1 text-xs font-semibold text-kumo-default">
-        {formatTimestamp(state.ts)}
-      </div>
-      <SeriesTooltipRows
-        rows={state.rows}
-        hiddenCount={state.hiddenCount}
-        formatValue={formatValue}
-      />
+      {state.type === "marker" ? (
+        <MarkerTooltipContent
+          state={state}
+          formatValue={formatValue}
+          formatTimestamp={formatTimestamp}
+        />
+      ) : (
+        <>
+          <div className="mb-1 text-xs font-semibold text-kumo-default">
+            {formatTimestamp(state.ts)}
+          </div>
+          <SeriesTooltipRows
+            rows={state.rows}
+            hiddenCount={state.hiddenCount}
+            formatValue={formatValue}
+          />
+        </>
+      )}
+      {footer && (
+        <div className="mt-1">
+          <Text variant="secondary" size="xs">
+            {footer}
+          </Text>
+        </div>
+      )}
     </>
   );
 });
@@ -67,7 +77,7 @@ function MarkerTooltipContent({
 }: {
   state: MarkerTooltipState;
   formatValue?: (v: number) => string;
-  formatTimestamp: (ts: number | string | Date) => string;
+  formatTimestamp: (timestamp: number) => string;
 }) {
   return (
     <>

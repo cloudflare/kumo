@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogRoot,
@@ -15,6 +15,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { Banner } from "../../components/banner";
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 export const KUMO_DELETE_RESOURCE_VARIANTS = {
   size: {
@@ -77,14 +78,16 @@ export function DeleteResource({
   className,
 }: DeleteResourceProps) {
   const [confirmationInput, setConfirmationInput] = useState("");
-  const [copied, setCopied] = useState(false);
+  const { copied, runCopy, reset: resetCopyFeedback } = useCopyFeedback(1500);
+  const openRef = useRef(open);
+  openRef.current = open;
 
   useEffect(() => {
     if (!open) {
+      resetCopyFeedback();
       setConfirmationInput("");
-      setCopied(false);
     }
-  }, [open]);
+  }, [open, resetCopyFeedback]);
 
   const normalizeForComparison = useCallback(
     (str: string) => (caseSensitive ? str : str.toLowerCase()),
@@ -101,10 +104,13 @@ export function DeleteResource({
   }, [isConfirmed, isDeleting, onDelete]);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(resourceName);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }, [resourceName]);
+    if (!openRef.current) return;
+
+    await runCopy(
+      () => navigator.clipboard.writeText(resourceName),
+      (error) => console.warn("Clipboard copy failed", error),
+    );
+  }, [resourceName, runCopy]);
 
   return (
     <DialogRoot open={open} onOpenChange={onOpenChange}>

@@ -1,4 +1,6 @@
-import { describe, test, expect } from "vite-plus/test";
+import { afterEach, describe, test, expect } from "vite-plus/test";
+import { cdp } from "vite-plus/test/browser";
+import type { CDPSession } from "vite-plus/test/browser-playwright";
 import { render } from "vitest-browser-react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { forwardRef, useState, type ReactNode } from "react";
@@ -158,6 +160,54 @@ describe("Flow Integration", () => {
           toId: to,
         });
       }
+    });
+
+    test("custom-rendered nodes are measured at their positioned size", async () => {
+      // Record every committed layout so an intermediate frame laid out from
+      // stretched (pre-positioning) widths would be caught.
+      const ids = ["short", "long", "medium"];
+      const misaligned: string[] = [];
+      const observer = new MutationObserver(() => {
+        const nodes = ids.map((id) =>
+          document.querySelector<HTMLElement>(`[data-node-id="${id}"]`),
+        );
+        if (nodes.some((node) => !node || node.style.left === "")) return;
+        const rights = nodes.map((node) => {
+          const rect = node!.getBoundingClientRect();
+          return Math.round(rect.right);
+        });
+        if (new Set(rights).size !== 1) misaligned.push(rights.join(","));
+      });
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["style"],
+        childList: true,
+        subtree: true,
+      });
+
+      const { getByText } = await render(
+        <Flow>
+          <Flow.Parallel align="end">
+            <Flow.Node id="short" render={<div />}>
+              A
+            </Flow.Node>
+            <Flow.Node id="long" render={<div />}>
+              A much longer branch label
+            </Flow.Node>
+            <Flow.Node id="medium" render={<div />}>
+              Medium label
+            </Flow.Node>
+          </Flow.Parallel>
+          <Flow.Node id="end">End</Flow.Node>
+        </Flow>,
+      );
+
+      await expect.element(getByText("End")).toBeVisible();
+      await waitForNextFrame();
+      await waitForNextFrame();
+      observer.disconnect();
+
+      expect(misaligned).toEqual([]);
     });
 
     test("connectors stay aligned after a scroll event shifts the container", async () => {
@@ -321,6 +371,116 @@ describe("Flow Integration", () => {
       ).toBe(true);
     });
 
+    test("connectors meet an anchor on a node with a negative top margin", async () => {
+      const { container, getByTestId } = await render(
+        <Flow>
+          <Flow.Node
+            id="margined"
+            render={
+              <div style={{ marginTop: -4, width: 120 }}>
+                <Flow.Anchor
+                  render={
+                    <div data-testid="margined-anchor" style={{ height: 40 }}>
+                      Start
+                    </div>
+                  }
+                />
+              </div>
+            }
+          />
+          <Flow.Node id="next">Next</Flow.Node>
+        </Flow>,
+      );
+
+      await expect.element(getByTestId("margined-anchor")).toBeVisible();
+      await waitForNextFrame();
+      await waitForNextFrame();
+      assertConnectorAtAnchor(
+        container,
+        "margined",
+        "next",
+        "margined-anchor",
+        "start",
+      );
+    });
+
+    test("connectors stay straight between outer- and inner-margin nodes", async () => {
+      const { container, getByTestId } = await render(
+        <Flow>
+          <Flow.Parallel align="end">
+            <Flow.Node
+              id="domains"
+              render={
+                <div style={{ marginTop: -4, width: 120 }}>
+                  <Flow.Anchor
+                    render={
+                      <div data-testid="domains-anchor" style={{ height: 40 }}>
+                        Domains
+                      </div>
+                    }
+                  />
+                </div>
+              }
+            />
+            <Flow.Node id="workers" render={<div>Workers</div>} />
+          </Flow.Parallel>
+          <Flow.Node
+            id="service"
+            render={
+              <div style={{ width: 120 }}>
+                <div style={{ marginTop: -4 }}>
+                  <Flow.Anchor
+                    render={
+                      <div data-testid="service-anchor" style={{ height: 40 }}>
+                        Service
+                      </div>
+                    }
+                  />
+                </div>
+              </div>
+            }
+          />
+          <Flow.Parallel>
+            <Flow.Node
+              id="bindings"
+              render={
+                <div style={{ marginTop: -4, width: 120 }}>
+                  <Flow.Anchor
+                    render={
+                      <div data-testid="bindings-anchor" style={{ height: 40 }}>
+                        Bindings
+                      </div>
+                    }
+                  />
+                </div>
+              }
+            />
+          </Flow.Parallel>
+        </Flow>,
+      );
+
+      await expect.element(getByTestId("service-anchor")).toBeVisible();
+      await waitForNextFrame();
+      await waitForNextFrame();
+
+      for (const [from, to, fromAnchor, toAnchor] of [
+        ["domains", "service", "domains-anchor", "service-anchor"],
+        ["service", "bindings", "service-anchor", "bindings-anchor"],
+      ]) {
+        const { start, end } = getPathEndpointsForConnector(
+          container,
+          from,
+          to,
+        );
+        assertConnectorAtAnchor(container, from, to, fromAnchor, "start");
+        assertConnectorAtAnchor(container, from, to, toAnchor, "end");
+        expect(
+          Math.abs(start.y - end.y),
+          `${from} → ${to}: ${start.y} → ${end.y}`,
+        ).toBeLessThanOrEqual(1);
+      }
+    });
+
     test("does not render outgoing connectors when there is no node after a parallel group", async () => {
       const { container, getByText } = await render(
         <Flow>
@@ -347,6 +507,92 @@ describe("Flow Integration", () => {
       // branch ids as the source (i.e. "branch-a-*", "branch-b-*").
       assertNoPathStartingWith(container, "branch-a");
       assertNoPathStartingWith(container, "branch-b");
+    });
+  });
+
+  describe("canvas={false}", () => {
+    afterEach(() => {
+      window.getSelection()?.removeAllRanges();
+    });
+
+    const renderSelectableFlow = (canvas: boolean) =>
+      render(
+        <div style={{ width: 600 }}>
+          <Flow canvas={canvas}>
+            <Flow.Node>Selectable node text</Flow.Node>
+            <Flow.Node>End</Flow.Node>
+          </Flow>
+        </div>,
+      );
+
+    /**
+     * Drags from the diagram's empty padding (outside any node) across the
+     * node's text, recording the body styles the pan gesture would set.
+     */
+    async function dragFromPaddingAcrossNode(
+      getByText: Awaited<ReturnType<typeof renderSelectableFlow>>["getByText"],
+    ) {
+      const node = getByText("Selectable node text").element();
+      await expect.element(node).toBeVisible();
+      const nodeRect = node.getBoundingClientRect();
+      const diagramRect = node
+        .closest("[data-node-id]")!
+        .parentElement!.closest(".group")!
+        .getBoundingClientRect();
+
+      const start: [number, number] = [nodeRect.left + 2, diagramRect.top + 2];
+      const end: [number, number] = [
+        nodeRect.right - 2,
+        nodeRect.top + nodeRect.height / 2,
+      ];
+      expect(start[1]).toBeLessThan(nodeRect.top);
+
+      let duringDrag = { userSelect: "", cursor: "" };
+      await mouseDrag(start, end, () => {
+        duringDrag = {
+          userSelect: document.body.style.userSelect,
+          cursor: document.body.style.cursor,
+        };
+      });
+      return duringDrag;
+    }
+
+    test("does not block text selection when a drag starts outside a node", async () => {
+      const { getByText } = await renderSelectableFlow(false);
+
+      const duringDrag = await dragFromPaddingAcrossNode(getByText);
+
+      expect(duringDrag).toEqual({ userSelect: "", cursor: "" });
+      expect(window.getSelection()?.toString()).toContain(
+        "Selectable node text",
+      );
+    });
+
+    test("does not show a grab cursor", async () => {
+      const { container, getByText } = await render(
+        <div style={{ width: 120 }}>
+          <Flow canvas={false}>
+            <Flow.Node>A very wide node that overflows</Flow.Node>
+            <Flow.Node>End</Flow.Node>
+          </Flow>
+        </div>,
+      );
+      await expect
+        .element(getByText("A very wide node that overflows"))
+        .toBeVisible();
+
+      const wrapper = container.querySelector<HTMLElement>(".group")!;
+      expect(wrapper.style.cursor).not.toBe("grab");
+    });
+
+    test("canvas={true} still starts a pan from outside a node", async () => {
+      const { getByText } = await renderSelectableFlow(true);
+
+      const duringDrag = await dragFromPaddingAcrossNode(getByText);
+
+      expect(duringDrag).toEqual({ userSelect: "none", cursor: "grabbing" });
+      expect(document.body.style.userSelect).toBe("");
+      expect(document.body.style.cursor).toBe("");
     });
   });
 });
@@ -462,6 +708,30 @@ function getPathEndpointsForConnector(
   return getPathEndpoints(d);
 }
 
+function assertConnectorAtAnchor(
+  container: Element,
+  fromId: string,
+  toId: string,
+  anchorId: string,
+  endpoint: "start" | "end",
+) {
+  const path = container.querySelector(
+    `path[data-testid="${fromId}-${toId}"]`,
+  )!;
+  const svgContainer = path.closest("svg")!.closest("[class*='relative']")!;
+  const anchor = container.querySelector(`[data-testid="${anchorId}"]`)!;
+  const anchorRect = anchor.getBoundingClientRect();
+  const containerRect = svgContainer.getBoundingClientRect();
+  const expectedY = anchorRect.top - containerRect.top + anchorRect.height / 2;
+  const actualY = getPathEndpointsForConnector(container, fromId, toId)[
+    endpoint
+  ].y;
+  expect(
+    Math.abs(actualY - expectedY),
+    `${fromId} → ${toId} ${endpoint}: ${actualY} vs anchor ${expectedY}`,
+  ).toBeLessThanOrEqual(1);
+}
+
 /**
  * Assert that a connector path with `data-testid="{fromId}-{toId}"` exists.
  */
@@ -551,4 +821,51 @@ function assertPathConnects({
     isCloseTo(end, leftCenter(localTo)),
     `path end ${JSON.stringify(end)} should be close to left-center of toNode ${JSON.stringify(leftCenter(localTo))}`,
   ).toBe(true);
+}
+
+/**
+ * Performs a real left-button mouse drag via CDP so the browser runs native
+ * text selection. Coordinates are relative to the test iframe's viewport.
+ */
+async function mouseDrag(
+  from: [number, number],
+  to: [number, number],
+  beforeRelease?: () => void,
+) {
+  // Vite+ re-exports cdp() without the Playwright provider's type augmentation.
+  const session = cdp() as CDPSession;
+  const frame = (
+    window.frameElement as HTMLElement | null
+  )?.getBoundingClientRect();
+  const scale = frame ? frame.width / window.innerWidth : 1;
+  const toPage = ([x, y]: [number, number]) => ({
+    x: (frame?.left ?? 0) + x * scale,
+    y: (frame?.top ?? 0) + y * scale,
+  });
+
+  await session.send("Input.dispatchMouseEvent", {
+    type: "mousePressed",
+    ...toPage(from),
+    button: "left",
+    clickCount: 1,
+  });
+  const steps = 10;
+  for (let i = 1; i <= steps; i++) {
+    await session.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      ...toPage([
+        from[0] + ((to[0] - from[0]) * i) / steps,
+        from[1] + ((to[1] - from[1]) * i) / steps,
+      ]),
+      button: "left",
+      buttons: 1,
+    });
+  }
+  beforeRelease?.();
+  await session.send("Input.dispatchMouseEvent", {
+    type: "mouseReleased",
+    ...toPage(to),
+    button: "left",
+    clickCount: 1,
+  });
 }

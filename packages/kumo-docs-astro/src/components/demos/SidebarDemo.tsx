@@ -50,6 +50,17 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
   );
 }
 
+/**
+ * Keeps the footer action aligned with the collapsed rail. The library footer
+ * deliberately gains breathing room in its expanded state; these demos use a
+ * single bottom-left action, so retaining its x-position makes the transition
+ * easier to follow.
+ */
+function DemoSidebarFooter({ children }: { children: React.ReactNode }) {
+  return <Sidebar.Footer className="!px-[11px]">{children}</Sidebar.Footer>;
+}
+DemoSidebarFooter.displayName = "Sidebar.Footer";
+
 function BrandLogo() {
   return (
     <div className="flex w-full min-w-0 items-center gap-2 px-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:px-2">
@@ -311,9 +322,9 @@ export function SidebarToggleDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <ToggleButton />
@@ -360,9 +371,9 @@ export function SidebarLoadingDemo() {
               </Sidebar.Group>
             </Sidebar.Content>
           )}
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <button
@@ -415,9 +426,9 @@ export function SidebarResizableDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
           <Sidebar.ResizeHandle />
         </Sidebar>
         <DemoMain>
@@ -517,9 +528,9 @@ export function SidebarPeekingDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <PeekStateIndicator />
@@ -610,9 +621,9 @@ export function SidebarAutoScrollDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <p>Open Workers near the bottom of the list</p>
@@ -623,7 +634,77 @@ export function SidebarAutoScrollDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 7. Sliding Views — animated horizontal transitions between surfaces
+// 7. Transition completion — run work after sidebar and collapsible animations
+// ---------------------------------------------------------------------------
+
+/** Run layout-dependent work after a sidebar or collapsible finishes transitioning. */
+export function SidebarTransitionCompleteDemo() {
+  const [completion, setCompletion] = useState(
+    "No transition has completed yet.",
+  );
+
+  return (
+    <DemoContainer>
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        className="h-full min-h-0!"
+        onOpenChangeComplete={(open) => {
+          setCompletion(`Sidebar ${open ? "opened" : "collapsed"}.`);
+        }}
+      >
+        <Sidebar>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible
+                    onOpenChangeComplete={(open) => {
+                      setCompletion(
+                        `Compute section ${open ? "opened" : "collapsed"}.`,
+                      );
+                    }}
+                  >
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>Workers</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>Pages</Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <DemoSidebarFooter>
+            <Sidebar.Trigger />
+          </DemoSidebarFooter>
+        </Sidebar>
+        <DemoMain>
+          <p aria-live="polite">{completion}</p>
+          <p>
+            Toggle the sidebar or open Compute to see the completion callback.
+          </p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 8. Sliding Views — animated horizontal transitions between surfaces
 // ---------------------------------------------------------------------------
 
 /** Sidebar with animated sliding views between Account and Zone navigation. */
@@ -712,7 +793,7 @@ export function SidebarSlidingViewsDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 8. Full — kitchen sink showcasing every subcomponent
+// 9. Full — kitchen sink showcasing every subcomponent
 // ---------------------------------------------------------------------------
 
 /** Kitchen sink sidebar showcasing every subcomponent: header with account switcher, groups with labels, collapsible sections with nested expandable, badges, sliding views via Domains, and a footer trigger. */
@@ -873,9 +954,9 @@ export function SidebarFullDemo() {
             </Sidebar.SlidingView>
           </Sidebar.SlidingViews>
 
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain />
       </Sidebar.Provider>
@@ -884,7 +965,107 @@ export function SidebarFullDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Mobile — navigation drawer with Escape to close
+// 9. scrollToItem — imperative scroll to a tagged nav item
+// ---------------------------------------------------------------------------
+
+const LONG_NAV_ITEMS = [
+  "Home",
+  "Analytics",
+  "Domains",
+  "SSL/TLS",
+  "Firewall",
+  "Caching",
+  "Workers",
+  "Pages",
+  "R2",
+  "KV",
+  "D1",
+  "AI Gateway",
+  "Queues",
+  "Zaraz",
+  "Turnstile",
+  "Load Balancing",
+  "Zero Trust",
+  "Access",
+  "Gateway",
+  "Tunnels",
+  "Logs",
+  "Notifications",
+  "Members",
+  "API tokens",
+  "Billing",
+  "Settings",
+] as const;
+
+const ANCHOR_ID_BY_LABEL: Record<string, string> = {
+  Home: "home",
+  Workers: "workers",
+  "Zero Trust": "zero-trust",
+  Settings: "settings",
+};
+
+function ScrollToItemControls() {
+  const { scrollToItem } = useSidebar();
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <p>Jump to any tagged item.</p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {(["home", "workers", "zero-trust", "settings"] as const).map((id) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() =>
+              scrollToItem(id, { align: "center", behavior: "smooth" })
+            }
+            className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+          >
+            Scroll to {id}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Imperative scroll via `useSidebar().scrollToItem(id, options)` targeting `itemId` props. */
+export function SidebarScrollToItemDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                {LONG_NAV_ITEMS.map((label, idx) => (
+                  <Sidebar.MenuButton
+                    key={label}
+                    icon={idx === 0 ? HouseIcon : GlobeIcon}
+                    active={idx === 0}
+                    itemId={ANCHOR_ID_BY_LABEL[label]}
+                  >
+                    {label}
+                  </Sidebar.MenuButton>
+                ))}
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <DemoSidebarFooter>
+            <Sidebar.Trigger />
+          </DemoSidebarFooter>
+        </Sidebar>
+        <DemoMain>
+          <ScrollToItemControls />
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 10. Mobile — navigation drawer with Escape to close
 // ---------------------------------------------------------------------------
 
 function MobileToggleButton() {
@@ -935,9 +1116,9 @@ export function SidebarMobileDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <MobileToggleButton />
@@ -951,7 +1132,7 @@ export function SidebarMobileDemo() {
   );
 }
 // ---------------------------------------------------------------------------
-// 10. Full-screen mobile — nav fills the viewport, route lives in breadcrumbs
+// 11. Full-screen mobile — nav fills the viewport, route lives in breadcrumbs
 // ---------------------------------------------------------------------------
 
 /** A node in the nav tree. Leaves are navigable; branches expand. */

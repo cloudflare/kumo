@@ -1,10 +1,9 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  THEME_CONFIG as STATIC_THEME_CONFIG,
-  AVAILABLE_THEMES as STATIC_AVAILABLE_THEMES,
-} from "@cloudflare/kumo/scripts/theme-generator/config";
-import type { TokenDefinition } from "@cloudflare/kumo/scripts/theme-generator/types";
+import type {
+  ThemeConfig,
+  TokenDefinition,
+} from "@cloudflare/kumo/scripts/theme-generator/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,6 +20,11 @@ type ColorToken = {
   tokenType: TokenType;
 };
 
+type ThemeConfigModule = {
+  THEME_CONFIG: ThemeConfig;
+  AVAILABLE_THEMES: readonly string[];
+};
+
 // Path to the source config.ts — used for dev-mode loading and HMR watching
 const configFile = resolve(
   __dirname,
@@ -32,8 +36,8 @@ const configFile = resolve(
  * Derives token data directly from config.ts (single source of truth).
  */
 function getColorsFromConfig(
-  THEME_CONFIG: typeof STATIC_THEME_CONFIG,
-  AVAILABLE_THEMES: typeof STATIC_AVAILABLE_THEMES,
+  THEME_CONFIG: ThemeConfig,
+  AVAILABLE_THEMES: readonly string[],
 ): ColorToken[] {
   const colors: ColorToken[] = [];
 
@@ -106,24 +110,21 @@ function getColorsFromConfig(
  *
  * In dev mode, uses Vite's ssrLoadModule to import the source .ts file
  * directly — changes to config.ts are reflected without rebuilding kumo.
- * In production builds, uses the static import from the built dist/.
+ * In production builds, loads the package export from the built dist/.
  *
  * @returns Astro/Vite compatible plugin
  */
-export function kumoColorsPlugin() {
-  // Reference to the Vite dev server (set during configureServer).
-  // Only used in actual dev mode — Astro's build also creates a server
-  // for SSR, but ssrLoadModule can hang during build, so we track the
-  // real mode via the config hook.
+export function kumoColorsPlugin({
+  isDev,
+  builtThemeConfig,
+}: {
+  isDev: boolean;
+  builtThemeConfig?: ThemeConfigModule;
+}) {
   let server: any = null;
-  let isDevMode = false;
 
   return {
     name: "vite-plugin-kumo-colors",
-
-    config(_: unknown, env: { command: string }) {
-      isDevMode = env.command === "serve";
-    },
 
     resolveId(id: string) {
       if (id === VIRTUAL_MODULE_ID) {
@@ -133,23 +134,27 @@ export function kumoColorsPlugin() {
 
     async load(id: string) {
       if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-        let THEME_CONFIG: typeof STATIC_THEME_CONFIG;
-        let AVAILABLE_THEMES: typeof STATIC_AVAILABLE_THEMES;
+        let themeConfig: ThemeConfig;
+        let availableThemes: readonly string[];
 
-        if (isDevMode && server) {
+        if (isDev && server) {
           // Dev mode: load source .ts directly via Vite's module runner.
           // This always reads the latest file contents — no build needed.
           const mod = await server.ssrLoadModule(configFile);
-          THEME_CONFIG = mod.THEME_CONFIG;
-          AVAILABLE_THEMES = mod.AVAILABLE_THEMES;
+          themeConfig = mod.THEME_CONFIG;
+          availableThemes = mod.AVAILABLE_THEMES;
         } else {
-          // Production build: use the statically imported config from dist/.
-          // This is resolved at module load time and always available.
-          THEME_CONFIG = STATIC_THEME_CONFIG;
-          AVAILABLE_THEMES = STATIC_AVAILABLE_THEMES;
+          if (!builtThemeConfig) {
+            throw new Error(
+              "The built Kumo theme config is required outside dev mode.",
+            );
+          }
+
+          themeConfig = builtThemeConfig.THEME_CONFIG;
+          availableThemes = builtThemeConfig.AVAILABLE_THEMES;
         }
 
-        const colors = getColorsFromConfig(THEME_CONFIG, AVAILABLE_THEMES);
+        const colors = getColorsFromConfig(themeConfig, availableThemes);
 
         return `
 export const kumoColors = ${JSON.stringify(colors, null, 2)};

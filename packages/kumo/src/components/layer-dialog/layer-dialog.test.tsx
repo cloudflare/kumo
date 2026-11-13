@@ -1,0 +1,840 @@
+// Stub Web Animations API for happy-dom (Base UI ScrollArea calls getAnimations).
+if (!HTMLElement.prototype.getAnimations) {
+  HTMLElement.prototype.getAnimations = () => [];
+}
+
+import {
+  act,
+  fireEvent,
+  render,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
+import { KumoPortalProvider } from "../../utils/portal-provider";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
+import { DropdownMenu } from "../dropdown/dropdown";
+import { Input } from "../input/input";
+import {
+  KUMO_LAYER_DIALOG_DEFAULT_VARIANTS,
+  KUMO_LAYER_DIALOG_VARIANTS,
+  LayerDialog,
+} from "./layer-dialog";
+
+describe("LayerDialog", () => {
+  it("exports its strict compound component slots", () => {
+    expect(LayerDialog.Root).toBeDefined();
+    expect(LayerDialog.Alert).toBeDefined();
+    expect(LayerDialog.Content).toBeDefined();
+    expect(LayerDialog.Title).toBeDefined();
+    expect(LayerDialog.Description).toBeDefined();
+    expect(LayerDialog.Body).toBeDefined();
+    expect(LayerDialog.Separator).toBeDefined();
+    expect(LayerDialog.Action).toBeDefined();
+    expect(LayerDialog.Actions).toBeDefined();
+  });
+
+  it("renders a full-width body separator", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Sections</LayerDialog.Title>
+          <LayerDialog.Body>
+            <span>First</span>
+            <LayerDialog.Separator />
+            <span>Second</span>
+          </LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const separator = getByRole("separator");
+    expect(separator.className).toContain("-mx-4");
+    expect(separator.className).toContain("sm:-mx-4.5");
+    expect(separator.className).toContain("bg-kumo-hairline");
+  });
+
+  it("uses a larger constrained desktop width by default", () => {
+    expect(KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.size).toBe("base");
+    expect(KUMO_LAYER_DIALOG_VARIANTS.size.base.classes).toBe("sm:max-w-xl");
+    expect(Object.keys(KUMO_LAYER_DIALOG_VARIANTS.size)).toEqual([
+      "sm",
+      "base",
+      "lg",
+      "xl",
+    ]);
+  });
+
+  it("derives the desktop height cap from viewport padding, not a hardcoded calc", () => {
+    // Every alignment must reserve vertical padding on the viewport, and the
+    // popup must fill that padded box. A hardcoded `calc(100dvh - Nrem)` on
+    // the popup can drift from the alignment padding and overflow the screen.
+    for (const config of Object.values(
+      KUMO_LAYER_DIALOG_VARIANTS.verticalAlign,
+    )) {
+      expect(config.classes).toMatch(/sm:(py|pb)-\d/);
+    }
+
+    const { getByRole, unmount } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content verticalAlign="top">
+          <LayerDialog.Title>Tall</LayerDialog.Title>
+          <LayerDialog.Body>Body</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const popup = getByRole("dialog");
+    const viewport = popup.parentElement!;
+    expect(viewport.className).toContain("sm:pt-16");
+    expect(viewport.className).toContain("sm:pb-6");
+    expect(popup.className).toContain("sm:max-h-full");
+    expect(popup.className).not.toMatch(/sm:max-h-\[calc/);
+    expect(popup.firstElementChild?.className).toContain("sm:max-h-full");
+    unmount();
+  });
+
+  it("falls back to default variants for unknown size and alignment", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content
+          size={"huge" as never}
+          verticalAlign={"middle" as never}
+        >
+          <LayerDialog.Title>Fallback</LayerDialog.Title>
+          <LayerDialog.Body>Body</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    expect(getByRole("dialog").className).toContain(
+      KUMO_LAYER_DIALOG_VARIANTS.size.base.classes,
+    );
+    expect(warn).toHaveBeenCalledTimes(2);
+    warn.mockRestore();
+  });
+
+  it("rejects more than one description", () => {
+    expect(() =>
+      render(
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Title</LayerDialog.Title>
+            <LayerDialog.Description>One</LayerDialog.Description>
+            <LayerDialog.Description>Two</LayerDialog.Description>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>,
+      ),
+    ).toThrow("LayerDialog.Content requires");
+  });
+
+  it("requires explicit actions for alert dialogs", () => {
+    expect(() =>
+      render(
+        <LayerDialog.Alert open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Delete resource</LayerDialog.Title>
+            <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Alert>,
+      ),
+    ).toThrow("LayerDialog.Alert requires");
+  });
+
+  it("accepts a split primary action group for related alternate outcomes", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="draft">
+                  Save as draft
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Save options"
+            >
+              Save and deploy
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    expect(getByRole("group", { name: "Save options" })).toBeDefined();
+    const primary = getByRole("button", { name: "Save and deploy" });
+    const menu = getByRole("button", { name: "Save options" });
+    expect(primary.className).toContain("bg-(--kumo-button-emphasis-bg)");
+    expect(menu.className).toContain("bg-(--kumo-button-emphasis-bg)");
+    expect(
+      primary.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-brand)");
+    expect(
+      menu.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-brand)");
+  });
+
+  it("uses Content's portal container for alternate action menus", async () => {
+    const portalContainer = document.createElement("div");
+    document.body.append(portalContainer);
+
+    const { unmount } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content container={portalContainer}>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="draft">
+                  Save as draft
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Save options"
+            >
+              Save and deploy
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    fireEvent.click(
+      within(portalContainer).getByRole("button", { name: "Save options" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        within(portalContainer).getByRole("menuitem", {
+          name: "Save as draft",
+        }),
+      ).toBeDefined();
+    });
+
+    unmount();
+    portalContainer.remove();
+  });
+
+  it("matches a destructive action's variant in its menu trigger", () => {
+    const { getByRole } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete deployment</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="archive">
+                  Archive instead
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="More delete actions"
+              variant="destructive"
+            >
+              Delete deployment
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    const primary = getByRole("button", { name: "Delete deployment" });
+    const menu = getByRole("button", { name: "More delete actions" });
+    expect(
+      primary.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-danger)");
+    expect(
+      menu.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-danger)");
+  });
+
+  it("uses the portal container from KumoPortalProvider", () => {
+    const portalContainer = document.createElement("div");
+    document.body.append(portalContainer);
+
+    const { unmount } = render(
+      <KumoPortalProvider container={portalContainer}>
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Portal title</LayerDialog.Title>
+            <LayerDialog.Body>Portal body</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoPortalProvider>,
+    );
+
+    expect(within(portalContainer).getByText("Portal title")).toBeDefined();
+
+    unmount();
+    portalContainer.remove();
+  });
+
+  it("keeps alert dialogs modal when modal is false", () => {
+    const outsideButton = document.createElement("button");
+    document.body.append(outsideButton);
+
+    const { unmount } = render(
+      <LayerDialog.Alert open modal={false}>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    expect(outsideButton.getAttribute("data-base-ui-inert")).toBe("");
+    expect(outsideButton.getAttribute("aria-hidden")).toBe("true");
+
+    unmount();
+    outsideButton.remove();
+  });
+
+  it("defaults the alert dismissal label to Cancel", () => {
+    const { getByRole, queryByRole } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    expect(getByRole("button", { name: "Cancel" })).toBeDefined();
+    expect(queryByRole("button", { name: "Close" })).toBeNull();
+  });
+
+  it("uses provider translations for generated dismissal copy", () => {
+    const closeDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Information</LayerDialog.Title>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoLocaleProvider>,
+    );
+
+    expect(closeDialog.getByRole("button", { name: "Fermer" })).toBeDefined();
+    closeDialog.unmount();
+
+    const alertDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Alert open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Delete resource</LayerDialog.Title>
+            <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+            <LayerDialog.Actions>
+              <LayerDialog.Action>Delete</LayerDialog.Action>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Alert>
+      </KumoLocaleProvider>,
+    );
+
+    expect(alertDialog.getByRole("button", { name: "Annuler" })).toBeDefined();
+  });
+
+  it("lets explicit labels override provider translations", () => {
+    const closeDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Root open>
+          <LayerDialog.Content closeLabel="Dismiss dialog">
+            <LayerDialog.Title>Information</LayerDialog.Title>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoLocaleProvider>,
+    );
+
+    expect(
+      closeDialog.getByRole("button", { name: "Dismiss dialog" }),
+    ).toBeDefined();
+    closeDialog.unmount();
+
+    const actionsDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Information</LayerDialog.Title>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+            <LayerDialog.Actions dismissLabel="Keep editing">
+              <LayerDialog.Action>Save</LayerDialog.Action>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoLocaleProvider>,
+    );
+
+    expect(
+      actionsDialog.getByRole("button", { name: "Keep editing" }),
+    ).toBeDefined();
+  });
+
+  it("rejects arbitrary extra footer controls", () => {
+    expect(() =>
+      render(
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Save changes</LayerDialog.Title>
+            <LayerDialog.Body>
+              Review your changes before saving.
+            </LayerDialog.Body>
+            <LayerDialog.Actions>
+              <LayerDialog.Action>Save and deploy</LayerDialog.Action>
+              <button type="button">Save as draft</button>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Root>,
+      ),
+    ).toThrow("exactly one direct LayerDialog.Action");
+  });
+
+  it("keeps the deprecated LayerDialog.Actions.Primary alias working", () => {
+    expect(LayerDialog.Actions.Primary).toBe(LayerDialog.Action);
+
+    const onClick = vi.fn();
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary onClick={onClick}>
+              Save
+            </LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    fireEvent.click(getByRole("button", { name: "Save" }));
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+});
+
+describe("LayerDialog.Body edge clipping", () => {
+  // The body viewport is a scroll container, so it clips anything painted
+  // outside its box. Inputs draw their border and focus ring as a box-shadow
+  // outside the element, so a first-child control needs top padding or the
+  // top of its outline is cut off. happy-dom has no layout, so assert the
+  // class contract that prevents the clip.
+  const renderBodyWithLeadingInput = (desktop: boolean) => {
+    const originalMatchMedia = window.matchMedia;
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      writable: true,
+      value: (query: string) => ({
+        matches: desktop && query.includes("min-width: 640px"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    });
+
+    const result = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Search</LayerDialog.Title>
+          <LayerDialog.Body>
+            <Input aria-label="Search" placeholder="Search" />
+          </LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const input = result.getByRole("textbox", { name: "Search" });
+    const viewport = result
+      .getByRole("dialog")
+      .querySelector<HTMLElement>("[data-id$='-viewport'][style*='overflow']")!;
+    const content = viewport.firstElementChild as HTMLElement;
+
+    return {
+      content,
+      input,
+      viewport,
+      cleanup: () => {
+        result.unmount();
+        Object.defineProperty(window, "matchMedia", {
+          configurable: true,
+          writable: true,
+          value: originalMatchMedia,
+        });
+      },
+    };
+  };
+
+  it.each([
+    ["desktop", true],
+    ["mobile", false],
+  ])(
+    "pads the top of the body so a leading input's ring is not clipped (%s)",
+    (_layout, desktop) => {
+      const { content, input, cleanup } = renderBodyWithLeadingInput(desktop);
+
+      // Guard the premise: the input is the first thing rendered in the
+      // scroll content (possibly inside the body's description wrapper) and
+      // draws its border as a ring.
+      let first = content.firstElementChild;
+      while (first && first !== input && first.firstElementChild) {
+        expect(first.previousElementSibling).toBeNull();
+        first = first.firstElementChild;
+      }
+      expect(first).toBe(input);
+      expect(input.className).toMatch(/(^|\s)ring(\s|$)/);
+      // And the intended layout branch rendered.
+      expect(content.className).toContain(desktop ? "px-4.5" : "px-4");
+
+      // Any top padding of at least 0.5 (2px) covers the 1.5px focus ring.
+      expect(content.className).toMatch(/(^|\s)(pt|py|p)-(0\.5|[1-9])/);
+      expect(content.className).not.toMatch(/(^|\s)(pt|py|p)-0(\s|$)/);
+
+      cleanup();
+    },
+  );
+
+  it("does not fade the top of the body before Base UI measures overflow", () => {
+    // Safari skips Base UI's registered 0px initial value for the overflow
+    // vars, so the mask fallback is what renders until the first measurement.
+    // The body always opens scrolled to the top, so the top fade must fall
+    // back to 0px rather than masking out the first 24px of content.
+    const { viewport, cleanup } = renderBodyWithLeadingInput(true);
+
+    expect(viewport.className).toContain(
+      "var(--scroll-area-overflow-y-start,0px)",
+    );
+    expect(viewport.className).not.toContain(
+      "var(--scroll-area-overflow-y-start,24px)",
+    );
+
+    cleanup();
+  });
+
+  it("hides native scrollbars without Base UI's injected style", () => {
+    // Base UI forces `overflow: scroll` on the viewport and hides the native
+    // scrollbars only through a <style> it adds to <head> once per document.
+    // Head-swapping client routers (Astro's ClientRouter) remove that style,
+    // which shows empty scrollbar tracks wherever scrollbars are always
+    // visible, so the viewport must carry Kumo's own rule.
+    const { viewport, cleanup } = renderBodyWithLeadingInput(true);
+
+    expect(viewport.style.overflow).toBe("scroll");
+    expect(viewport.className).toMatch(/(^|\s)no-scrollbar(\s|$)/);
+
+    cleanup();
+  });
+});
+
+describe("LayerDialog dismissal", () => {
+  it("lets an alert close programmatically after its primary action", async () => {
+    const actionsRef = { current: null as null | { close: () => void } };
+    const onOpenChange = vi.fn();
+
+    const { queryByRole } = render(
+      <LayerDialog.Alert
+        actionsRef={actionsRef as never}
+        defaultOpen
+        onOpenChange={onOpenChange}
+      >
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    expect(queryByRole("alertdialog")).not.toBeNull();
+    act(() => actionsRef.current?.close());
+
+    expect(onOpenChange).toHaveBeenCalledWith(
+      false,
+      expect.objectContaining({ reason: "imperative-action" }),
+    );
+    await waitFor(() => expect(queryByRole("alertdialog")).toBeNull());
+  });
+
+  it("blocks user dismissal but not programmatic closes while dismissDisabled", () => {
+    const actionsRef = { current: null as null | { close: () => void } };
+    const onOpenChange = vi.fn();
+
+    const { getByRole } = render(
+      <LayerDialog.Root
+        actionsRef={actionsRef as never}
+        defaultOpen
+        dismissDisabled
+        onOpenChange={onOpenChange}
+      >
+        <LayerDialog.Content>
+          <LayerDialog.Title>Saving</LayerDialog.Title>
+          <LayerDialog.Body>Please wait.</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    fireEvent.keyDown(getByRole("dialog"), { key: "Escape" });
+    expect(onOpenChange).not.toHaveBeenCalled();
+
+    act(() => actionsRef.current?.close());
+    expect(onOpenChange).toHaveBeenCalledWith(
+      false,
+      expect.objectContaining({ reason: "imperative-action" }),
+    );
+  });
+
+  it("keeps nested dialogs distinct and renders a backdrop for each layer", () => {
+    const initialBackdropCount = document.querySelectorAll(
+      "[data-layer-dialog-backdrop]",
+    ).length;
+    const { getAllByRole, getByRole } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>
+            <LayerDialog.Root open>
+              <LayerDialog.Content>
+                <LayerDialog.Title>What gets deleted</LayerDialog.Title>
+                <LayerDialog.Body>Everything.</LayerDialog.Body>
+              </LayerDialog.Content>
+            </LayerDialog.Root>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    expect(getAllByRole("alertdialog", { hidden: true })).toHaveLength(1);
+    expect(getByRole("dialog", { hidden: true })).toBeDefined();
+    expect(getByRole("button", { hidden: true, name: "Close" })).toBeDefined();
+    expect(
+      document.querySelectorAll("[data-layer-dialog-backdrop]"),
+    ).toHaveLength(initialBackdropCount + 2);
+  });
+
+  it("describes the popup with its Description slot when present", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Configure hostname</LayerDialog.Title>
+          <LayerDialog.Description>
+            Route requests to your Worker.
+          </LayerDialog.Description>
+          <LayerDialog.Body>Form fields</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const popup = getByRole("dialog");
+    const describedBy = popup.getAttribute("aria-describedby");
+    expect(describedBy).toBeTruthy();
+    const description = document.getElementById(describedBy!);
+    expect(description?.textContent).toBe("Route requests to your Worker.");
+    // The description lives in the title frame, beside the title, not in the
+    // scrollable body.
+    const title = document.getElementById(
+      popup.getAttribute("aria-labelledby")!,
+    );
+    expect(title?.parentElement?.contains(description)).toBe(true);
+  });
+
+  it("condenses the description on scroll only when enough overflow survives", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Audit log</LayerDialog.Title>
+          <LayerDialog.Description>Long list below.</LayerDialog.Description>
+          <LayerDialog.Body>Entries</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const popup = getByRole("dialog");
+    const description = document.getElementById(
+      popup.getAttribute("aria-describedby")!,
+    )!;
+    const collapsible = description.closest("[class*='grid-rows-']")!;
+    const clip = collapsible.firstElementChild as HTMLElement;
+    const viewport = popup.querySelector<HTMLElement>(
+      "[data-id$='-viewport'][style*='overflow']",
+    )!;
+
+    // jsdom has no layout, so stub the geometry the scroll handler reads.
+    const setGeometry = (
+      scrollTop: number,
+      scrollHeight: number,
+      clientHeight: number,
+    ) => {
+      Object.defineProperty(viewport, "scrollTop", {
+        configurable: true,
+        value: scrollTop,
+      });
+      Object.defineProperty(viewport, "scrollHeight", {
+        configurable: true,
+        value: scrollHeight,
+      });
+      Object.defineProperty(viewport, "clientHeight", {
+        configurable: true,
+        value: clientHeight,
+      });
+    };
+    Object.defineProperty(clip, "offsetHeight", {
+      configurable: true,
+      value: 24,
+    });
+
+    // Barely overflowing: collapsing a 24px description would leave only
+    // 6px of scroll range, which clamps scrollTop under the threshold and
+    // would re-expand the description in a loop. Stay expanded.
+    setGeometry(40, 330, 300);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[1fr]");
+    expect(collapsible.hasAttribute("data-condensed")).toBe(false);
+
+    // Plenty of overflow: condense, and keep the description in the DOM so
+    // aria-describedby still resolves.
+    setGeometry(40, 900, 300);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[0fr]");
+    expect(collapsible.getAttribute("data-condensed")).toBe("true");
+    expect(popup.getAttribute("aria-describedby")).toBe(description.id);
+
+    // Once condensed, any scroll past the threshold keeps it condensed even
+    // if the measured clip height is now 0 mid-transition.
+    Object.defineProperty(clip, "offsetHeight", {
+      configurable: true,
+      value: 0,
+    });
+    setGeometry(20, 900, 324);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[0fr]");
+
+    // Scrolling back to the top expands again.
+    setGeometry(0, 900, 324);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[1fr]");
+  });
+
+  it("keeps the primary action neutral unless destructive is requested", () => {
+    // Button variants share classes and differ by the inline emphasis token.
+    const emphasisToken = (button: HTMLElement) =>
+      button.style.getPropertyValue("--kumo-button-emphasis-gradient-end");
+
+    const { getByRole, rerender } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Deploy to production</LayerDialog.Title>
+          <LayerDialog.Body>Traffic switches immediately.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action>Deploy</LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+    expect(emphasisToken(getByRole("button", { name: "Deploy" }))).toBe(
+      "var(--color-kumo-brand)",
+    );
+
+    rerender(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action variant="destructive">
+              Delete
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+    expect(emphasisToken(getByRole("button", { name: "Delete" }))).toBe(
+      "var(--color-kumo-danger)",
+    );
+  });
+
+  it("takes translated text for the two strings it renders itself", () => {
+    const { getByRole, rerender } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content closeLabel="Dialog schließen">
+          <LayerDialog.Title>Einstellungen</LayerDialog.Title>
+          <LayerDialog.Body>Inhalt</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+    expect(getByRole("button", { name: "Dialog schließen" })).toBeDefined();
+
+    rerender(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Löschen</LayerDialog.Title>
+          <LayerDialog.Body>Unwiderruflich.</LayerDialog.Body>
+          <LayerDialog.Actions dismissLabel="Abbrechen">
+            <LayerDialog.Action variant="destructive">
+              Löschen
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+    expect(getByRole("button", { name: "Abbrechen" })).toBeDefined();
+  });
+
+  it("describes the popup with its body when no Description is given", () => {
+    const { getByRole } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    const popup = getByRole("alertdialog");
+    const labelledBy = popup.getAttribute("aria-labelledby");
+    const describedBy = popup.getAttribute("aria-describedby");
+    expect(labelledBy).toBeTruthy();
+    expect(describedBy).toBeTruthy();
+    expect(document.getElementById(labelledBy!)?.textContent).toBe(
+      "Delete resource",
+    );
+    expect(document.getElementById(describedBy!)?.textContent).toBe(
+      "This action cannot be undone.",
+    );
+  });
+});

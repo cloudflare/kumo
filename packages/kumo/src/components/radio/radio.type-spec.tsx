@@ -55,7 +55,7 @@ const enumGroup = (
 );
 
 const stringGroup = (
-  <Radio.Group legend="Theme" value="system">
+  <Radio.Group legend="Theme" value="system" appearance="segmented">
     <Radio.Item label="Light" value="light" />
     <Radio.Item label="System" value="system" />
   </Radio.Group>
@@ -97,6 +97,13 @@ const mismatchedItemValue: RadioItemProps<number> = {
   value: "25",
 };
 
+const segmentedItemAppearance: RadioItemProps = {
+  label: "System",
+  value: "system",
+  // @ts-expect-error - segmented is a group-only appearance.
+  appearance: "segmented",
+};
+
 // Silence unused-variable warnings for all the sentinels above.
 // This file is never executed; it exists purely for type checking.
 export const __typeSpec = {
@@ -108,4 +115,5 @@ export const __typeSpec = {
   defaultStringValue,
   mismatchedGroupValue,
   mismatchedItemValue,
+  segmentedItemAppearance,
 };

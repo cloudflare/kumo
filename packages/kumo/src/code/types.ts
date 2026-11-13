@@ -135,6 +135,8 @@ export interface UseShikiHighlighterResult {
 /**
  * Props for CodeHighlighted component.
  */
+export type CodeHighlightedVariant = "default" | "plain";
+
 export interface CodeHighlightedProps {
   /** Source code to display */
   code: string;
@@ -155,9 +157,6 @@ export interface CodeHighlightedProps {
    */
   highlightLines?: number[];
 
-  /** Show copy-to-clipboard button */
-  showCopyButton?: boolean;
-
   /**
    * Override provider labels for this instance.
    * @example { copy: "Copy code", copied: "Done!" }
@@ -166,6 +165,12 @@ export interface CodeHighlightedProps {
 
   /** Additional CSS classes */
   className?: string;
+
+  /** Code block appearance. @default "default" */
+  variant?: CodeHighlightedVariant;
+
+  /** Show copy-to-clipboard button */
+  showCopyButton?: boolean;
 }
 
 // Re-export for backwards compatibility (deprecated, use SupportedLanguage instead)

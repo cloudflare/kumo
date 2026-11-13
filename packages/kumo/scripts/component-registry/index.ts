@@ -873,7 +873,77 @@ async function generateRegistry(): Promise<GenerateRegistryResult> {
         "Multi-line textarea input with Input variants and InputArea-specific dimensions",
       importPath: "@cloudflare/kumo (synthetic - uses Input component)",
       category: "Input",
-      props: {}, // Uses Input's props
+      props: {
+        size: {
+          type: "enum",
+          optional: true,
+          description:
+            'Input size.\n- `"xs"` — Extra small for compact UIs\n- `"sm"` — Small for secondary fields\n- `"base"` — Default size\n- `"lg"` — Large for prominent fields',
+          values: ["xs", "sm", "base", "lg"],
+          descriptions: {
+            xs: "Extra small for compact UIs",
+            sm: "Small for secondary fields",
+            base: "Default size",
+            lg: "Large for prominent fields",
+          },
+          default: "base",
+        },
+        variant: {
+          type: "enum",
+          optional: true,
+          description: "Visual variant of the textarea.",
+          values: ["default", "error"],
+          default: "default",
+        },
+        label: {
+          type: "ReactNode",
+          optional: true,
+          description:
+            "Label content for the textarea (enables Field wrapper) — can be a string or any React node.",
+        },
+        labelTooltip: {
+          type: "ReactNode",
+          optional: true,
+          description:
+            "Tooltip content to display next to the label via an info icon.",
+        },
+        description: {
+          type: "ReactNode",
+          optional: true,
+          description: "Helper text displayed below the textarea.",
+        },
+        error: {
+          type: "string | { message: ReactNode; match: FieldErrorMatch }",
+          optional: true,
+          description: "Error message or validation error object.",
+        },
+        autoResize: {
+          type: "boolean",
+          optional: true,
+          description:
+            "Automatically resize the textarea based on its content.",
+          default: "false",
+        },
+        minRows: {
+          type: "number",
+          optional: true,
+          description:
+            "Minimum number of rows to display when `autoResize` is enabled.",
+          default: "1",
+        },
+        maxRows: {
+          type: "number",
+          optional: true,
+          description:
+            "Maximum number of rows to grow to when `autoResize` is enabled; content beyond this scrolls.",
+        },
+        onValueChange: {
+          type: "(value: string) => void",
+          optional: true,
+          description:
+            "Callback fired with the new string value on every change.",
+        },
+      },
       styling: COMPONENT_STYLING_METADATA.InputArea,
       examples: [],
       colors: [],

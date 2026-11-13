@@ -1,0 +1,5 @@
+{
+  "commit_id": "9a22fff717fb12d317c11613852746e3c940c9e2",
+  "event": "APPROVE",
+  "body": "Clean, focused fix with solid test coverage. All tests pass locally.\n\n**Summary of changes:**\n1. Switches `git diff` from two-dot (`..`) to three-dot (`...`) syntax in `git-operations.ts`, ensuring changesets and changed-file detection align with GitHub’s PR diff semantics. This eliminates false-positive changeset failures when `main` advances after a PR’s merge ref is created.\n2. Adds `hasKumoChanges` gating to `validate-pr-description.ts` so a changeset is only demanded when `packages/kumo/` is actually modified.\n3. Adds an integration-level test in `git-operations.test.ts` that reproduces the stale-merge-ref scenario in a fresh repo and asserts the correct isolation.\n4. Wires both test files into their respective CI workflows so regressions are caught early.\n\nEverything looks correct and minimal. Approving."
+}

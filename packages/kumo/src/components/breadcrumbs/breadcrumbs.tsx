@@ -2,8 +2,6 @@ import {
   Children,
   cloneElement,
   isValidElement,
-  useEffect,
-  useState,
   type PropsWithChildren,
   type ReactElement,
   type ReactNode,
@@ -14,6 +12,7 @@ import { SkeletonLine } from "../../components/loader/skeleton-line";
 import { useLinkComponent } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 /** Breadcrumbs size variant definitions. */
 export const KUMO_BREADCRUMBS_VARIANTS = {
@@ -144,24 +143,15 @@ function MobileEllipsis() {
 }
 
 function Clipboard({ text }: { text: string }) {
-  const [isCopied, setIsCopied] = useState(false);
-
-  useEffect(() => {
-    if (!isCopied) return;
-
-    const timeoutId = setTimeout(() => setIsCopied(false), 2000);
-    return () => clearTimeout(timeoutId);
-  }, [isCopied]);
+  const { copied: isCopied, runCopy } = useCopyFeedback();
 
   const handleCopyDeeplink = async () => {
     if (!text) return;
 
-    try {
-      await navigator.clipboard.writeText(text);
-      setIsCopied(true);
-    } catch (err) {
-      console.error("Failed to copy deeplink:", err);
-    }
+    await runCopy(
+      () => navigator.clipboard.writeText(text),
+      (error) => console.error("Failed to copy deeplink:", error),
+    );
   };
 
   return (

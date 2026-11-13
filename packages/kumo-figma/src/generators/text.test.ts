@@ -234,6 +234,7 @@ describe("Text Generator - getAllVariantData", () => {
       expect(variant.combinedClasses).toBeDefined();
       expect(variant.parsed).toBeDefined();
       expect(variant.description).toBeDefined();
+      expect(typeof variant.isHeadingVariant).toBe("boolean");
       expect(typeof variant.isCopyVariant).toBe("boolean");
       expect(typeof variant.isMonoVariant).toBe("boolean");
     }
@@ -255,16 +256,26 @@ describe("Text Generator - getAllVariantData", () => {
     }
   });
 
-  it("should have size=null for non-copy, non-mono variants (headings)", () => {
+  it("should expose the heading variant's supported size combinations", () => {
     const data = getAllVariantData();
-    const headingVariants = data.variants.filter(
-      (v) => !v.isCopyVariant && !v.isMonoVariant,
+    const headingVariants = data.variants.filter((v) => v.isHeadingVariant);
+
+    expect(headingVariants.length).toBeGreaterThan(0);
+    expect(headingVariants.some((variant) => variant.size === null)).toBe(true);
+    expect(headingVariants.some((variant) => variant.size !== null)).toBe(true);
+  });
+
+  it("should keep fixed-size variants at size=null", () => {
+    const data = getAllVariantData();
+    const fixedSizeVariants = data.variants.filter(
+      (variant) =>
+        !variant.isHeadingVariant &&
+        !variant.isCopyVariant &&
+        !variant.isMonoVariant,
     );
 
-    // Should have at least some heading variants
-    expect(headingVariants.length).toBeGreaterThan(0);
-
-    for (const variant of headingVariants) {
+    expect(fixedSizeVariants.length).toBeGreaterThan(0);
+    for (const variant of fixedSizeVariants) {
       expect(variant.size).toBeNull();
     }
   });

@@ -2,7 +2,6 @@ import { Eye, EyeSlash } from "@phosphor-icons/react";
 import {
   forwardRef,
   useCallback,
-  useEffect,
   useId,
   useRef,
   useState,
@@ -18,6 +17,7 @@ import {
   type KumoInputVariant,
 } from "../input/input";
 import { Field, type FieldErrorMatch } from "../field/field";
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 export const KUMO_SENSITIVE_INPUT_VARIANTS = KUMO_INPUT_VARIANTS;
 
@@ -132,7 +132,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       hasValue ? "masked" : "empty",
     );
 
-    const [copied, setCopied] = useState(false);
+    const { copied, runCopy } = useCopyFeedback();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -153,60 +153,61 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       [ref],
     );
 
-    // Reset copied state after 2 seconds
-    useEffect(() => {
-      if (copied) {
-        const timeoutId = setTimeout(() => setCopied(false), 2000);
-        return () => clearTimeout(timeoutId);
-      }
-    }, [copied]);
-
     const copyToClipboard = useCallback(
       async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        try {
-          if (
-            typeof navigator !== "undefined" &&
-            navigator.clipboard &&
-            typeof navigator.clipboard.writeText === "function"
-          ) {
-            await navigator.clipboard.writeText(value);
-            setCopied(true);
-            onCopy?.();
-            return;
-          }
-        } catch {
-          // Fall through to manual fallback
-        }
-
-        if (typeof document !== "undefined") {
-          const textarea = document.createElement("textarea");
-          textarea.value = value;
-          textarea.setAttribute("readonly", "");
-          textarea.style.position = "absolute";
-          textarea.style.left = "-9999px";
-          document.body.appendChild(textarea);
-          const selection = document.getSelection();
-          const previousRange = selection?.rangeCount
-            ? selection.getRangeAt(0)
-            : null;
-          textarea.select();
-          try {
-            document.execCommand("copy");
-            setCopied(true);
-            onCopy?.();
-          } catch (error) {
-            console.warn("Clipboard copy failed", error);
-          } finally {
-            document.body.removeChild(textarea);
-            if (previousRange) {
-              selection?.removeAllRanges();
-              selection?.addRange(previousRange);
+        const didCopy = await runCopy(
+          async (isCurrent) => {
+            try {
+              if (
+                typeof navigator !== "undefined" &&
+                navigator.clipboard &&
+                typeof navigator.clipboard.writeText === "function"
+              ) {
+                await navigator.clipboard.writeText(value);
+                return;
+              }
+            } catch {
+              // Fall through to manual fallback.
             }
-          }
+
+            if (!isCurrent()) return;
+
+            if (typeof document === "undefined") {
+              throw new Error("Clipboard API is unavailable");
+            }
+
+            const textarea = document.createElement("textarea");
+            textarea.value = value;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "absolute";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            const selection = document.getSelection();
+            const previousRange = selection?.rangeCount
+              ? selection.getRangeAt(0)
+              : null;
+            textarea.select();
+            try {
+              if (!document.execCommand("copy")) {
+                throw new Error("Copy command was not accepted");
+              }
+            } finally {
+              document.body.removeChild(textarea);
+              if (previousRange) {
+                selection?.removeAllRanges();
+                selection?.addRange(previousRange);
+              }
+            }
+          },
+          (error) => console.warn("Clipboard copy failed", error),
+        );
+
+        if (didCopy) {
+          onCopy?.();
         }
       },
-      [value, onCopy],
+      [value, onCopy, runCopy],
     );
 
     // Sync mode when value changes externally
@@ -345,6 +346,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           onKeyDown={handleInputKeyDown}
           disabled={disabled}
           readOnly={readOnly || isMaskedWithValue}
+          required={required}
           autoComplete={autoComplete}
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
@@ -442,7 +444,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             onKeyDown={(e) => e.stopPropagation()}
             aria-label={copied ? "Copied" : "Copy to clipboard"}
             className={cn(
-              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:ring-kumo-focus/50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand",
               // Defensive styles to prevent global CSS pollution
               "m-0 h-auto min-h-0 border-none shadow-none",
             )}

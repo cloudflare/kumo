@@ -68,6 +68,12 @@ const buildInfo = getBuildInfo();
 // Detect dev mode: `astro dev` sets this in process.argv
 const isDev = process.argv.includes("dev");
 
+// Load the built config while Astro's config module runner is still active.
+// In dev, defer to the source-loading path so Kumo does not need to be built.
+const builtThemeConfig = isDev
+  ? undefined
+  : await import("@cloudflare/kumo/scripts/theme-generator/config");
+
 // Path to kumo source (used for dev mode CSS aliases)
 const kumoSrc = resolve(__dirname, "../kumo/src");
 
@@ -107,7 +113,7 @@ export default defineConfig({
       // before Tailwind processes them.
       ...(isDev ? [kumoHmrPlugin()] : []),
       tailwindcss(),
-      kumoColorsPlugin(),
+      kumoColorsPlugin({ isDev, builtThemeConfig }),
       kumoRegistryPlugin(),
     ],
 

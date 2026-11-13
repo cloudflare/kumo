@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, DropdownMenu } from "@cloudflare/kumo";
 import {
   CopySimpleIcon,
@@ -15,8 +15,22 @@ interface CopyPageButtonProps {
   align?: "start" | "center" | "end";
 }
 
+const COPIED_FEEDBACK_MS = 2000;
+
 export function CopyPageButton({ align = "end" }: CopyPageButtonProps) {
   const [copied, setCopied] = useState(false);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyAttemptRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      copyAttemptRef.current += 1;
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+        resetTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const getMarkdownUrl = () => {
     const url = new URL(window.location.href);
@@ -29,23 +43,37 @@ export function CopyPageButton({ align = "end" }: CopyPageButtonProps) {
     return `${url.origin}${path}.md`;
   };
 
-  const onCopySuccess = () => {
-    setCopied(true);
+  const onCopySuccess = (attempt: number) => {
+    if (copyAttemptRef.current !== attempt) return;
 
-    setTimeout(() => setCopied(false), 2000); // 2 seconds
+    setCopied(true);
+    resetTimeoutRef.current = setTimeout(() => {
+      if (copyAttemptRef.current !== attempt) return;
+      setCopied(false);
+      resetTimeoutRef.current = null;
+    }, COPIED_FEEDBACK_MS);
   };
 
   const handleCopyMarkdown = async () => {
-    onCopySuccess();
+    const attempt = ++copyAttemptRef.current;
+    if (resetTimeoutRef.current !== null) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
 
     try {
       const markdownUrl = getMarkdownUrl();
       const response = await fetch(markdownUrl);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const markdown = await response.text();
+      if (copyAttemptRef.current !== attempt) return;
 
       await navigator.clipboard.writeText(markdown);
+      onCopySuccess(attempt);
     } catch (error) {
+      if (copyAttemptRef.current !== attempt) return;
+
+      setCopied(false);
       console.error("Failed to copy page as Markdown:", error);
     }
   };

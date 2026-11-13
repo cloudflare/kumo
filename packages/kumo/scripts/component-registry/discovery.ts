@@ -30,7 +30,9 @@ import {
 export const CATEGORY_MAP: Record<string, string> = {
   // Action
   button: "Action",
+  "button-group": "Action",
   "clipboard-text": "Action",
+  "inline-copy-text": "Action",
   // Display
   badge: "Display",
   breadcrumbs: "Display",
@@ -54,6 +56,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   "input-group": "Input",
   radio: "Input",
   select: "Input",
+  slider: "Input",
   switch: "Input",
   // Layout
   grid: "Layout",
@@ -65,6 +68,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   tabs: "Navigation",
   // Overlay
   dialog: "Overlay",
+  "layer-dialog": "Overlay",
   dropdown: "Overlay",
   popover: "Overlay",
   tooltip: "Overlay",

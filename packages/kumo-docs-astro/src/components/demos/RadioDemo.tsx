@@ -46,6 +46,100 @@ export function RadioHorizontalDemo() {
   );
 }
 
+export function RadioSegmentedDemo() {
+  const [duration, setDuration] = useState("1");
+  return (
+    <Radio.Group
+      appearance="segmented"
+      legend="Duration preset"
+      value={duration}
+      onValueChange={setDuration}
+    >
+      <Radio.Item label="1h" value="1" />
+      <Radio.Item label="12h" value="12" />
+      <Radio.Item label="24h" value="24" />
+    </Radio.Group>
+  );
+}
+
+export function RadioAppearanceComparisonDemo() {
+  return (
+    <div className="flex flex-wrap gap-8">
+      <Radio.Group
+        legend="Default appearance"
+        orientation="horizontal"
+        defaultValue="1"
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+        <Radio.Item label="24h" value="24" />
+      </Radio.Group>
+      <Radio.Group
+        appearance="segmented"
+        legend="Segmented appearance"
+        defaultValue="1"
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+        <Radio.Item label="24h" value="24" />
+      </Radio.Group>
+    </div>
+  );
+}
+
+export function RadioSegmentedDisabledDemo() {
+  return (
+    <div className="flex flex-wrap gap-8">
+      <Radio.Group
+        appearance="segmented"
+        legend="Disabled group"
+        defaultValue="12"
+        disabled
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+        <Radio.Item label="24h" value="24" />
+      </Radio.Group>
+      <Radio.Group
+        appearance="segmented"
+        legend="Disabled item"
+        defaultValue="1"
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" disabled />
+        <Radio.Item label="24h" value="24" />
+      </Radio.Group>
+    </div>
+  );
+}
+
+export function RadioSegmentedLegendDemo() {
+  return (
+    <Radio.Group appearance="segmented" defaultValue="automatic">
+      <Radio.Legend className="text-sm font-normal text-kumo-subtle">
+        Configuration mode
+      </Radio.Legend>
+      <Radio.Item label="Automatic" value="automatic" />
+      <Radio.Item label="Manual" value="manual" />
+    </Radio.Group>
+  );
+}
+
+export function RadioSegmentedLongLabelsDemo() {
+  return (
+    <div className="w-48 max-w-full">
+      <Radio.Group
+        appearance="segmented"
+        legend="Processing preference"
+        defaultValue="automatic"
+      >
+        <Radio.Item label="Automatic processing" value="automatic" />
+        <Radio.Item label="Manual configuration" value="manual" />
+      </Radio.Group>
+    </div>
+  );
+}
+
 /** Shows a radio group with helper description text */
 export function RadioDescriptionDemo() {
   const [value, setValue] = useState("standard");

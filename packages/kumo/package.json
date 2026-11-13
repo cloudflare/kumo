@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "2.9.0",
+  "version": "2.18.1",
   "private": false,
   "description": "Kumo - Cloudflare's component library for building modern web applications",
   "keywords": [
@@ -76,6 +76,10 @@
       "types": "./dist/components/button.d.ts",
       "import": "./dist/components/button.js"
     },
+    "./components/button-group": {
+      "types": "./dist/components/button-group.d.ts",
+      "import": "./dist/components/button-group.js"
+    },
     "./components/chart": {
       "types": "./dist/components/chart.d.ts",
       "import": "./dist/components/chart.js"
@@ -140,6 +144,10 @@
       "types": "./dist/components/grid.d.ts",
       "import": "./dist/components/grid.js"
     },
+    "./components/inline-copy-text": {
+      "types": "./dist/components/inline-copy-text.d.ts",
+      "import": "./dist/components/inline-copy-text.js"
+    },
     "./components/input": {
       "types": "./dist/components/input.d.ts",
       "import": "./dist/components/input.js"
@@ -155,6 +163,10 @@
     "./components/layer-card": {
       "types": "./dist/components/layer-card.d.ts",
       "import": "./dist/components/layer-card.js"
+    },
+    "./components/layer-dialog": {
+      "types": "./dist/components/layer-dialog.d.ts",
+      "import": "./dist/components/layer-dialog.js"
     },
     "./components/link": {
       "types": "./dist/components/link.d.ts",
@@ -196,6 +208,10 @@
       "types": "./dist/components/sidebar.d.ts",
       "import": "./dist/components/sidebar.js"
     },
+    "./components/slider": {
+      "types": "./dist/components/slider.d.ts",
+      "import": "./dist/components/slider.js"
+    },
     "./components/surface": {
       "types": "./dist/components/surface.d.ts",
       "import": "./dist/components/surface.js"
@@ -215,6 +231,10 @@
     "./components/tabs": {
       "types": "./dist/components/tabs.d.ts",
       "import": "./dist/components/tabs.js"
+    },
+    "./components/tag-input": {
+      "types": "./dist/components/tag-input.d.ts",
+      "import": "./dist/components/tag-input.js"
     },
     "./components/text": {
       "types": "./dist/components/text.d.ts",
@@ -450,13 +470,14 @@
     "typecheck": "tsc --noEmit",
     "validate:build": "vp test run --project=unit tests/imports/export-path-validation.test.ts",
     "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts",
-    "test:browser": "vp test --config=vitest.browser.config.ts"
+    "test:browser": "vp test --config=vitest.browser.config.ts",
+    "test:visual-contracts": "vp test run --config=vitest.visual-contracts.config.ts"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
+    "@base-ui/react": "^1.9.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
-    "cnfast": "^0.0.8",
+    "cn": "0.4.0",
     "d3-geo": "^3.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",

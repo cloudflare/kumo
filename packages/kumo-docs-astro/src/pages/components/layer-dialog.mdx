@@ -1,0 +1,311 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Layer Dialog"
+description: "A strict responsive dialog composition with a sticky title inside its scrollable body."
+sourceFile: "components/layer-dialog"
+baseUIComponent: "drawer"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  LayerDialogActionDemo,
+  LayerDialogAlertDemo,
+  LayerDialogCancelDemo,
+  LayerDialogCleanupDemo,
+  LayerDialogFormDemo,
+  LayerDialogInformationalDemo,
+  LayerDialogMaxHeightDemo,
+  LayerDialogNestedDemo,
+  LayerDialogPendingDemo,
+  LayerDialogSearchDemo,
+  LayerDialogSeparatorDemo,
+  LayerDialogSizeDemo,
+  LayerDialogSplitActionDemo,
+  LayerDialogTopAlignDemo,
+} from "~/components/demos/LayerDialogDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="LayerDialogActionDemo">
+    <LayerDialogActionDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { LayerDialog } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+```tsx
+import { Button, LayerDialog } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Open settings</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Configure custom hostname</LayerDialog.Title>
+        <LayerDialog.Description>
+          Route requests for this hostname to your Worker.
+        </LayerDialog.Description>
+        <LayerDialog.Body>{/* form fields */}</LayerDialog.Body>
+        <LayerDialog.Actions>
+          <LayerDialog.Action onClick={save}>
+            Save hostname
+          </LayerDialog.Action>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+```
+
+</ComponentSection>
+
+<ComponentSection>
+## Composition rules
+`LayerDialog.Content` accepts exactly one `Title`, one `Body`, an optional `Description`, and an optional `Actions`. It chooses its dismissal UI automatically:
+
+- Without `Actions`: show an X in the title frame and no footer.
+- With `Actions`: remove the X and show **Close** or **Cancel** plus one primary action. On mobile, they remain visible beneath the scrolling body behind a hairline divider; on desktop, they remain in the fixed footer.
+
+Consumers cannot mix these layouts or add unrelated footer controls. `Actions` accepts one `Action`, which can optionally expose related menu items. Use the X for read-only content, `Actions` when the user must commit a change, and `LayerDialog.Alert` for destructive or critical confirmations.
+
+`Description` renders directly beneath the title inside the sticky title frame and becomes the dialog's accessible description. Without one, the body copy describes the dialog instead.
+</ComponentSection>
+
+<ComponentSection>
+## Informational dialog
+`Title` and `Description` always live in the bordered body surface. The title frame remains visible while the body scrolls and has the sole automatic X dismissal action. Once the body scrolls past the top, the description folds away beneath the title to give the content more room, and unfolds again at the top. The content edge mask signals overflow.
+<ComponentExample demo="LayerDialogInformationalDemo"><LayerDialogInformationalDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Standard action
+Adding `Actions` selects exactly one Kumo primary action and an automatic **Close** button. On mobile, the actions stay visible beneath the scrolling body behind a hairline divider; on desktop, they occupy the fixed footer. Consumers cannot add unrelated footer controls or extra CTAs. The primary action accepts `variant="primary"` (default) or `variant="destructive"`.
+<ComponentExample demo="LayerDialogActionDemo"><LayerDialogActionDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Native forms
+
+`Body` and `Actions` are separate slots, so the native `<form>` belongs inside `Body` while its submit button belongs in `Actions`. Give the form an ID, then associate the primary action using its HTML `form` attribute. This preserves built-in validation and supports uncontrolled form fields without React state.
+
+<ComponentExample demo="LayerDialogFormDemo"><LayerDialogFormDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Search and pickers
+
+A control can be the first element in `Body`. Here an unlabeled search input sits directly beneath the title frame, so give it an `aria-label`. The body leaves room above its content, so the input's border and focus ring are not clipped by the scroll area.
+
+<ComponentExample demo="LayerDialogSearchDemo"><LayerDialogSearchDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Dividing body content
+
+Use `LayerDialog.Separator` between sections in `LayerDialog.Body`. The divider extends through the body's horizontal padding to span the full content surface.
+
+<ComponentExample demo="LayerDialogSeparatorDemo"><LayerDialogSeparatorDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Multiple primary actions
+
+Pass related actions through `LayerDialog.Action`’s `menu` prop. It renders a standardized split-button caret beside the action. Keep the automatic dismiss button separate. For example, **Save and deploy** can expose **Save as draft** without turning the footer into three peer actions.
+
+<ComponentExample demo="LayerDialogSplitActionDemo"><LayerDialogSplitActionDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Cancellation wording
+When `LayerDialog.Actions` is present, LayerDialog renders a dismiss button. It uses the secondary button treatment on mobile and the ghost treatment in the desktop footer. Its default label is "Close", or "Cancel" for `LayerDialog.Alert`.
+
+Use `dismissLabel` only when this dialog needs more specific wording, such as "Keep editing" or "Discard changes". The label does not change the button's behavior: it always closes the dialog.
+<ComponentExample demo="LayerDialogCancelDemo"><LayerDialogCancelDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Confirmation and destructive actions
+`LayerDialog.Alert` follows Base UI's alert dialog: it supplies `role="alertdialog"`, an automatic **Cancel**, no X, is always modal, and blocks backdrop and swipe dismissal. Escape still cancels, matching the ARIA alert dialog pattern.
+Pass `variant="destructive"` to the primary action when the confirmation is irreversible. Alerts that confirm a non-destructive but critical step keep the default primary styling.
+
+<ComponentExample demo="LayerDialogAlertDemo"><LayerDialogAlertDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Nested dialogs
+Nest one `LayerDialog.Root` or `LayerDialog.Alert` inside the parent dialog's body when the user must confirm a related action. Each dialog portals independently; Base UI keeps the nested drawer active above its parent and returns focus to the parent trigger when it closes. The nested drawer renders its own backdrop over the parent, so the parent remains intact but clearly inactive. No z-index overrides are needed.
+<ComponentExample demo="LayerDialogNestedDemo"><LayerDialogNestedDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Pending work
+`dismissDisabled` blocks every user-initiated dismissal together while asynchronous work is in flight. Programmatic closes, through `actionsRef.current.close()` or a controlled `open` prop, still work so a successful action can dismiss the dialog. The single primary action owns its separate loading or disabled state.
+<ComponentExample demo="LayerDialogPendingDemo"><LayerDialogPendingDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Cleanup
+Put cleanup in `onOpenChange`, rather than in a dismissal click handler, so it runs for X, Close, Escape, backdrop, and swipe.
+<ComponentExample demo="LayerDialogCleanupDemo"><LayerDialogCleanupDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Localization
+
+The dialog renders two strings of its own. Configure their application-wide defaults with `KumoLocaleProvider`:
+
+- `layerDialog.close` is used for the automatic X button and the default footer dismiss button. Default: "Close".
+- `layerDialog.cancel` is used for the default footer dismiss button inside an `Alert`.
+
+```tsx
+<KumoLocaleProvider
+  translations={{
+    layerDialog: { close: "Schließen", cancel: "Abbrechen" },
+  }}
+>
+  <App />
+</KumoLocaleProvider>
+```
+
+Use `closeLabel` on `Content` or `dismissLabel` on `Actions` when one dialog needs custom copy; explicit props override provider defaults.
+
+## Desktop width
+Desktop dialogs use `size="base"` (576px) by default. Use `sm` (448px), `lg` (672px), or `xl` (768px) when the content needs a different width. Mobile dialogs remain full-width at every size.
+<ComponentExample demo="LayerDialogSizeDemo"><LayerDialogSizeDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Desktop placement
+Desktop dialogs center by default. Use the narrow `verticalAlign="top"` override only when its content benefits from top alignment; mobile remains a bottom sheet.
+<ComponentExample demo="LayerDialogTopAlignDemo"><LayerDialogTopAlignDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Maximum height
+Height is derived from content and capped by the viewport. Following Base UI's inside-scroll pattern, the viewport reserves the vertical breathing room for each placement and the popup fills it, so a top-aligned dialog can never extend past the bottom edge. Past the cap, only the body scrolls while the title frame and actions stay pinned. Mobile sheets cap at 85% of the viewport instead. There are no height props: consumers control height only through the content they render.
+<ComponentExample demo="LayerDialogMaxHeightDemo"><LayerDialogMaxHeightDemo client:load /></ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+### LayerDialog.Root
+
+<p>
+  Controls the open state. Accepts every Base UI Drawer root prop, including
+  `open`, `defaultOpen`, `onOpenChange`, `modal`, and `actionsRef`. Doesn't
+  render its own HTML element.
+</p>
+<div class="mb-4 overflow-hidden rounded-lg border border-kumo-hairline">
+  <table class="w-full text-sm">
+    <thead class="bg-kumo-elevated">
+      <tr>
+        <th class="px-4 py-2 text-left font-medium">Prop</th>
+        <th class="px-4 py-2 text-left font-medium">Type</th>
+        <th class="px-4 py-2 text-left font-medium">Default</th>
+        <th class="px-4 py-2 text-left font-medium">Description</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-kumo-hairline">
+      <tr>
+        <td class="px-4 py-2 font-mono text-xs">dismissDisabled</td>
+        <td class="px-4 py-2 font-mono text-xs">boolean</td>
+        <td class="px-4 py-2 font-mono text-xs">false</td>
+        <td class="px-4 py-2 text-kumo-subtle">
+          Blocks X, Close, Escape, backdrop, and swipe dismissal while work is
+          pending. Programmatic closes are never blocked.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### LayerDialog.Alert
+
+<p>
+  Same props as `LayerDialog.Root`. Forces `modal`, blocks pointer dismissal,
+  renders `role="alertdialog"`, and requires `LayerDialog.Actions`.
+</p>
+
+### LayerDialog.Trigger
+
+<p>A button that opens the dialog when clicked.</p>
+<PropsTable component="LayerDialog.Trigger" />
+
+### LayerDialog.Content
+
+<p>Portals the backdrop and popup and validates the composition.</p>
+<PropsTable component="LayerDialog.Content" />
+
+### LayerDialog.Title
+
+<p>A heading that labels the dialog for accessibility.</p>
+<PropsTable component="LayerDialog.Title" />
+
+### LayerDialog.Description
+
+<p>
+  Optional supporting copy beneath the title. Becomes the dialog's accessible
+  description.
+</p>
+<PropsTable component="LayerDialog.Description" />
+
+### LayerDialog.Body
+
+<p>The scrollable content region.</p>
+<PropsTable component="LayerDialog.Body" />
+
+### LayerDialog.Separator
+
+<p>A full-width divider between sections of body content.</p>
+<PropsTable component="LayerDialog.Separator" />
+
+### LayerDialog.Actions
+
+<p>
+  A footer with an automatic dismiss button and exactly one `LayerDialog.Action`.
+</p>
+<PropsTable component="LayerDialog.Actions" />
+
+### LayerDialog.Action
+
+<p>
+  The primary action. Renders a Kumo `Button` and accepts standard button
+  attributes such as `onClick`, `disabled`, and `type`. Pass menu items through
+  `menu` to render a matching split-button menu.
+</p>
+<PropsTable component="LayerDialog.Action" />
+
+</ComponentSection>

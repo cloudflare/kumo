@@ -24,6 +24,7 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
+  "MenuBar", // Deprecated; use Tabs with variant="segmented" instead
   "Surface", // Deprecated compatibility export; no dedicated docs page
 ]);
 
@@ -41,6 +42,7 @@ const CHART_COMPONENT_URLS: Record<string, string> = {
   TimeseriesChart: "/charts/timeseries",
   BubbleMap: "/charts/maps#bubble-map",
   ChoroplethMap: "/charts/maps#choropleth-map",
+  GlobeMap: "/charts/maps#cloudflare-availability-locations",
 };
 
 /**
@@ -185,6 +187,8 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   checkbox:
     "A control that allows the user to toggle between checked and not checked.",
   "clipboard-text": "A text component with a copy-to-clipboard button.",
+  "inline-copy-text":
+    "A compact, borderless copy control for short inline values.",
   collapsible:
     "A vertically stacked set of interactive headings that each reveal content.",
   combobox:
@@ -199,7 +203,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "layer-card":
     "A card with a layered visual effect for navigation or highlights.",
   loader: "A loading spinner to indicate loading state.",
-  menubar: "A horizontal menu bar with icon buttons for toolbars.",
   popover: "An accessible popup anchored to a trigger element.",
   radio: "A control that allows selecting one option from a set.",
   select: "Displays a list of options for the user to pick from.",

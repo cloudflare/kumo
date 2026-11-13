@@ -1,5 +1,333 @@
 # @cloudflare/kumo
 
+## 2.18.1
+
+### Patch Changes
+
+- 8729c71: fix(dialog): let flex column dialogs shrink a scrollable body again
+
+  2.18.0 added `*:shrink-0` to every `Dialog`, which stopped dialogs built as `flex flex-col max-h-[…] overflow-hidden` with a `flex-1 min-h-0 overflow-y-auto` body from scrolling: the body kept its full height and the footer was clipped out of reach. `Dialog` no longer sets `flex-shrink` on its children. `LayerCard.Primary` and `LayerCard.Secondary` now carry `shrink-0` themselves, so layered dialogs still keep their sections from being squashed, and a section can opt back into shrinking with `className="min-h-0 flex-1"`.
+
+  If you added `*:shrink` to a `Dialog` to work around 2.18.0, it is no longer needed and can be removed.
+
+- 63d0398: Fix `kumo migrate` so that stdout stays valid JSON when no token migrations are pending. The "No pending token migrations." text now goes to stderr, and stdout is a JSON object with an empty `classes` map. `--classes` output is unchanged.
+- aede2c3: Remove the inherited resting background from ghost buttons so translucent parent surfaces do not appear darker beneath them.
+- 68ead88: Name `Radio.Group`'s radiogroup with its legend.
+
+  `Radio.Group` rendered an unnamed `role="radiogroup"` element around a `<fieldset>` that the legend named, so assistive technology announced a radiogroup with no name. The radiogroup now renders as the fieldset itself, so there is one element, `<fieldset role="radiogroup">`, named by its `legend` or `Radio.Legend`. Queries like `getByRole("group", { name })` for a radio group's legend become `getByRole("radiogroup", { name })`.
+
+- 27f8615: Select: a visible `label` now names the trigger whatever its type. A ReactNode label, such as a translated `<Trans>` element, used to leave the trigger unnamed or named by its placeholder. The trigger now points `aria-labelledby` at the rendered label, which also keeps the name when `render` sets the trigger's `id`. A consumer `aria-labelledby` next to a visible label is now honored.
+- ac1cbbf: Fix `SensitiveInput` not forwarding `required` to the native input. The prop only decorated the label, so an empty required field did not block form submission.
+- 8c058ff: Fix Badge height inconsistencies by setting an explicit line-height instead of relying on the parent or consumer typography theme.
+
+## 2.18.0
+
+### Minor Changes
+
+- 9d8b6e5: Add a `variant="sketch"` option to `SkeletonLine`: a wireframe-style placeholder with a rounded fill and sliding shimmer, a 1px outline, and construction strokes that overshoot each corner by 4px.
+- 085332b: Add `href` to `Banner.Action` so actions can render as links. Link actions use `LinkButton`, so they respect `LinkProvider` and support `external`.
+
+### Patch Changes
+
+- 39d33de: Keep keyboard focus visible in forced-colors mode when browsers suppress box-shadow rings. Controls retain a system-color outline, including the shared focus containers used by InputGroup, TagInput, and Slider. Keep tab outlines inside the scrolling tab list so all four edges remain visible.
+- 99e73d6: `Button` and `LinkButton` labels are now vertically centered regardless of where the button sits on the page. The bottom-padding text lift is removed, and `base` and `lg` buttons use a 20px line height (`leading-5`) so the gap between the label and the button edge is a whole pixel. With the old 21px line height that gap was 7.5px, and browsers rounded the text up or down depending on the button's position, so labels could render 1px high. `Select` triggers use the same size classes and get the same fix. The reduced leading padding for icon + text buttons is unchanged.
+- 12cd0fa: Fix several catalog runtime bugs:
+
+  - `setByPath` replaces `null` intermediate values instead of throwing, and ignores `__proto__`/`constructor`/`prototype` segments
+  - `getByPath` and `setByPath` decode JSON Pointer escapes (`~1` → `/`, `~0` → `~`)
+  - `{ auth }` conditions now work inside `and`/`or`/`not` visibility expressions (evaluator, `LogicExpression` type, and Zod schema). Unrecognised `auth` values now hide the element instead of showing it
+  - `resolveProps` resolves `{ path }` references inside arrays
+  - `hasAction` no longer reports `Object.prototype` names such as `toString` as registered actions
+
+- d8a668e: Loosen and balance choice descriptions: `Radio.Item` and `Checkbox.Item` card descriptions, and the `Radio.Group`, `Checkbox.Group`, and `Switch.Group` descriptions, now use `leading-snug` (matching `Field` and `Select` descriptions) and `text-pretty`, so multi-line descriptions are easier to read and don't end on a single orphaned word.
+- a813d01: Forward trigger props (`aria-label`, `aria-labelledby`, `aria-describedby`, `id`, handlers, etc.) from `Combobox.TriggerValue` to its trigger button instead of dropping them on `Value`, so comboboxes without a visible `label` can have an accessible name. `Combobox.TriggerMultipleWithInput` now accepts `aria-label`, `aria-labelledby` and `aria-describedby` for its input.
+- 3450917: Guard `Combobox.TriggerValue`'s `placeholder` prop type so it stays `ReactNode` and can't be narrowed to `string` by the forwarded trigger (button) props.
+- 1c85bb3: fix(date-picker): reset day button background, border, padding and margin, and the weekday header background, so host app button and table styles don't leak into the calendar
+- cbb7fe8: `Button`, `LinkButton`, `Badge`, `DropdownMenu` items, `Sidebar.MenuButton` and `InputGroup.Button` no longer crash with React error #306 when `icon` is an element passed from a React Server Component. React can deliver such an element as a lazy reference, which Kumo now unwraps before deciding whether to render `icon` as an element or a component (#891).
+- 33bdabd: Keep Dialog and alertdialog content within the dynamic viewport and allow tall content to scroll. Preserve the natural height of LayerCard sections so long forms and their final actions remain reachable on small screens.
+
+## 2.17.0
+
+### Minor Changes
+
+- c2b2fc4: Add a `masked` option to `ClipboardText` for sensitive values that should be hidden initially and revealed on demand.
+- 7d1c776: Refresh DatePicker's styling. Days are 32px squares in 36px columns with 8px between weeks and 14px text, and the previous and next buttons are borderless squares that match the days. Two-month views sit side by side, range bands are rounded at their ends and where weeks wrap, and month and year dropdowns (`captionLayout="dropdown"`) are styled.
+
+  DatePicker now uses Kumo tokens instead of hard-coded colors, so it follows the active theme, and `@cloudflare/kumo/styles/standalone` now styles it too. Month-change animations respect `prefers-reduced-motion`.
+
+  The `.rdp-*` rules and `--rdp-*` variables in `kumo.css` are gone, apart from the month-change animations. If you customized DatePicker through them, use the `classNames` prop instead.
+
+- 40eaa25: Fix the toast bump animation cutting off a toast's slide-in when the same `id` is added again while the toast is still entering. Duplicate adds through `createKumoToastManager()` now bump too, and toast motion respects `prefers-reduced-motion`. Toast surface styles now live on an inner `[data-kumo-part="surface"]` element instead of the `role="dialog"` root.
+
+### Patch Changes
+
+- 06726b0: `Field` no longer renders a `<label>` when it would be empty: when `label` and `labelTooltip` are each `undefined`, `null`, a boolean or `""`, and there is no "(optional)" indicator. This fixes `Input`, `InputArea` and `TagInput` without a `label` but with a description or error: they no longer show an empty row above the control, and their `aria-label` is no longer replaced by an empty accessible name.
+- 595463b: Format generated primitive and theme files with Oxfmt so codegen does not create formatting-only changes.
+- 3aa0d59: Hide the native scrollbars of the LayerDialog body and Sidebar content with Kumo's own CSS. Base UI only hides them with a style element it injects into the document head, so client routers that swap the head (such as Astro's ClientRouter) or a Content Security Policy that blocks inline styles could leave empty scrollbar tracks along the dialog body.
+- 890a6ab: Add a full-width `LayerDialog.Separator` for dividing sections of dialog body content.
+- 4185bb1: `Tooltip` now keeps its own trigger out of the tab order while the tooltip is `disabled`. This applies only when Kumo renders the trigger (no `render` or `asChild`), for example around truncated `Text` that needs a tooltip only when it overflows. A disabled tooltip there has nothing to reveal, so keyboard users no longer stop on it. Custom triggers passed through `render` keep their own focus behavior.
+
+## 2.16.0
+
+### Minor Changes
+
+- 810d820: Add the `xAxisHideLabelOverlap` prop to `TimeseriesChart`, defaulting to `true`.
+
+### Patch Changes
+
+- 99b17fb: Match CodeHighlighted loading and error fallback styling to highlighted code. Reset host app backgrounds, borders, and pre border radii to keep the frame and spacing consistent while syntax colors load.
+- 6a093a5: Fix disabled `Input` text color. It used an undefined `text-kumo-disabled` token, so disabled inputs looked the same as enabled ones. It now uses `text-kumo-inactive`.
+- e16f41f: Fix `Pagination` page validation. The page input only accepts whole numbers written as digits, so it no longer calls `setPage` with `NaN`, fractions, or values like `0x10` and `1e1`. Invalid input now restores the current page. With `totalCount={0}`, or when `page` is past the last page, Next and Last are disabled and nothing requests page 0.
+- fedc8a7: Fix three `TagInput` bugs:
+
+  - `readOnly` now prevents all value changes. Tags can no longer be removed with their remove buttons or Backspace, and new tags can't be added by typing, pasting, or blurring.
+  - Pasting comma- or newline-separated text now merges it with the draft text and replaces the current selection before splitting it into tags. Previously, text you were already typing was lost.
+  - Native forms now submit the accepted tags. With `name`, each tag is submitted as its own form value, so the empty draft is no longer sent. With `required`, validation passes as soon as there is at least one tag.
+
+- 947065a: Fix `TimeseriesChart` crashing with `RangeError: Maximum call stack size exceeded` on large datasets. Marker clustering no longer spreads every timestamp into `Math.max`/`Math.min`, and is skipped entirely when the chart has no markers.
+
+## 2.15.0
+
+### Minor Changes
+
+- 88850d5: Add `tooltipTimestampFormat` to TimeseriesChart for formatting standard and marker tooltip timestamps in a consumer-selected time zone.
+- 5282710: Add a segmented appearance to Radio groups for compact, mutually exclusive choices.
+- 3d93312: Add `appearance="card"` and `orientation` to `Checkbox.Group`, plus `appearance` and `description` to `Checkbox.Item`. Card groups render as one card with dividers (rows when vertical, a two-column grid when horizontal), matching `Radio.Group`'s card appearance.
+- 1846759: DropdownMenu submenu and row improvements:
+
+  - An open submenu's trigger stays highlighted (`data-popup-open`).
+  - Every menu row (Item, LinkItem, SubTrigger, CheckboxItem, RadioItem) uses the same `bg-kumo-tint` highlight and `rounded-md` radius.
+  - Submenus line up with their trigger by default. `SubContent`'s default `sideOffset` and `alignOffset` depend on the resolved side, so they stay correct if the submenu has to move above or below the trigger.
+  - The menu popup now animates with Base UI's `data-starting-style` / `data-ending-style` (the old `data-[state=*]` classes never matched).
+  - New `DropdownMenu.Positioner` and `DropdownMenu.Popup` parts. `Content` and `SubContent` are built from them, and you can compose them yourself. `DropdownMenu.Portal` now respects `KumoPortalProvider`.
+  - `SubTrigger`'s `icon` prop accepts `Icon | ReactNode`.
+  - Icons are spaced by the row's `gap-2`, so element and component icons line up identically.
+  - Rows without an icon (including labels) are inset automatically when another row in the same menu has an icon, so their text lines up. `inset` still forces it.
+
+- 81b0ef4: Add Base UI-style composable Popover parts while preserving the legacy `Popover.Content` API.
+- 49317c6: Render `Radio.Group` cards as one card with dividers (rows when vertical, a two-column grid when horizontal), give card radio controls a 1px ring, and tighten card groups' legend and description gaps to match `Field`.
+- 1cb4773: Allow translating optional markers and label tooltip accessible names with KumoLocaleProvider, with Label-level overrides for custom content.
+- 85afbd0: Add `Slider` component for picking a number, or a range between two numbers, by dragging a thumb along a track. Built on Base UI's Slider: pass an array to `value` or `defaultValue` for a range. Shows each thumb's value in a badge below the track and the minimum and maximum at either end, formats them with `format`, and supports `sm` and `base` sizes.
+- 2f9b17f: Allow LayerDialog actions to use a ButtonGroup split button for related alternate submit outcomes.
+
+### Patch Changes
+
+- 2c53422: Fix Autocomplete highlighted item background to use `bg-kumo-tint`, matching Combobox and Select.
+- 09a9dae: Apply dropdown icon spacing and sizing to element icons while preserving their custom classes.
+- df14b5d: Bump `@base-ui/react` to 1.9.0. Brings Base UI bug fixes across Menu, Popover, Select, Combobox, Drawer, Dialog, and more, plus the preview menu filtering primitives (`Menu.FilterProvider`, `Menu.Input`) via `@cloudflare/kumo/primitives/menu`.
+- cdb7e0f: Button and LinkButton: optically center text by lifting it slightly, and trim the leading padding when an icon precedes text so the icon side matches the trailing padding.
+- dc7c513: Stop throwing on malformed URL hashes while syncing table-of-contents sections. Hashes that can't be percent-decoded are matched as-is, so ids containing a literal `%` still deep-link.
+- f7d6829: Keep Popover arrows visible when content clips or scrolls by using a compatibility-safe opacity transition.
+- 03aa5ae: Remove unused Tabs indicator entrance animation styles.
+- dae9cdd: Keep transient copy feedback visible until the final repeated copy click settles across Kumo copy controls.
+- 7e0ff40: Fix `Flow` connectors bending when nodes have a top margin by aligning connector offsets with their anchors.
+- a8c946a: Match a linkable Badge's focus outline to its pill shape.
+- c3b0294: Replace the internal class merging dependency with `cn`.
+- 86af1a1: Stop `LayerDialog.Body` from clipping the top of its first child. The body now has a little top padding so a leading input's border and focus ring stay visible, and the top scroll fade no longer masks content in Safari before the scroll area is measured.
+- d97d751: Restore `LayerDialog.Actions.Primary` and `LayerDialogPrimaryProps` as deprecated aliases of `LayerDialog.Action` and `LayerDialogActionProps`, so dialogs written against 2.14 keep working.
+- bfb4140: Fix `Loader` crashing with `can't access property "height"` in browsers with SVG disabled (e.g. Tor Browser at the "Safest" security level). The spinner is now sized via `width`/`height` SVG attributes instead of an inline `style`. Note that sizing classes passed via `className` (e.g. `size-4`) now take precedence over the `size` prop.
+- aef723c: Hide outside-month dates by default in multi-month DatePicker views so dates and range highlights are not duplicated between panels. Preserve single-month behavior and explicit showOutsideDays overrides.
+- 6701f40: Fire `Sidebar.Collapsible` `onOpenChangeComplete` when the sidebar or mobile drawer shows or hides an open section. Before, the callback fired only when the section itself toggled.
+- 462516f: Stop logging runtime warnings for deprecated Text heading variants. The variants remain marked as deprecated in the TypeScript API.
+- 17d094e: Render the `Sidebar.MenuSub` guide line as an `aria-hidden` list item so the sub-menu list only contains `<li>` children.
+- 543dc8a: Slider: render the current value badge in the high-contrast (black) color instead of the brand blue, with a subtle grey fill when disabled. The filled track is now lighter in dark mode so it stands out from the background.
+- 72b3346: Fix `Flow` nodes with a custom `render` element briefly laying out at the wrong position on mount. Unpositioned nodes are now measured as absolutely positioned elements, so their first reported width matches their final width.
+- 5ee4a03: TagInput: ignore Enter, comma and Tab while an IME composition is active, so confirming a Japanese/Chinese/Korean conversion no longer creates a tag early.
+- 7d91721: Preserve ButtonGroup's outer corners while an overlay control is open.
+- 828866a: Prevent Select separators from causing a horizontal scrollbar.
+- f46e8bc: Update the Cloudflare logo cloud colors to match the current brand asset.
+
+## 2.14.0
+
+### Minor Changes
+
+- da41be5: Update the bundled Base UI dependency to version 1.8.0 and expose its Combobox item collection and functional Toast update APIs.
+- 9ad4c57: Add `ButtonGroup` component for joining a small set of tightly-coupled buttons into a single control — most commonly a split button (a primary action next to a dropdown trigger). Handles layout only: children keep their own variant, size, and shape while the group flattens inner corners and overlaps borders so the buttons share one seam. Renders `role="group"`. For grouping multiple independent buttons or inputs, use `Toolbar` instead.
+- d0b18d6: Add sidebar open-change completion callbacks.
+- cd119ab: Add the TagInput component for creating and removing free-form values.
+- 5d19dee: Add `InlineCopyText`, a compact borderless copy control for short values in dense interfaces and table cells. It accepts string or rich children, Text typography props excluding heading variants, an explicit copied value for rich content, localized accessible labels, inline success feedback, and hover or focus icon reveal.
+- 77489b5: Add an optional `yAxisMinInterval` prop to `TimeseriesChart` for discrete data.
+- 6989681: Add support for footer text below `TimeseriesChart` tooltip values.
+- 06321ce: Add a strict responsive LayerDialog component with automatic dismissal composition, alert-dialog semantics, mobile drawer behavior, and application-wide defaults for its built-in close and cancel copy through `KumoLocaleProvider`.
+- d4a3e71: Add `GlobeMap`, an SVG orthographic globe with boundary-free hatched land, horizon-faded geographic markers, optional geographic guides, pointer and keyboard rotation, automatic rotation, Kumo-themed tooltips, and no WebGL or ECharts requirement.
+
+### Patch Changes
+
+- de80043: Reset the native fieldset padding in radio and checkbox groups.
+- 1175556: Refine Empty state typography and balance description text when it wraps.
+- 5b1e222: Support nested LayerDialog drawers with independently layered backdrops and responsive mobile actions.
+- 9c970e3: Add a plain CodeHighlighted variant for frameless, padding-free code blocks with a correctly positioned copy button.
+- cfffa4e: Document app-root CSS isolation for reliable stacking of portaled components.
+- 6e7bd82: Update formatting for Vite+ 0.3.1.
+- 78d05b6: Use the up/down double chevron in Combobox value and input triggers to match Select.
+- 86029e4: Add a visual regression contract for truncating text in default Tooltip triggers.
+
+## 2.13.2
+
+### Patch Changes
+
+- 36fc155: Add `scrollItemIntoView()` to preserve the position of visible sidebar items while honoring alignment for offscreen items.
+
+## 2.13.1
+
+### Patch Changes
+
+- 7d5241d: Allow default Tooltip trigger children to control their line height, preventing inherited text from being clipped.
+
+## 2.13.0
+
+### Minor Changes
+
+- 4066307: Add unknown-total pagination support through `hasNextPage`.
+- f74936f: Add `Toolbar.Link`, which renders a `LinkButton` with toolbar sizing, styling, and keyboard navigation.
+
+### Patch Changes
+
+- d004940: Position dialogs near the top of the viewport instead of vertically centering them.
+- 8f0a1f0: Use the elevated surface color for even rows in the default Table variant.
+- 1ede8bf: fix(select): align the trigger surface with form controls
+
+  Select triggers now use `bg-kumo-control`, including their open and disabled
+  states, so they match Input, Combobox, and the rest of the form-control family.
+  Consumer background classes can still override the default without using
+  `!important`. The popup remains on the floating `bg-kumo-base` surface.
+
+- 8482c50: fix(select): anchor the popup below the trigger and expose placement props
+
+  `Select.Positioner` relied on Base UI's `alignItemWithTrigger` default (`true`),
+  which overlays the popup on the trigger so the selected option's text lands on
+  the trigger's value text, emulating a native `<select>`. Options always render at
+  `text-base`, so on `xs`/`sm` triggers the popup was much taller than its anchor,
+  and Base UI's compensating shift detached it from the trigger — on `xs` it
+  overhung by 12.5px above and 45.5px below and sat 8px to the left, covering
+  adjacent content.
+
+  The popup now prefers `bottom` placement and is offset from the trigger, with
+  Base UI's collision avoidance still flipping it automatically when the preferred
+  side lacks space. Placement is configurable:
+
+  | prop                   | default    | notes                                                         |
+  | ---------------------- | ---------- | ------------------------------------------------------------- |
+  | `side`                 | `"bottom"` | preferred side; still flips automatically on collision        |
+  | `sideOffset`           | `4`        | gap between trigger and popup, matching Combobox/Autocomplete |
+  | `align`                | `"start"`  | alignment along the trigger edge                              |
+  | `alignOffset`          | —          | additional offset along the alignment axis                    |
+  | `alignItemWithTrigger` | `false`    | opt back in to the native `<select>` overlay                  |
+
+  The remaining Base UI Positioner controls are also forwarded unchanged:
+  `anchor`, `arrowPadding`, `positionMethod`, `collisionAvoidance`,
+  `collisionBoundary`, `collisionPadding`, `sticky`, and
+  `disableAnchorTracking`.
+
+  The popup also now tracks the trigger width via `min-w-(--anchor-width)` instead
+  of `min-w-[calc(var(--anchor-width)+3px)]`, which existed to visually offset the
+  old item-alignment shift.
+
+- 7526a6a: Allow non-heading Text variants to inherit line height from their surrounding context.
+- b094a5a: Make `Combobox.Input` sit flush with the top and sides of `Combobox.Content` and remove its bottom corner rounding.
+- 20b7880: Reduce the trailing inset for buttons inside large InputGroup addons.
+
+## 2.12.0
+
+### Minor Changes
+
+- 716e5b8: Add the `Text` `heading` variant with a 16px semibold default and a 20px
+  `size="lg"` option. The variant defaults to a `span`, so callers choose heading
+  semantics explicitly with `as`. Deprecate the numbered `heading1`, `heading2`,
+  and `heading3` variants.
+
+### Patch Changes
+
+- d7a7a35: `Collapsible.DefaultTrigger` now uses `text-kumo-default` (neutral) with `font-medium` instead of the blue `text-kumo-link` color.
+- 0db4f66: deprecate `MenuBar` in favor of segmented `Tabs`
+
+  - mark the `MenuBar` component (and its exports) as `@deprecated`; it will be removed in a future release
+  - new usage should prefer `Tabs` with `variant="segmented"` (the default `Tabs` variant)
+  - the runtime behaviour of `MenuBar` is unchanged for existing consumers
+  - remove the `MenuBar` documentation page and demos from the docs site
+
+- c64183b: Fix Toast background clipping the ring outline at the corners — the inner background layer's radius (11px) was smaller than the root's `rounded-xl` (12px), painting over the ring at the corners. Matched them up.
+- ef13cb4: Restore disabled and loading state handling for `Toolbar.Button` so disabled
+  controls expose the correct semantics and cannot be activated.
+- 51d0f03: Normalize shadows and outlines on tip-style overlays (Popover, Tooltip, ClipboardText, Chart tooltip).
+
+  - Drop the `shadow-kumo-tip-shadow` color override so shadows use Tailwind's default translucent black instead of an opaque light-gray in light mode.
+  - Tune shadow sizes: Popover, Tooltip, ClipboardText tooltip, and Chart tooltip use `shadow-md`; ClipboardText's "Copied" toast keeps `shadow-lg` to match the Toast component.
+  - Switch these overlays from `outline-kumo-fill` to `outline-kumo-line`, matching every other floating surface (Dropdown, Select, Combobox, Dialog, etc.).
+  - Rename `kumo-tip-shadow` → `kumo-arrow-edge` and `kumo-tip-stroke` → `kumo-arrow-stroke`. The tokens draw the border on Popover/Tooltip arrow SVGs, not a box shadow. Both now resolve to `kumo-line`, so the arrow border aligns with the popup outline in both modes.
+
+- d586bf3: Add `scrollToItem(id, options?)` to `useSidebar()` for imperatively scrolling
+  a nav item into the sidebar viewport. Tag items with the new `itemId` prop on
+  `Sidebar.MenuButton` or `Sidebar.MenuItem`.
+
+  Options:
+
+  - `align`: `"start" | "center" | "end" | "auto"` (default `"auto"` — no-op if
+    the item is already visible; otherwise scroll the minimum distance).
+  - `behavior`: `"auto" | "smooth"` (default `"auto"` — instant, best for
+    cross-app landings so users don't watch the sidebar animate on entry).
+    `prefers-reduced-motion` forces `"auto"`.
+
+  Scrolls only the sidebar viewport (never the document) and works with
+  `Sidebar.SlidingViews`: items register with the provider via an internal
+  map, so `scrollToItem` walks up from the target to find its owning viewport
+  rather than querying the DOM.
+
+## 2.11.0
+
+### Minor Changes
+
+- aa6edff: Add icon support to filled Badge variants through the `icon` prop, add linked-badge hover styles, and use the base surface background for outline badges.
+
+### Patch Changes
+
+- bba0f5e: Allow users to select and copy LinkButton text while preserving Button text selection behavior.
+- c2c8d42: Update Table rows to use borderless, alternating background styling.
+- 0ad1926: Fix hydration mismatch in the Sidebar's `useIsMobile` hook on SSR frameworks like Next.js. The hook now uses `useSyncExternalStore` with a desktop `getServerSnapshot`, so the server-rendered HTML (desktop `<aside>`) hydrates cleanly on mobile viewports before switching to the mobile overlay.
+
+## 2.10.0
+
+### Minor Changes
+
+- 4b9a4dc: Allow Select and Combobox triggers to compose directly with `Toolbar.Button` and `Toolbar.Input` through their `render` props, adding grouped styling and arrow-key focus management while preserving regular `Select.*` and `Combobox.*` APIs.
+
+  Deprecate Toolbar's configurable `size` prop and size metadata exports. They remain functional for compatibility; omitting `size` continues to use the base size.
+
+### Patch Changes
+
+- 65db2e6: Forward link-specific props in Tabs and Sidebar so link-rendered tabs can opt out of native button semantics, and Sidebar link buttons preserve attributes like `aria-current`.
+- 0c58325: Expose all positioner props on Combobox.Content (`anchor`, `positionMethod`, `collisionAvoidance`, `collisionBoundary`, `collisionPadding`, `sticky`, `disableAnchorTracking`).
+- 528d5ff: Populate InputArea props in component registry so the docs API reference table renders correctly
+- 75c3b14: Fix Sidebar peeking state during SlidingViews transitions.
+- 1d9b588: Fix Tabs overflow controls when tabs are removed and the remaining tabs fit.
+
+## 2.9.2
+
+### Patch Changes
+
+- 188a82c: Remove the elevated chip styling from Tabs overflow scroll controls.
+- c5ad709: Constrain Tabs overflow controls to segmented tabs and focus the caret target.
+
+## 2.9.1
+
+### Patch Changes
+
+- ff76f30: Update the default collapsible trigger and panel styling.
+
+  `Collapsible.DefaultPanel` now uses an inner content wrapper so the outer panel can animate height smoothly while clipping overflow during the transition. Consumers applying custom layout or spacing classes directly to `DefaultPanel` may need to move those styles to their content, or use `Collapsible.Panel` for a fully custom layout.
+
+- 7468623: Fix `initCatalog` so it actually loads the validation schemas.
+
+  Previously it triggered a synchronous validation whose "schemas not loaded" error was swallowed, so `await initCatalog(catalog)` could resolve while `hasComponent`, `componentNames`, and the other synchronous catalog APIs still reported no components. It now awaits `loadSchemas()` directly.
+
+  A failed schema load is also no longer cached: retrying `initCatalog` (or `loadSchemas`) after a transient failure now re-attempts the import instead of returning the stale rejection.
+
+- d7639f2: Fix Shiki highlighter lifecycle in `ShikiProvider` and `CodeHighlighted`.
+
+  `ShikiProvider` no longer re-creates the highlighter when a parent rerender passes an equivalent inline `languages` array — initialization is keyed on the normalized language set. Highlighters are now disposed on unmount and when the engine or language set changes, instead of leaking. `CodeHighlighted` memoizes the highlighted HTML so unrelated rerenders (such as copy-button state changes) no longer re-highlight unchanged code, and initialization errors are logged once instead of on every render. Reinitializing after a failed initialization now clears the stale error state instead of showing it during the retry.
+
+- c599590: Reset the Tabs overflow control background so host button styles do not show through the scrim gradient.
+
 ## 2.9.0
 
 ### Minor Changes

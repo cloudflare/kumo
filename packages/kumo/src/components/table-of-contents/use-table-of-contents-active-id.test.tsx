@@ -194,6 +194,48 @@ describe("useTableOfContentsActiveId", () => {
     expect(result.current.activeId).toBe("one");
   });
 
+  it("ignores malformed hashes and continues syncing valid hashes", () => {
+    addSections(["one"]);
+    window.location.hash = "#%";
+
+    const { result } = renderHook(() =>
+      useTableOfContentsActiveId({ ids: ["one"] }),
+    );
+    expect(result.current.activeId).toBeNull();
+
+    act(() => {
+      window.location.hash = "#%ZZ";
+      window.dispatchEvent(new Event("hashchange"));
+    });
+    expect(result.current.activeId).toBeNull();
+
+    act(() => {
+      window.location.hash = "#one";
+      window.dispatchEvent(new Event("hashchange"));
+    });
+    expect(result.current.activeId).toBe("one");
+  });
+
+  it("matches the raw hash when it can't be decoded", () => {
+    addSections(["one", "50%-off"]);
+    window.location.hash = "#50%-off";
+
+    const { result } = renderHook(() =>
+      useTableOfContentsActiveId({ ids: ["one", "50%-off"] }),
+    );
+    expect(result.current.activeId).toBe("50%-off");
+  });
+
+  it("decodes percent-encoded hashes", () => {
+    addSections(["one", "café"]);
+    window.location.hash = "#caf%C3%A9";
+
+    const { result } = renderHook(() =>
+      useTableOfContentsActiveId({ ids: ["one", "café"] }),
+    );
+    expect(result.current.activeId).toBe("café");
+  });
+
   it("ignores hashes that aren't tracked sections", () => {
     addSections(["one"]);
     window.location.hash = "#footnote-3";

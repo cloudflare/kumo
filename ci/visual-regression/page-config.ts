@@ -48,7 +48,9 @@ export async function discoverComponents(
   const response = await fetch(baseUrl);
   const html = await response.text();
 
-  const componentLinks: DiscoveredComponent[] = [];
+  const componentLinks: DiscoveredComponent[] = [
+    { id: "home", name: "Home", url: "/" },
+  ];
   const seen = new Set<string>();
 
   const linkRegex = /href="(\/components\/([^"]+))"/g;
@@ -73,15 +75,8 @@ export async function discoverComponents(
 }
 
 /**
- * Representative components used as canaries for broad-impact changes.
- * Covers a simple input, a complex overlay, and a layout-heavy component
- * to catch regressions without screenshotting every page.
- */
-export const CANARY_COMPONENTS = ["button", "dialog", "select"];
-
-/**
  * Patterns that indicate broad visual impact across all components.
- * Changes to these files trigger a canary regression instead of granular checks.
+ * Changes to these files trigger a full regression instead of granular checks.
  */
 const FULL_REGRESSION_PATTERNS: RegExp[] = [
   // Shared styles and theming
@@ -140,6 +135,13 @@ export interface ChangeClassification {
  *   packages/kumo-docs-astro/.../ButtonDemo.tsx -> "button"
  */
 export function getComponentFromFile(filePath: string): string | null {
+  if (
+    filePath === "packages/kumo-docs-astro/src/components/demos/HomeGrid.tsx" ||
+    filePath === "packages/kumo-docs-astro/src/pages/index.astro"
+  ) {
+    return "home";
+  }
+
   // Match any file under a component directory: packages/kumo/src/components/{name}/
   const componentMatch = filePath.match(
     /packages\/kumo\/src\/components\/([^/]+)\//,

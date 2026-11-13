@@ -20,6 +20,8 @@ import {
   CheckboxErrorDemo,
   CheckboxGroupDemo,
   CheckboxGroupErrorDemo,
+  CheckboxCardDemo,
+  CheckboxCardHorizontalDemo,
   CheckboxLegendSrOnlyDemo,
   CheckboxLegendCustomDemo,
 } from "~/components/demos/CheckboxDemo";
@@ -136,6 +138,28 @@ export default function Example() {
 </p>
 <ComponentExample demo="CheckboxGroupErrorDemo">
   <CheckboxGroupErrorDemo client:visible />
+</ComponentExample>
+
+### Checkbox Card
+
+<p>
+  Use `appearance="card"` on the group to display each option as a selectable
+  row of a single card, separated by dividers. Combine with the `description`
+  prop on each item for richer content. Card items place the checkbox after the
+  label unless `controlFirst` is set.
+</p>
+<ComponentExample demo="CheckboxCardDemo">
+  <CheckboxCardDemo client:visible />
+</ComponentExample>
+
+### Checkbox Card (Horizontal)
+
+<p>
+  Combine `appearance="card"` with `orientation="horizontal"` to lay the options
+  out in two columns within the same card.
+</p>
+<ComponentExample demo="CheckboxCardHorizontalDemo">
+  <CheckboxCardHorizontalDemo client:visible />
 </ComponentExample>
 
 ### Visually Hidden Legend

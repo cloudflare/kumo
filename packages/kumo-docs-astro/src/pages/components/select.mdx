@@ -28,6 +28,8 @@ import {
   SelectGroupedDemo,
   SelectGroupedWithDisabledDemo,
   SelectLongListDemo,
+  SelectPlacementDemo,
+  SelectDynamicPlacementDemo,
 } from "~/components/demos/SelectDemo";
 
 {/* Hero Demo */}
@@ -110,6 +112,43 @@ export default function Example() {
 
   <ComponentExample demo="SelectSizesDemo">
     <SelectSizesDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Placement */}
+
+<ComponentSection>
+
+### Placement
+
+<p>
+  The popup prefers `side="bottom"` and flips automatically when that side runs
+  out of room. Use `side`, `align`, `sideOffset` and `alignOffset` to pin it
+  explicitly — collision handling still applies.
+</p>
+
+  <ComponentExample demo="SelectPlacementDemo">
+    <SelectPlacementDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Dynamic placement aligned to the selected option */}
+
+<ComponentSection>
+
+### Aligned to the selected option
+
+<p>
+  Set `alignItemWithTrigger` to overlay the popup on the trigger so the selected
+  option sits directly on top of it, the way a native `select` behaves. Options
+  before the selection render above the trigger and the rest below, so the popup
+  can extend in both directions. Both selects below have `Mars` selected
+  mid-list — open them to compare. This mode disables itself and falls back to
+  normal anchored placement when there is not enough room.
+</p>
+
+  <ComponentExample demo="SelectDynamicPlacementDemo">
+    <SelectDynamicPlacementDemo client:load />
   </ComponentExample>
 </ComponentSection>
 

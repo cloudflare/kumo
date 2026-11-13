@@ -29,13 +29,17 @@ export interface ReportItem {
   /**
    * Sort order - lower numbers appear first in comment
    * 10-19: release info (npm)
-   * 20-29: previews (docs)
+   * 20-29: validation reports (visual regression)
+   * 30-39: previews (docs)
+   * 40-49: metrics (bundle size)
    */
   priority: number;
   /** Markdown content for this section */
   content: string;
   /** Whether this item represents a successful operation */
   success: boolean;
+  /** Optional structured data for downstream reporting and future budgets */
+  data?: unknown;
 }
 
 /**

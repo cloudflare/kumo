@@ -118,7 +118,12 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
           if (!nodeRef.current) return;
           const anchorRect = el.getBoundingClientRect();
           const nodeRect = nodeRef.current.getBoundingClientRect();
-          writeOffsets(anchorRect.top - nodeRect.top + anchorRect.height / 2);
+          // Account for the node's margin when measuring its anchor.
+          const marginTop =
+            parseFloat(getComputedStyle(nodeRef.current).marginTop) || 0;
+          writeOffsets(
+            anchorRect.top - nodeRect.top + marginTop + anchorRect.height / 2,
+          );
           reportSize();
         };
 
@@ -139,9 +144,13 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     const position = nodePositions[id];
     const mergedRef = mergeRefs(ref, nodeRef);
 
+    // Unpositioned nodes stay absolute so they are measured at their
+    // shrink-to-fit size. Custom `render` elements would otherwise sit in
+    // normal flow, stretch to the container width, and lay out from that
+    // width for a frame before the ResizeObserver corrects it.
     const positionStyle: React.CSSProperties = position
       ? { position: "absolute", top: position.y, left: position.x }
-      : { opacity: 0 };
+      : { position: "absolute", opacity: 0 };
 
     let element: ReactElement;
     if (render && isValidElement(render)) {

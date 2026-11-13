@@ -9,8 +9,12 @@ import {
   screen,
   fireEvent,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { version } from "react";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import {
   Sidebar,
@@ -47,6 +51,12 @@ import {
 // Helpers
 // ---------------------------------------------------------------------------
 
+function fireTransitionEnd(element: HTMLElement, propertyName: string) {
+  const event = new Event("transitionend", { bubbles: true });
+  Object.defineProperty(event, "propertyName", { value: propertyName });
+  fireEvent(element, event);
+}
+
 /** Minimal sidebar wrapper for tests that need Provider context. */
 function TestSidebar({
   children,
@@ -73,11 +83,13 @@ function StateReader() {
   );
 }
 
-function setMobileMatchMedia(matches: boolean) {
+function setMobileMatchMedia(matches: boolean, prefersReducedMotion = false) {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
-      matches,
+      matches: query.includes("prefers-reduced-motion")
+        ? prefersReducedMotion
+        : matches,
       media: query,
       onchange: null,
       addListener: vi.fn(),
@@ -255,6 +267,255 @@ describe("Sidebar toggle", () => {
     await user.click(screen.getByRole("button", { name: "Collapse sidebar" }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
+
+  it("calls onOpenChangeComplete after the sidebar transition finishes", async () => {
+    const onOpenChangeComplete = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <TestSidebar defaultOpen onOpenChangeComplete={onOpenChangeComplete}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Collapse sidebar" }));
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "opacity",
+    );
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "width",
+    );
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "width",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it("does not complete a parent sidebar from a nested sidebar transition", () => {
+    const outerOnOpenChangeComplete = vi.fn();
+    const innerOnOpenChangeComplete = vi.fn();
+    const nestedSidebars = (open: boolean) => (
+      <SidebarProvider
+        open={open}
+        onOpenChangeComplete={outerOnOpenChangeComplete}
+      >
+        <Sidebar>
+          <span />
+        </Sidebar>
+        <SidebarProvider
+          open={open}
+          onOpenChangeComplete={innerOnOpenChangeComplete}
+        >
+          <Sidebar>
+            <span />
+          </Sidebar>
+        </SidebarProvider>
+      </SidebarProvider>
+    );
+    const { rerender } = render(nestedSidebars(true));
+    rerender(nestedSidebars(false));
+
+    const sidebars = document.querySelectorAll<HTMLElement>(
+      '[data-sidebar="sidebar"]',
+    );
+    fireTransitionEnd(sidebars[1]!, "width");
+
+    expect(innerOnOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(innerOnOpenChangeComplete).toHaveBeenCalledWith(false);
+    expect(outerOnOpenChangeComplete).not.toHaveBeenCalled();
+  });
+
+  it("completes the latest state when no transition event fires", () => {
+    vi.useFakeTimers();
+    const onOpenChangeComplete = vi.fn();
+
+    try {
+      render(
+        <TestSidebar
+          defaultOpen
+          animationDuration={100}
+          onOpenChangeComplete={onOpenChangeComplete}
+        >
+          <SidebarFooter>
+            <SidebarTrigger />
+          </SidebarFooter>
+        </TestSidebar>,
+      );
+
+      const trigger = screen.getByRole("button", {
+        name: "Collapse sidebar",
+      });
+      fireEvent.click(trigger);
+      fireEvent.click(trigger);
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.advanceTimersByTime(100);
+      });
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+      expect(onOpenChangeComplete).toHaveBeenCalledWith(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("completes an open change when the callback is added with it", () => {
+    const onOpenChangeComplete = vi.fn();
+    const sidebar = (open: boolean, callback?: (nextOpen: boolean) => void) => (
+      <TestSidebar open={open} onOpenChangeComplete={callback}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+    const { rerender } = render(sidebar(true));
+    rerender(sidebar(false, onOpenChangeComplete));
+
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "width",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it("completes immediately when reduced motion disables transitions", () => {
+    setMobileMatchMedia(false, true);
+    const onOpenChangeComplete = vi.fn();
+    render(
+      <TestSidebar defaultOpen onOpenChangeComplete={onOpenChangeComplete}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Collapse sidebar" }));
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it("clears pending state when the callback is removed", () => {
+    vi.useFakeTimers();
+    const firstCallback = vi.fn();
+    const nextCallback = vi.fn();
+    const sidebar = (
+      open: boolean,
+      onOpenChangeComplete?: (open: boolean) => void,
+    ) => (
+      <TestSidebar open={open} onOpenChangeComplete={onOpenChangeComplete}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+
+    try {
+      const { rerender } = render(sidebar(true, firstCallback));
+      rerender(sidebar(false, firstCallback));
+      rerender(sidebar(true));
+      rerender(sidebar(true, nextCallback));
+
+      fireTransitionEnd(
+        document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+        "width",
+      );
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(firstCallback).not.toHaveBeenCalled();
+      expect(nextCallback).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not complete when switching between desktop and mobile", () => {
+    vi.useFakeTimers();
+    const onOpenChangeComplete = vi.fn();
+    const sidebar = (mobileBreakpoint: number) => (
+      <TestSidebar
+        defaultOpen
+        mobileBreakpoint={mobileBreakpoint}
+        onOpenChangeComplete={onOpenChangeComplete}
+      >
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+
+    try {
+      const { rerender } = render(sidebar(768));
+      setMobileMatchMedia(true);
+      rerender(sidebar(769));
+
+      fireTransitionEnd(
+        document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+        "transform",
+      );
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not complete a controlled open state when switching to mobile", () => {
+    vi.useFakeTimers();
+    const onOpenChangeComplete = vi.fn();
+    const sidebar = (mobileBreakpoint: number) => (
+      <TestSidebar
+        open
+        mobileBreakpoint={mobileBreakpoint}
+        onOpenChangeComplete={onOpenChangeComplete}
+      >
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+
+    try {
+      const { rerender } = render(sidebar(768));
+      setMobileMatchMedia(true);
+      rerender(sidebar(769));
+
+      fireTransitionEnd(
+        document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+        "transform",
+      );
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 // ============================================================================
@@ -264,19 +525,27 @@ describe("Sidebar toggle", () => {
 describe("Sidebar.Collapsible", () => {
   function CollapsibleTest({
     defaultOpen = false,
+    open,
     autoScrollOnOpen = false,
+    onOpenChangeComplete,
+    sidebarOpen,
   }: {
     defaultOpen?: boolean;
+    open?: boolean;
     autoScrollOnOpen?: boolean;
+    onOpenChangeComplete?: (open: boolean) => void;
+    sidebarOpen?: boolean;
   }) {
     return (
-      <TestSidebar defaultOpen>
+      <TestSidebar defaultOpen open={sidebarOpen}>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarCollapsible
                 defaultOpen={defaultOpen}
+                open={open}
                 autoScrollOnOpen={autoScrollOnOpen}
+                onOpenChangeComplete={onOpenChangeComplete}
               >
                 <SidebarCollapsibleTrigger
                   render={
@@ -342,6 +611,140 @@ describe("Sidebar.Collapsible", () => {
     const content = screen.getByTestId("collapsible-content");
     expect(content.hasAttribute("inert")).toBe(true);
     expect(content.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("calls onOpenChangeComplete after the content transition finishes", () => {
+    const onOpenChangeComplete = vi.fn();
+    render(<CollapsibleTest onOpenChangeComplete={onOpenChangeComplete} />);
+
+    fireEvent.click(screen.getByText("Compute").closest("button")!);
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(screen.getByTestId("collapsible-content"), "opacity");
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(true);
+  });
+
+  it("completes a controlled change when the callback is added with it", () => {
+    const onOpenChangeComplete = vi.fn();
+    const { rerender } = render(<CollapsibleTest open />);
+    rerender(
+      <CollapsibleTest
+        open={false}
+        onOpenChangeComplete={onOpenChangeComplete}
+      />,
+    );
+
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it.each([
+    { change: "the sidebar expands", isMobile: false, sidebarOpen: true },
+    { change: "the sidebar collapses", isMobile: false, sidebarOpen: false },
+    {
+      change: "the controlled mobile drawer opens",
+      isMobile: true,
+      sidebarOpen: true,
+    },
+  ])("completes an open group when $change", ({ isMobile, sidebarOpen }) => {
+    setMobileMatchMedia(isMobile);
+    const onOpenChangeComplete = vi.fn();
+    const { rerender } = render(
+      <CollapsibleTest
+        open
+        sidebarOpen={!sidebarOpen}
+        onOpenChangeComplete={onOpenChangeComplete}
+      />,
+    );
+    rerender(
+      <CollapsibleTest
+        open
+        sidebarOpen={sidebarOpen}
+        onOpenChangeComplete={onOpenChangeComplete}
+      />,
+    );
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(sidebarOpen);
+  });
+
+  it("completes an open group when the uncontrolled mobile drawer opens and closes", () => {
+    setMobileMatchMedia(true);
+    const onOpenChangeComplete = vi.fn();
+    function DrawerToggle() {
+      const { toggleSidebar } = useSidebar();
+      return (
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          data-testid="drawer-toggle"
+        >
+          Toggle drawer
+        </button>
+      );
+    }
+    render(
+      <SidebarProvider>
+        <DrawerToggle />
+        <Sidebar>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarCollapsible
+                  open
+                  onOpenChangeComplete={onOpenChangeComplete}
+                >
+                  <SidebarCollapsibleTrigger
+                    render={<SidebarMenuButton>Compute</SidebarMenuButton>}
+                  />
+                  <SidebarCollapsibleContent data-testid="collapsible-content">
+                    <SidebarMenuSub>
+                      <SidebarMenuSubButton>Workers</SidebarMenuSubButton>
+                    </SidebarMenuSub>
+                  </SidebarCollapsibleContent>
+                </SidebarCollapsible>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
+      </SidebarProvider>,
+    );
+    const content = screen.getByTestId("collapsible-content");
+    expect(content.getAttribute("aria-hidden")).toBe("true");
+
+    fireEvent.click(screen.getByTestId("drawer-toggle"));
+    expect(content.getAttribute("aria-hidden")).toBe("false");
+    fireTransitionEnd(content, "grid-template-rows");
+    expect(onOpenChangeComplete).toHaveBeenLastCalledWith(true);
+
+    fireEvent.click(screen.getByTestId("drawer-toggle"));
+    expect(content.getAttribute("aria-hidden")).toBe("true");
+    fireTransitionEnd(content, "grid-template-rows");
+    expect(onOpenChangeComplete).toHaveBeenCalledTimes(2);
+    expect(onOpenChangeComplete).toHaveBeenLastCalledWith(false);
   });
 
   it("should scroll opened content into view when enabled", () => {
@@ -479,6 +882,28 @@ describe("Sidebar.SlidingViews", () => {
     );
   }
 
+  function PeekingSlidingTest({ activeKey = "a" }: { activeKey?: string }) {
+    return (
+      <TestSidebar defaultOpen={false} peekable>
+        <StateReader />
+        <SidebarSlidingViews activeKey={activeKey}>
+          <SidebarSlidingView value="a">
+            <SidebarContent>
+              <button type="button" data-testid="view-a-button">
+                Go to B
+              </button>
+            </SidebarContent>
+          </SidebarSlidingView>
+          <SidebarSlidingView value="b">
+            <SidebarContent>
+              <button type="button">Go to A</button>
+            </SidebarContent>
+          </SidebarSlidingView>
+        </SidebarSlidingViews>
+      </TestSidebar>
+    );
+  }
+
   it("should show the active view", () => {
     render(<SlidingTest activeKey="a" />);
     const viewA = screen
@@ -509,6 +934,25 @@ describe("Sidebar.SlidingViews", () => {
       .closest("[data-sidebar='sliding-view']")!;
     expect(viewA.getAttribute("aria-hidden")).toBe("true");
     expect(viewB.getAttribute("aria-hidden")).toBe("false");
+  });
+
+  it("should keep peeking when a view change blurs the active item under the pointer", () => {
+    const { rerender } = render(<PeekingSlidingTest activeKey="a" />);
+
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']")!;
+    fireEvent.mouseEnter(peekZone);
+
+    const activeButton = screen.getByTestId("view-a-button");
+    fireEvent.focus(activeButton);
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
+
+    rerender(<PeekingSlidingTest activeKey="b" />);
+    fireEvent.blur(activeButton, { relatedTarget: null });
+
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
+
+    fireEvent.mouseLeave(peekZone);
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("collapsed");
   });
 });
 
@@ -585,6 +1029,81 @@ describe("Sidebar.MenuButton", () => {
     expect(link).toBeTruthy();
     expect(link!.getAttribute("href")).toBe("/home");
   });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton href="/tenants" active aria-current="true">
+              Tenants
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Tenants").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("true");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
+  });
+
+  // React Flight (RSC) can deliver an element prop as a lazy reference whose
+  // resolved value is an element, not a component (#891).
+  it.skipIf(version.startsWith("18."))(
+    "should render an icon element delivered as an RSC lazy reference",
+    () => {
+      const lazyElement = {
+        $$typeof: Symbol.for("react.lazy"),
+        _payload: <svg data-testid="lazy-icon" />,
+        _init: (payload: React.ReactElement) => payload,
+      } as unknown as React.ReactNode;
+
+      render(
+        <TestSidebar defaultOpen>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuButton icon={lazyElement}>Home</SidebarMenuButton>
+            </SidebarMenu>
+          </SidebarContent>
+        </TestSidebar>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(within(button).getByTestId("lazy-icon")).toBeTruthy();
+    },
+  );
+});
+
+describe("Sidebar.MenuSub", () => {
+  it("renders only list items as direct children of the list", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuSub data-testid="menu-sub">
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton>Workers</SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton>Pages</SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const list = screen.getByTestId("menu-sub");
+    const children = Array.from(list.children);
+    expect(children.every((child) => child.tagName === "LI")).toBe(true);
+
+    const guideLine = children[0];
+    expect(guideLine.getAttribute("aria-hidden")).toBe("true");
+    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+  });
 });
 
 describe("Sidebar.MenuSubButton", () => {
@@ -620,6 +1139,29 @@ describe("Sidebar.MenuSubButton", () => {
     const link = screen.getByText("External").closest("a");
     expect(link!.getAttribute("target")).toBe("_self");
   });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuSubButton
+              href="/observability"
+              active
+              aria-current="page"
+            >
+              Observability
+            </SidebarMenuSubButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Observability").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("page");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-sub-button-link");
+  });
 });
 
 // ============================================================================
@@ -645,6 +1187,19 @@ describe("Sidebar contained mode", () => {
     );
     const wrapper = document.querySelector("[data-sidebar-wrapper]")!;
     expect(wrapper.className).toContain("min-h-svh");
+  });
+});
+
+describe("Sidebar.Content scrollbar", () => {
+  it("should hide the native scrollbar without Base UI's injected style", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>Content</SidebarContent>
+      </TestSidebar>,
+    );
+    // Base UI's own rule lives in a <style> that head-swapping client
+    // routers can remove, so the viewport must carry Kumo's.
+    expect(getViewport().className).toMatch(/(^|\s)no-scrollbar(\s|$)/);
   });
 });
 
@@ -798,5 +1353,573 @@ describe("Sidebar.Loading", () => {
     expect(
       screen.getByRole("status").classList.contains("custom-loading"),
     ).toBe(true);
+  });
+});
+
+// ============================================================================
+// Mobile detection (useIsMobile) — SSR / hydration safety
+// ============================================================================
+//
+// useIsMobile must be SSR-safe: during server rendering and hydration it must
+// report desktop (getServerSnapshot), so the SSR HTML (desktop <aside>) can be
+// hydrated without a mismatch even on a mobile viewport, then switch to the
+// mobile overlay once the client subscribes to matchMedia.
+describe("Sidebar mobile detection (useIsMobile)", () => {
+  it("should render the desktop <aside> during SSR regardless of viewport", () => {
+    setMobileMatchMedia(true);
+
+    const html = renderToString(
+      <SidebarProvider mobileBreakpoint={768}>
+        <Sidebar>
+          <SidebarHeader>Header</SidebarHeader>
+        </Sidebar>
+      </SidebarProvider>,
+    );
+
+    expect(html).toContain("<aside");
+    expect(html).not.toContain("data-mobile");
+  });
+
+  it("should hydrate the SSR output without a hydration mismatch on a mobile viewport", () => {
+    setMobileMatchMedia(true);
+
+    const ui = (
+      <SidebarProvider mobileBreakpoint={768}>
+        <Sidebar>
+          <SidebarHeader>Header</SidebarHeader>
+        </Sidebar>
+      </SidebarProvider>
+    );
+
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(ui);
+
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    act(() => {
+      hydrateRoot(container, ui);
+    });
+
+    const hydrationErrors = errorSpy.mock.calls.filter((args) =>
+      /hydration|did not match|hydrate/i.test(args.map(String).join(" ")),
+    );
+    expect(hydrationErrors).toEqual([]);
+
+    errorSpy.mockRestore();
+  });
+
+  it("should render the mobile overlay on the client when the viewport matches", () => {
+    setMobileMatchMedia(true);
+
+    render(
+      <TestSidebar mobileBreakpoint={768}>
+        <SidebarHeader>Header</SidebarHeader>
+      </TestSidebar>,
+    );
+
+    expect(document.querySelector('[data-mobile="true"]')).not.toBeNull();
+  });
+
+  it("should render the desktop aside on the client on a desktop viewport", () => {
+    setMobileMatchMedia(false);
+
+    render(
+      <TestSidebar mobileBreakpoint={768}>
+        <SidebarHeader>Header</SidebarHeader>
+      </TestSidebar>,
+    );
+
+    expect(
+      document.querySelector('aside[data-sidebar="sidebar"]'),
+    ).not.toBeNull();
+    expect(document.querySelector('[data-mobile="true"]')).toBeNull();
+  });
+});
+
+// ============================================================================
+// Scroll restoration + imperative scrollToItem
+// ============================================================================
+
+function getViewport(): HTMLDivElement {
+  const v = document.querySelector<HTMLDivElement>('[data-sidebar="viewport"]');
+  if (!v) throw new Error("viewport not found");
+  return v;
+}
+
+function setViewportGeometry(
+  el: HTMLDivElement,
+  scrollHeight: number,
+  clientHeight: number,
+) {
+  Object.defineProperty(el, "scrollHeight", {
+    configurable: true,
+    value: scrollHeight,
+  });
+  Object.defineProperty(el, "clientHeight", {
+    configurable: true,
+    value: clientHeight,
+  });
+}
+
+function readScrollTop(el: HTMLDivElement): number {
+  return el.scrollTop;
+}
+
+describe("Sidebar scrollToItem", () => {
+  function findItem(id: string): HTMLElement {
+    const el = document.querySelector<HTMLElement>(
+      `[data-sidebar-item-id="${id}"]`,
+    );
+    if (!el) throw new Error(`Item not found: ${id}`);
+    return el;
+  }
+
+  // Assumes viewportRect.top = 0 and viewport.scrollTop = 0 at the moment
+  // scrollToItem runs — which is true for these tests but would silently
+  // produce wrong geometry if you stub the item AFTER pre-scrolling the
+  // viewport. Pair with `stubViewportOrigin` and don't move the viewport
+  // before calling.
+  function stubItemGeometry(
+    el: HTMLElement,
+    offsetTop: number,
+    height: number,
+    scale = 1,
+    viewportTop = 0,
+  ) {
+    Object.defineProperty(el, "offsetTop", {
+      configurable: true,
+      value: offsetTop,
+    });
+    Object.defineProperty(el, "offsetHeight", {
+      configurable: true,
+      value: height,
+    });
+    Object.defineProperty(el, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({
+        top: viewportTop + offsetTop * scale,
+        left: 0,
+        bottom: viewportTop + (offsetTop + height) * scale,
+        right: 0,
+        width: 0,
+        height: height * scale,
+        x: 0,
+        y: viewportTop + offsetTop * scale,
+        toJSON: () => ({}),
+      }),
+    });
+  }
+
+  function stubViewportOrigin(viewport: HTMLDivElement, scale = 1, top = 0) {
+    Object.defineProperty(viewport, "offsetHeight", {
+      configurable: true,
+      value: viewport.clientHeight,
+    });
+    Object.defineProperty(viewport, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({
+        top,
+        left: 0,
+        bottom: top + viewport.clientHeight * scale,
+        right: 0,
+        width: 0,
+        height: viewport.clientHeight * scale,
+        x: 0,
+        y: top,
+        toJSON: () => ({}),
+      }),
+    });
+  }
+
+  it("scrolls the viewport so the target lands at the start", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("zero-trust", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="home">Home</SidebarMenuButton>
+            <SidebarMenuButton itemId="zero-trust">
+              Zero Trust
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("zero-trust"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(800);
+  });
+
+  it.each([
+    ["preserves a visible item", 100, 0, 0],
+    ["start-aligns an item below the viewport", 800, 0, 800],
+    ["start-aligns an item above the viewport", -400, 500, 100],
+    ["start-aligns an item clipped below the viewport", 380, 0, 380],
+    ["start-aligns an item clipped above the viewport", -20, 500, 480],
+  ])("%s", async (_, itemTop, initialScrollTop, expectedScrollTop) => {
+    function Ctrl() {
+      const { scrollItemIntoView } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollItemIntoView("zero-trust", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="zero-trust">
+              Zero Trust
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("zero-trust"), itemTop, 40);
+    viewport.scrollTop = initialScrollTop;
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(expectedScrollTop);
+  });
+
+  it.each([
+    ["uses default auto alignment", undefined, 440],
+    ["center-aligns an offscreen item", { align: "center" } as const, 620],
+    ["end-aligns an offscreen item", { align: "end" } as const, 440],
+  ])("%s", async (_, options, expectedScrollTop) => {
+    function Ctrl() {
+      const { scrollItemIntoView } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollItemIntoView("target", options)}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(expectedScrollTop);
+  });
+
+  it("normalizes scaled geometry before start-aligning the target", async () => {
+    function Ctrl() {
+      const { scrollItemIntoView } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollItemIntoView("target", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport, 0.5, 100);
+    stubItemGeometry(findItem("target"), 800, 40, 0.5, 100);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(800);
+  });
+
+  it("centers the target when align is 'center'", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target", { align: "center" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(800 - (400 - 40) / 2);
+  });
+
+  it("does not scroll ancestors — only the viewport", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 800, 40);
+
+    // If we called scrollIntoView, ancestors would scroll too. This test
+    // fails loudly if we regress by dispatching a scrollIntoView.
+    const scrollIntoView = vi.fn();
+    HTMLElement.prototype.scrollIntoView =
+      scrollIntoView as unknown as typeof HTMLElement.prototype.scrollIntoView;
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    expect(readScrollTop(viewport)).toBe(800);
+  });
+
+  it("clamps to the viewport's max scroll range", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 1000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 900, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(600);
+  });
+
+  it("is a no-op when the id doesn't match anything", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("nope")}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="real">Real</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 1000, 400);
+    stubViewportOrigin(viewport);
+    const before = readScrollTop(viewport);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(before);
+  });
+
+  it("MenuItem forwards itemId as data-sidebar-item-id", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem itemId="wrapped">
+              <SidebarMenuButton>Wrapped</SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    expect(
+      document.querySelector('li[data-sidebar-item-id="wrapped"]'),
+    ).toBeTruthy();
+  });
+
+  it("registers itemId on a MenuButton inside an explicit MenuItem", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("compute", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton itemId="compute">Compute</SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    const target = document.querySelector<HTMLElement>(
+      'button[data-sidebar-item-id="compute"]',
+    );
+    if (!target) throw new Error("expected button to carry itemId");
+    stubItemGeometry(target, 500, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(500);
+  });
+
+  it("scrolls the correct viewport when multiple are mounted (SlidingViews)", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target-b", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarSlidingViews activeKey="a">
+          <SidebarSlidingView value="a">
+            <SidebarContent>
+              <SidebarMenu>
+                <SidebarMenuButton itemId="target-a">A</SidebarMenuButton>
+              </SidebarMenu>
+            </SidebarContent>
+          </SidebarSlidingView>
+          <SidebarSlidingView value="b">
+            <SidebarContent>
+              <SidebarMenu>
+                <SidebarMenuButton itemId="target-b">B</SidebarMenuButton>
+              </SidebarMenu>
+            </SidebarContent>
+          </SidebarSlidingView>
+        </SidebarSlidingViews>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    // Both viewports are mounted at once — this is the SlidingViews bug that
+    // a `viewport.querySelector` implementation would fail: it would pick the
+    // first viewport in DOM order (view A) and miss `target-b` in view B.
+    const viewports = document.querySelectorAll<HTMLDivElement>(
+      '[data-sidebar="viewport"]',
+    );
+    expect(viewports.length).toBe(2);
+    const [viewportA, viewportB] = viewports as unknown as [
+      HTMLDivElement,
+      HTMLDivElement,
+    ];
+    setViewportGeometry(viewportA, 2000, 400);
+    setViewportGeometry(viewportB, 2000, 400);
+    stubViewportOrigin(viewportA);
+    stubViewportOrigin(viewportB);
+
+    stubItemGeometry(findItem("target-b"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+
+    // View B scrolled to the target; view A untouched.
+    expect(readScrollTop(viewportB)).toBe(800);
+    expect(readScrollTop(viewportA)).toBe(0);
   });
 });

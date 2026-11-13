@@ -1,5 +1,5 @@
 import { Combobox as ComboboxBase } from "@base-ui/react/combobox";
-import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
+import { CaretUpDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
 import {
   Fragment,
   createContext,
@@ -168,7 +168,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
 }) {
   const comboboxControl = (
     <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
-      <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
+      <ComboboxBase.Root {...props} required={required}>
+        {children}
+      </ComboboxBase.Root>
     </ComboboxContext.Provider>
   );
 
@@ -204,6 +206,13 @@ function Content({
   sideOffset = 4,
   alignOffset,
   side,
+  anchor,
+  positionMethod,
+  collisionAvoidance,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  disableAnchorTracking,
   container: containerProp,
 }: PropsWithChildren<{
   className?: string;
@@ -211,6 +220,13 @@ function Content({
   alignOffset?: ComboboxBase.Positioner.Props["alignOffset"];
   side?: ComboboxBase.Positioner.Props["side"];
   sideOffset?: ComboboxBase.Positioner.Props["sideOffset"];
+  anchor?: ComboboxBase.Positioner.Props["anchor"];
+  positionMethod?: ComboboxBase.Positioner.Props["positionMethod"];
+  collisionAvoidance?: ComboboxBase.Positioner.Props["collisionAvoidance"];
+  collisionBoundary?: ComboboxBase.Positioner.Props["collisionBoundary"];
+  collisionPadding?: ComboboxBase.Positioner.Props["collisionPadding"];
+  sticky?: ComboboxBase.Positioner.Props["sticky"];
+  disableAnchorTracking?: ComboboxBase.Positioner.Props["disableAnchorTracking"];
   /**
    * Container element for the portal. Use this to render the combobox inside
    * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
@@ -229,6 +245,13 @@ function Content({
         sideOffset={sideOffset}
         alignOffset={alignOffset}
         side={side}
+        anchor={anchor}
+        positionMethod={positionMethod}
+        collisionAvoidance={collisionAvoidance}
+        collisionBoundary={collisionBoundary}
+        collisionPadding={collisionPadding}
+        sticky={sticky}
+        disableAnchorTracking={disableAnchorTracking}
       >
         <ComboboxBase.Popup
           className={cn(
@@ -257,10 +280,36 @@ const triggerValueIconStyles: Record<
   lg: { padding: "pr-10", iconSize: 18, iconRight: "right-3" },
 };
 
+/**
+ * Drops keys whose value is `undefined`. Base UI's `mergeProps` lets an
+ * explicit `undefined` override internal props, so e.g.
+ * `aria-labelledby={undefined}` would erase the Field label's id.
+ */
+function omitUndefined<T extends object>(props: T): T {
+  return Object.fromEntries(
+    Object.entries(props).filter(([, value]) => value !== undefined),
+  ) as T;
+}
+
+// `placeholder` must be omitted from the trigger (button) props: the HTML
+// attribute is typed `string`, and intersecting it with `Value.Props`'s
+// `ReactNode` placeholder would narrow it to `string` (a breaking change).
+type TriggerValueProps = Omit<
+  ComboboxBase.Trigger.Props,
+  "className" | "children" | "placeholder"
+> &
+  ComboboxBase.Value.Props & {
+    className?: string;
+    /** Replaces the trigger element while preserving Combobox behavior. */
+    render?: ComboboxBase.Trigger.Props["render"];
+  };
+
 function TriggerValue({
   className,
-  ...props
-}: ComboboxBase.Value.Props & { className?: string }) {
+  children,
+  placeholder,
+  ...triggerProps
+}: TriggerValueProps) {
   const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
@@ -268,6 +317,7 @@ function TriggerValue({
     <ComboboxBase.Trigger
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
+      {...omitUndefined(triggerProps)}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
@@ -277,14 +327,16 @@ function TriggerValue({
         className,
       )}
     >
-      <ComboboxBase.Value {...props} />
+      <ComboboxBase.Value placeholder={placeholder}>
+        {children}
+      </ComboboxBase.Value>
       <ComboboxBase.Icon
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 items-center text-kumo-subtle",
           iconStyles.iconRight,
         )}
       >
-        <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
+        <CaretUpDownIcon size={iconStyles.iconSize} className="fill-current" />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
   );
@@ -341,7 +393,7 @@ function TriggerInput({
   return (
     <div
       className={cn(
-        "relative inline-block w-full max-w-xs",
+        "relative inline-block w-full",
         "has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
         props.className,
       )}
@@ -380,7 +432,10 @@ function TriggerInput({
         )}
       >
         <ComboboxBase.Icon className="flex items-center">
-          <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
+          <CaretUpDownIcon
+            size={iconStyles.iconSize}
+            className="fill-current"
+          />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
     </div>
@@ -433,7 +488,7 @@ function Input(props: ComboboxBase.Input.Props) {
       {...props}
       className={cn(
         inputVariants(),
-        "mx-1.5 w-[calc(100%-0.75rem)] shrink-0 first:mb-2",
+        "mx-0 -mt-1.5 w-full shrink-0 rounded-b-none first:mb-2",
         props.className,
       )}
     />
@@ -526,7 +581,11 @@ function TriggerMultipleWithInput<ValueType>({
   className,
   inputSide = "right",
   value: controlledValue,
-}: {
+  ...inputProps
+}: Pick<
+  ComboboxBase.Input.Props,
+  "aria-label" | "aria-labelledby" | "aria-describedby"
+> & {
   placeholder?: string;
   renderItem: (value: ValueType) => React.ReactNode;
   className?: string;
@@ -537,6 +596,13 @@ function TriggerMultipleWithInput<ValueType>({
   const { size, hasError } = useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
+  const renderTriggerInput = (className: string) => (
+    <ComboboxBase.Input
+      {...omitUndefined(inputProps)}
+      placeholder={placeholder}
+      className={className}
+    />
+  );
 
   return (
     <ComboboxBase.Chips
@@ -550,12 +616,8 @@ function TriggerMultipleWithInput<ValueType>({
         className,
       )}
     >
-      {inputSide === "top" && (
-        <ComboboxBase.Input
-          placeholder={placeholder}
-          className="w-full border-0 bg-inherit px-2 py-1"
-        />
-      )}
+      {inputSide === "top" &&
+        renderTriggerInput("w-full border-0 bg-inherit px-2 py-1")}
       {/* Chips container */}
       <div className="flex flex-1 flex-wrap items-center gap-1.5">
         {/* Render chips from controlled value if provided */}
@@ -574,12 +636,10 @@ function TriggerMultipleWithInput<ValueType>({
             );
           }}
         </ComboboxBase.Value>
-        {inputSide === "right" && (
-          <ComboboxBase.Input
-            placeholder={placeholder}
-            className="min-w-[100px] flex-1 border-0 bg-inherit px-2 py-1"
-          />
-        )}
+        {inputSide === "right" &&
+          renderTriggerInput(
+            "min-w-[100px] flex-1 border-0 bg-inherit px-2 py-1",
+          )}
       </div>
     </ComboboxBase.Chips>
   );
@@ -643,4 +703,5 @@ export const Combobox = Object.assign(Root, {
 
   // Filtering
   useFilter: ComboboxBase.useFilter,
+  createItems: ComboboxBase.createItems,
 });

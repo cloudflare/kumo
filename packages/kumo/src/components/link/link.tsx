@@ -185,7 +185,7 @@ const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     "data-kumo-component": "Link",
     className: cn(
       linkVariants({ variant }),
-      "group/link inline-flex items-center gap-[0.1875em]",
+      "group/link inline-flex items-center gap-[0.1875em] has-[>[data-kumo-component=Badge]]:rounded-full",
     ),
   } as useRender.ElementProps<"a">;
 

@@ -1,6 +1,7 @@
 import { Info } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { useKumoLocale } from "../../utils/locale-provider";
 import { Button } from "../button";
 import { Tooltip } from "../tooltip";
 
@@ -44,8 +45,12 @@ export interface LabelProps extends KumoLabelVariantsProps {
   children: ReactNode;
   /** When `true`, shows gray "(optional)" text after the label. */
   showOptional?: boolean;
+  /** Content shown when `showOptional` is `true`. @default "(optional)" */
+  optionalLabel?: ReactNode;
   /** Tooltip content displayed next to the label via an info icon. */
   tooltip?: ReactNode;
+  /** Accessible label for the tooltip button. @default "More information" */
+  tooltipAriaLabel?: string;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** The id of the form element this label is associated with */
@@ -87,16 +92,25 @@ export interface LabelProps extends KumoLabelVariantsProps {
 export function Label({
   children,
   showOptional = false,
+  optionalLabel,
   tooltip,
+  tooltipAriaLabel,
   className,
   htmlFor,
   asContent = false,
 }: LabelProps) {
+  const { label } = useKumoLocale();
+  const resolvedOptionalLabel =
+    optionalLabel === undefined ? label.optional : optionalLabel;
+  const resolvedTooltipLabel = tooltipAriaLabel ?? label.tooltip;
+
   const content = (
     <>
       {children}
       {showOptional && (
-        <span className="font-normal text-kumo-subtle">(optional)</span>
+        <span className="font-normal text-kumo-subtle">
+          {resolvedOptionalLabel}
+        </span>
       )}
       {tooltip && (
         <Tooltip
@@ -106,7 +120,7 @@ export function Label({
               variant="ghost"
               size="xs"
               shape="square"
-              aria-label="More information"
+              aria-label={resolvedTooltipLabel}
             >
               <Info className="size-4" />
             </Button>

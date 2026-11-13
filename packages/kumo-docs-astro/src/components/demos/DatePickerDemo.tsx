@@ -13,6 +13,7 @@ export function DatePickerSingleDemo() {
   return (
     <div className="flex flex-col gap-4">
       <DatePicker
+        className="p-3"
         mode="single"
         selected={date}
         onChange={(d) => {
@@ -37,6 +38,7 @@ export function DatePickerMultipleDemo() {
   return (
     <div className="flex flex-col gap-4">
       <DatePicker
+        className="p-3"
         mode="multiple"
         selected={dates}
         onChange={setDates}
@@ -58,6 +60,7 @@ export function DatePickerRangeDemo() {
   return (
     <div className="flex flex-col gap-4">
       <DatePicker
+        className="p-3"
         mode="range"
         selected={range}
         onChange={setRange}
@@ -82,6 +85,7 @@ export function DatePickerRangeMinMaxDemo() {
   return (
     <div className="flex flex-col gap-4">
       <DatePicker
+        className="p-3"
         mode="range"
         selected={range}
         onChange={setRange}
@@ -92,6 +96,25 @@ export function DatePickerRangeMinMaxDemo() {
         }
       />
     </div>
+  );
+}
+
+/**
+ * Month and year dropdowns for jumping straight to a date.
+ */
+export function DatePickerDropdownCaptionDemo() {
+  const [date, setDate] = useState<Date | undefined>();
+
+  return (
+    <DatePicker
+      className="p-3"
+      mode="single"
+      selected={date}
+      onChange={setDate}
+      captionLayout="dropdown"
+      startMonth={new Date(2020, 0)}
+      endMonth={new Date(2030, 11)}
+    />
   );
 }
 
@@ -240,7 +263,7 @@ export function DatePickerRangeWithPresetsDemo() {
                   onClick={() => handlePresetClick(preset)}
                   className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${
                     isActive
-                      ? "bg-kumo-bg-inverse text-kumo-text-inverse"
+                      ? "bg-kumo-contrast text-kumo-inverse"
                       : "text-kumo-subtle hover:bg-kumo-control"
                   }`}
                 >
@@ -285,6 +308,7 @@ export function DatePickerDisabledWithFooterDemo() {
 
   return (
     <DatePicker
+      className="p-3"
       mode="multiple"
       selected={dates}
       onChange={setDates}
