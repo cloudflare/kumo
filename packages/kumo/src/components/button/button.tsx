@@ -273,6 +273,35 @@ const renderButtonContent = (
   );
 };
 
+const hasTitle = (title: React.ReactNode) =>
+  title != null && title !== false && title !== "";
+
+// Props for a titled button that is disabled or loading. It stays focusable so
+// its title can be reached, and withholds the same handlers as Base UI's
+// `focusableWhenDisabled`. `preventDefault` also stops form submission.
+const UNAVAILABLE_BUTTON_PROPS = {
+  "aria-disabled": true,
+  onClick: (event: React.MouseEvent) => event.preventDefault(),
+  onMouseDown: undefined,
+  onPointerDown: undefined,
+  onKeyDown: undefined,
+  onKeyUp: undefined,
+} satisfies React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+// The variants' `disabled:` styles, for a titled button that isn't `:disabled`.
+// Each `not-disabled:hover:` class replaces the variant's hover style in `cn()`.
+const UNAVAILABLE_VARIANT_CLASSES: Record<KumoButtonVariant, string> = {
+  primary: "opacity-50",
+  secondary:
+    "bg-kumo-base/50 !text-kumo-default/70 not-disabled:hover:bg-kumo-base/50",
+  ghost: "",
+  destructive: "opacity-50",
+  "secondary-destructive":
+    "bg-kumo-base/50 !text-kumo-danger/70 not-disabled:hover:!text-kumo-danger/70 not-disabled:hover:ring-kumo-line",
+  outline:
+    "not-disabled:hover:text-kumo-subtle not-disabled:hover:ring-kumo-line",
+};
+
 const getTitleLabel = (title: React.ReactNode) => {
   if (typeof title === "string") return title;
   if (typeof title === "number") return String(title);
@@ -301,7 +330,15 @@ type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: Icon | React.ReactNode;
   /** Shows a loading spinner and disables interaction. */
   loading?: boolean;
-  /** When set, wraps the button in a Tooltip with this content. */
+  /**
+   * Shows this content in a tooltip on hover and keyboard focus, and exposes it
+   * to screen readers as the button's description (or as its name, for an
+   * icon-only button without `aria-label`).
+   *
+   * While `disabled` or `loading`, a button with a title stays in the tab
+   * order with `aria-disabled` and ignores clicks and key presses, so the
+   * title can explain why it's unavailable.
+   */
   title?: React.ReactNode;
 };
 
@@ -358,7 +395,7 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
     children?: React.ReactNode;
     /** Additional CSS classes merged via `cn()`. */
     className?: string;
-    /** When `true`, the button is disabled. We render an actual html button with `disabled` attribute. */
+    /** When `true`, renders a disabled `<button>` instead of a link. See `Button` for how a `title` changes this. */
     disabled?: boolean;
     /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
     icon?: Icon | React.ReactNode;
@@ -396,12 +433,26 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const { type, ...restProps } = props;
     const emphasisStyle = getEmphasisStyle(variant);
     const titleLabel = getTitleLabel(title);
+    const titleDescriptionId = React.useId();
+    const titleIsName = Boolean(
+      !React.Children.count(children) &&
+      !restProps["aria-label"] &&
+      !restProps["aria-labelledby"] &&
+      titleLabel,
+    );
+    const isUnavailable = hasTitle(title) && Boolean(disabled || loading);
+    // Screen readers don't announce the tooltip, so the title that explains why
+    // the button is unavailable becomes its description.
+    const describesTitle = isUnavailable && !titleIsName;
     const buttonProps = {
       ...restProps,
-      ...(!React.Children.count(children) &&
-        !restProps["aria-label"] &&
-        !restProps["aria-labelledby"] &&
-        titleLabel && { "aria-label": titleLabel }),
+      ...(titleIsName && { "aria-label": titleLabel }),
+      ...(isUnavailable && UNAVAILABLE_BUTTON_PROPS),
+      "aria-busy": loading ? true : restProps["aria-busy"],
+      "aria-describedby":
+        [restProps["aria-describedby"], describesTitle && titleDescriptionId]
+          .filter(Boolean)
+          .join(" ") || undefined,
     };
     const iconNode = loading ? (
       <Loader size={size === "lg" ? 16 : 14} />
@@ -417,26 +468,30 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           buttonVariants({ variant, size, shape }),
           getIconPaddingClasses(shape, size, iconNode, children),
           disabled && "cursor-not-allowed opacity-50",
+          isUnavailable && [
+            "cursor-not-allowed text-kumo-subtle",
+            UNAVAILABLE_VARIANT_CLASSES[variant],
+          ],
           className,
         )}
-        disabled={loading || disabled}
+        disabled={(loading || disabled) && !isUnavailable}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         type={type ?? "button"}
         {...buttonProps}
       >
         {renderButtonContent(variant, iconNode, children)}
+        {describesTitle && (
+          // `hidden` keeps it out of the name but not the description.
+          <span id={titleDescriptionId} hidden>
+            {title}
+          </span>
+        )}
       </button>
     );
 
-    if (title && (disabled || loading)) {
-      return (
-        <Tooltip content={title} render={<span className="inline-flex" />}>
-          {button}
-        </Tooltip>
-      );
-    }
-
-    if (title) {
+    if (hasTitle(title)) {
+      // The button is the trigger in every state, so the tooltip doesn't
+      // remount when `disabled` or `loading` changes.
       return <Tooltip content={title} render={button} />;
     }
 
@@ -545,7 +600,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       </LinkComponent>
     );
 
-    if (title) {
+    if (hasTitle(title)) {
       return <Tooltip content={title} render={link} />;
     }
 
