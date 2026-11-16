@@ -82,6 +82,36 @@ import {
 
 <ComponentSection>
 
+## Localization
+
+Breadcrumbs renders three strings of its own. Configure their application-wide defaults with `KumoLocaleProvider`:
+
+- `breadcrumbs.label` names the `nav` landmark. Default: "breadcrumb".
+- `breadcrumbs.copy` names the `Breadcrumbs.Clipboard` button. Default: "Copy".
+- `breadcrumbs.copyTooltip` is the tooltip on the `Breadcrumbs.Clipboard` button. Default: "Click to copy".
+
+```tsx
+<KumoLocaleProvider
+  translations={{
+    breadcrumbs: {
+      label: "Fil d'Ariane",
+      copy: "Copier",
+      copyTooltip: "Cliquer pour copier",
+    },
+  }}
+>
+  <App />
+</KumoLocaleProvider>
+```
+
+Pass `aria-label` to `Breadcrumbs` when one trail needs a different landmark name; it overrides the provider default.
+
+In a right-to-left layout (`dir="rtl"`), the separators point left, toward the current page, and the root's end margin moves to the left.
+
+</ComponentSection>
+
+<ComponentSection>
+
 ## API Reference
 
 ### Breadcrumbs
