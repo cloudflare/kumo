@@ -49,7 +49,7 @@ export function breadcrumbsVariants({
   size = KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size,
 }: KumoBreadcrumbsVariantsProps = {}) {
   return cn(
-    "group mr-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
+    "group me-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
     resolveVariant(
       KUMO_BREADCRUMBS_VARIANTS.size,
       size,
@@ -119,7 +119,7 @@ function Current({
 function Separator() {
   return (
     <span
-      className="flex shrink-0 items-center text-kumo-inactive"
+      className="flex shrink-0 items-center text-kumo-inactive rtl:[&_svg]:rotate-180"
       aria-hidden="true"
     >
       <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
