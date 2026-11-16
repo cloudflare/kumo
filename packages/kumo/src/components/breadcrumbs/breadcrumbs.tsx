@@ -11,6 +11,7 @@ import { Button } from "../../components/button";
 import { SkeletonLine } from "../../components/loader/skeleton-line";
 import { useLinkComponent } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
+import { useKumoLocale } from "../../utils/locale-provider";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
@@ -48,7 +49,7 @@ export function breadcrumbsVariants({
   size = KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size,
 }: KumoBreadcrumbsVariantsProps = {}) {
   return cn(
-    "group mr-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
+    "group me-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
     resolveVariant(
       KUMO_BREADCRUMBS_VARIANTS.size,
       size,
@@ -118,7 +119,7 @@ function Current({
 function Separator() {
   return (
     <span
-      className="flex shrink-0 items-center text-kumo-inactive"
+      className="flex shrink-0 items-center text-kumo-inactive rtl:[&_svg]:rotate-180"
       aria-hidden="true"
     >
       <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -144,6 +145,7 @@ function MobileEllipsis() {
 
 function Clipboard({ text }: { text: string }) {
   const { copied: isCopied, runCopy } = useCopyFeedback();
+  const { breadcrumbs } = useKumoLocale();
 
   const handleCopyDeeplink = async () => {
     if (!text) return;
@@ -161,8 +163,8 @@ function Clipboard({ text }: { text: string }) {
       size="sm"
       className="opacity-0 transition-[opacity] group-hover:opacity-100"
       onClick={handleCopyDeeplink}
-      title="Click to copy"
-      aria-label="Copy"
+      title={breadcrumbs.copyTooltip}
+      aria-label={breadcrumbs.copy}
     >
       {isCopied ? (
         <CheckIcon weight="bold" className="text-kumo-success" />
@@ -191,6 +193,12 @@ export interface BreadcrumbsProps
   extends PropsWithChildren, KumoBreadcrumbsVariantsProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /**
+   * Accessible name of the breadcrumb `nav` landmark. Overrides
+   * `breadcrumbs.label` from `KumoLocaleProvider`.
+   * @default "breadcrumb"
+   */
+  "aria-label"?: string;
 }
 
 /**
@@ -210,14 +218,16 @@ export function Breadcrumb({
   children,
   size = "base",
   className,
+  "aria-label": ariaLabel,
 }: BreadcrumbsProps) {
+  const { breadcrumbs } = useKumoLocale();
   const childArray = Children.toArray(children);
   const mobileChildren = getMobileBreadcrumbChildren(childArray);
 
   return (
     <nav
       className={cn(breadcrumbsVariants({ size }), className)}
-      aria-label="breadcrumb"
+      aria-label={ariaLabel ?? breadcrumbs.label}
     >
       <div className="contents sm:hidden">{mobileChildren}</div>
       <div className="hidden sm:contents">{childArray}</div>

@@ -1,6 +1,14 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 export interface KumoTranslations {
+  breadcrumbs?: {
+    /** Accessible name of the breadcrumb `nav` landmark. */
+    label: string;
+    /** Accessible name of the `Breadcrumbs.Clipboard` button. */
+    copy: string;
+    /** Tooltip on the `Breadcrumbs.Clipboard` button. */
+    copyTooltip: string;
+  };
   label?: {
     optional: string;
     tooltip: string;
@@ -20,6 +28,11 @@ type ResolvedKumoTranslations = {
 };
 
 const defaultTranslations: ResolvedKumoTranslations = {
+  breadcrumbs: {
+    label: "breadcrumb",
+    copy: "Copy",
+    copyTooltip: "Click to copy",
+  },
   label: {
     optional: "(optional)",
     tooltip: "More information",
@@ -52,6 +65,10 @@ export function KumoLocaleProvider({
 }: KumoLocaleProviderProps) {
   const value = useMemo<ResolvedKumoTranslations>(
     () => ({
+      breadcrumbs: {
+        ...defaultTranslations.breadcrumbs,
+        ...translations?.breadcrumbs,
+      },
       label: {
         ...defaultTranslations.label,
         ...translations?.label,
