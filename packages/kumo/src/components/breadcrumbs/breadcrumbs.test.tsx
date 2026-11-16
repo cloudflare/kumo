@@ -23,7 +23,7 @@ describe("Breadcrumbs", () => {
     render(<Trail />);
 
     expect(screen.getByRole("navigation", { name: "breadcrumb" })).toBeTruthy();
-    expect(screen.getAllByRole("button", { name: "Copy" })).not.toHaveLength(0);
+    expect(screen.getAllByRole("button", { name: "Copy" })[0]).toBeTruthy();
   });
 
   it("uses labels from KumoLocaleProvider", () => {
@@ -40,9 +40,7 @@ describe("Breadcrumbs", () => {
     expect(
       screen.getByRole("navigation", { name: "Fil d'Ariane" }),
     ).toBeTruthy();
-    expect(screen.getAllByRole("button", { name: "Copier" })).not.toHaveLength(
-      0,
-    );
+    expect(screen.getAllByRole("button", { name: "Copier" })[0]).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Copy" })).toBeNull();
   });
 
