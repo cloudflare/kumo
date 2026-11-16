@@ -62,6 +62,15 @@ const _secondary = <Text variant="secondary">Muted</Text>;
 const _success = <Text variant="success">OK</Text>;
 const _error = <Text variant="error">Broken</Text>;
 
+// Copy variants can render semantic headings with copy sizing and weight.
+// The heading variant forbids `bold`, but that does not prevent a compact,
+// muted heading element.
+const _secondaryHeading = (
+  <Text as="h2" variant="secondary" size="base" bold>
+    Payment method
+  </Text>
+);
+
 // Monospace — `as` optional (defaults to span).
 const _mono = <Text variant="mono">console.log()</Text>;
 const _monoSecondary = <Text variant="mono-secondary">comment</Text>;
@@ -115,6 +124,14 @@ const _invalidHeadingSize = (
   </Text>
 );
 
+// Heading uses its own weight; use a copy variant when `bold` is needed.
+const _invalidHeadingBold = (
+  // @ts-expect-error — heading does not accept `bold`
+  <Text variant="heading" as="h2" bold>
+    Invalid
+  </Text>
+);
+
 // Deprecated heading variants continue to require `as`.
 // @ts-expect-error — deprecated heading variants require `as`
 const _missingAsH1 = <Text variant="heading1">Missing as</Text>;
@@ -140,6 +157,7 @@ export const __typeSpec = {
   _secondary,
   _success,
   _error,
+  _secondaryHeading,
   _mono,
   _monoSecondary,
   _dt,
@@ -156,6 +174,7 @@ export const __typeSpec = {
   _time,
   _headingAsLabel,
   _invalidHeadingSize,
+  _invalidHeadingBold,
   _missingAsH1,
   _missingAsH2,
   _missingAsH3,

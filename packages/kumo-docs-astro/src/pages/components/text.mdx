@@ -122,6 +122,18 @@ export default function Example() {
 </Text> // Doesn't compile
 ```
 
+<Text>
+  These restrictions apply to the visual variant, not the HTML element. When a
+  heading needs copy sizing or weight, such as a compact, muted card title, use
+  a copy variant and set the element with `as`:
+</Text>
+
+```tsx
+<Text as="h2" variant="secondary" size="base" bold>
+  Payment method
+</Text>
+```
+
 </section>
 
 </ComponentSection>
