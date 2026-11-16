@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import { useEffect } from "react";
+import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { Toasty, createKumoToastManager, useKumoToastManager } from "./toast";
 
 const surfaceOf = (text: string) =>
@@ -11,6 +12,9 @@ const surfaceOf = (text: string) =>
 
 const isBumping = (text: string) =>
   /animate-toast-bump/.test(surfaceOf(text)?.className ?? "");
+
+const rootOf = (text: string) =>
+  screen.getByText(text).closest('[role="dialog"]') as HTMLElement;
 
 describe("Toasty", () => {
   // Regression guard: existing callers that don't pass `toastManager`
@@ -165,5 +169,57 @@ describe("Toasty", () => {
       inTreeAdd?.({ title: "in-tree" });
     });
     expect(await screen.findByText("in-tree")).toBeTruthy();
+  });
+
+  it("uses logical positioning and reserves space for the close button", async () => {
+    const mgr = createKumoToastManager();
+
+    render(
+      <Toasty toastManager={mgr}>
+        <div />
+      </Toasty>,
+    );
+
+    act(() => {
+      mgr.add({
+        title: "Plugin changes were not applied to your site",
+        variant: "error",
+      });
+    });
+
+    await screen.findByText("Plugin changes were not applied to your site");
+    const root = rootOf("Plugin changes were not applied to your site");
+    const viewport = root.parentElement;
+    const content = root.querySelector('[data-kumo-part="content"]');
+    const close = root.querySelector('[data-kumo-part="close"]');
+
+    expect(viewport?.className).toContain("end-4");
+    expect(viewport?.className).toContain("sm:end-8");
+    expect(root.className).toContain("end-0");
+    expect(root.className).toContain("start-auto");
+    expect(root.className).toContain("after:start-0");
+    expect(content?.className).toContain("pe-6");
+    expect(close?.className).toContain("end-2");
+  });
+
+  it("configures swipe toward the inline end in RTL", async () => {
+    const mgr = createKumoToastManager();
+
+    render(
+      <DirectionProvider direction="rtl">
+        <Toasty toastManager={mgr}>
+          <div />
+        </Toasty>
+      </DirectionProvider>,
+    );
+
+    act(() => {
+      mgr.add({ title: "لم تُطبَّق تغييرات الإضافة" });
+    });
+
+    await screen.findByText("لم تُطبَّق تغييرات الإضافة");
+    const root = rootOf("لم تُطبَّق تغييرات الإضافة");
+
+    expect(root.getAttribute("data-kumo-swipe-direction")).toBe("down left");
   });
 });
