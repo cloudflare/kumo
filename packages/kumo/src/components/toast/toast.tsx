@@ -4,6 +4,7 @@ import {
   ToastManagerUpdateOptions,
   ToastObject,
 } from "@base-ui/react/toast";
+import { useDirection } from "@base-ui/react/direction-provider";
 import type React from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -40,7 +41,7 @@ export const KUMO_TOAST_VARIANTS = {
   },
   close: {
     classes:
-      "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+      "absolute top-2 end-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
     description: "Button-based close control with variant-aware hover tint",
   },
   variant: {
@@ -331,7 +332,7 @@ export const createKumoToastManager = () => {
 /**
  * Toasty — toast notification provider and viewport.
  *
- * Renders a `Toast.Provider` with a fixed-position viewport in the bottom-right corner.
+ * Renders a `Toast.Provider` with a fixed-position viewport at the bottom inline end.
  * Toasts stack with smooth enter/exit animations, swipe-to-dismiss, and expand-on-hover.
  *
  * Built on `@base-ui/react/toast`.
@@ -355,7 +356,7 @@ export function Toasty({
     <Toast.Provider toastManager={toastManager}>
       {children}
       <Toast.Portal container={container}>
-        <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
+        <Toast.Viewport className="fixed top-auto end-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:end-8 sm:bottom-8 sm:w-[340px]">
           <ToastList />
         </Toast.Viewport>
       </Toast.Portal>
@@ -384,19 +385,30 @@ function getBumpAnimation(toast: KumoToastOptions<any>) {
   );
 }
 
+function useToastSwipeDirection(): Array<"down" | "left" | "right"> {
+  const direction = useDirection();
+  return direction === "rtl" ? ["down", "left"] : ["down", "right"];
+}
+
 // The root owns the slide transition and the inner surface owns the bump,
 // so a bump never cancels an in-progress slide-in.
 function ToastList() {
   const { toasts } = useKumoToastManager();
+  const swipeDirection = useToastSwipeDirection();
+
   return toasts.map((toast) => (
     <Toast.Root
       key={toast.id}
       toast={toast}
+      swipeDirection={swipeDirection}
+      {...(process.env.NODE_ENV !== "production"
+        ? { "data-kumo-swipe-direction": swipeDirection.join(" ") }
+        : undefined)}
       className={cn(
-        "absolute right-0 bottom-0 left-auto z-[calc(1000-var(--toast-index))] mr-0 h-[var(--height)] w-full origin-bottom rounded-xl select-none motion-reduce:[transition-property:opacity]",
+        "absolute end-0 bottom-0 start-auto z-[calc(1000-var(--toast-index))] me-0 h-[var(--height)] w-full origin-bottom rounded-xl select-none motion-reduce:[transition-property:opacity]",
         "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
         "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
-        "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
+        "after:absolute after:top-full after:start-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
         "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
         "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
         "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
@@ -414,7 +426,10 @@ function ToastList() {
         )}
       >
         <ToastBackground variant={toast.variant} />
-        <Toast.Content className="isolate flex flex-col gap-1 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100">
+        <Toast.Content
+          data-kumo-part="content"
+          className="isolate flex flex-col gap-1 pe-6 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100"
+        >
           {toast.content ?? (
             <>
               <div className="flex items-start gap-2">
@@ -447,7 +462,7 @@ function ToastList() {
                 shape="square"
                 aria-label="Close"
                 className={cn(
-                  "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+                  "absolute top-2 end-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
                   toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
                 )}
                 icon={<XIcon className="h-3 w-3" />}
