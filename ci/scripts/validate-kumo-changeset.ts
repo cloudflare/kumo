@@ -50,21 +50,15 @@ function main() {
     return;
   }
 
-  // Skip validation on Changesets release PRs. The `changesets/action` bot
-  // opens these PRs from a `changeset-release/<target>` branch and, by
-  // design, their diff modifies `packages/kumo/` (version bump + CHANGELOG)
-  // while removing — not adding — `.changeset/*.md` files. Running the
-  // "must add a new changeset" rule here would always fail. See
-  // https://github.com/changesets/action for the branch-name convention.
-  //
-  // GITHUB_HEAD_REF is the PR's source branch name and is always set on
-  // pull_request workflow runs — the only CI path that reaches this code,
-  // per the isPullRequestContext() guard above.
-  const headRef = process.env.GITHUB_HEAD_REF ?? "";
-  if (headRef.startsWith("changeset-release/")) {
-    console.log(
-      `Detected Changesets release PR (branch: ${headRef}); skipping validation.`,
-    );
+  // GITHUB_HEAD_REF / GITHUB_BASE_REF are always set on pull_request
+  // workflow runs — the only CI path that reaches this code, per the
+  // isPullRequestContext() guard above.
+  const skipReason = getBranchSkipReason(
+    process.env.GITHUB_HEAD_REF ?? "",
+    process.env.GITHUB_BASE_REF ?? "",
+  );
+  if (skipReason) {
+    console.log(`${skipReason}; skipping validation.`);
     return;
   }
 
@@ -149,6 +143,31 @@ function main() {
   });
 
   console.log("Changeset validation passed!");
+}
+
+/**
+ * Returns why changeset validation should be skipped for a PR's branches,
+ * or null if it should run.
+ */
+export function getBranchSkipReason(
+  headRef: string,
+  baseRef: string,
+): string | null {
+  // Changesets release PRs come from `changeset-release/<target>` and, by
+  // design, modify `packages/kumo/` (version bump + CHANGELOG) while removing
+  // — not adding — `.changeset/*.md` files. See
+  // https://github.com/changesets/action for the branch-name convention.
+  if (headRef.startsWith("changeset-release/")) {
+    return `Detected Changesets release PR (branch: ${headRef})`;
+  }
+
+  // Merges of `main` into the `next` (3.0) branch bring in kumo changes whose
+  // changesets were already consumed by a 2.x release on `main`.
+  if (headRef.startsWith("sync/") && baseRef === "next") {
+    return `Detected main → next sync PR (branch: ${headRef})`;
+  }
+
+  return null;
 }
 
 export function requiresKumoChangeset(
