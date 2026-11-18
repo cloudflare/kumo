@@ -4,10 +4,17 @@ import { PoweredByCloudflare } from "./cloudflare-logo";
 import { LinkProvider } from "../../utils/link-provider";
 
 describe("PoweredByCloudflare", () => {
+  it("names the link by its text, not the decorative logo", () => {
+    render(<PoweredByCloudflare />);
+
+    const link = screen.getByRole("link", { name: "Powered by Cloudflare" });
+    expect(link.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("links to cloudflare.com in the same tab by default", () => {
     render(<PoweredByCloudflare />);
 
-    const link = screen.getByRole("link", { name: /Powered by Cloudflare$/ });
+    const link = screen.getByRole("link", { name: "Powered by Cloudflare" });
     expect(link.getAttribute("href")).toBe("https://www.cloudflare.com");
     expect(link.hasAttribute("target")).toBe(false);
   });
@@ -20,7 +27,7 @@ describe("PoweredByCloudflare", () => {
     );
 
     const link = screen.getByRole("link", {
-      name: /Powered by Cloudflare \(opens in a new tab\)$/,
+      name: "Powered by Cloudflare (opens in a new tab)",
     });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
@@ -30,7 +37,7 @@ describe("PoweredByCloudflare", () => {
     render(<PoweredByCloudflare target="_blank" newTabIcon={false} />);
 
     const link = screen.getByRole("link", {
-      name: /Powered by Cloudflare \(opens in a new tab\)$/,
+      name: "Powered by Cloudflare (opens in a new tab)",
     });
     expect(link.querySelector("svg.link-external-icon")).toBeNull();
   });

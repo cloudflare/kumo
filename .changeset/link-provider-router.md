@@ -78,6 +78,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 ### `PoweredByCloudflare`
 
 - The badge no longer always opens in a new tab. It follows the provider's `externalLinks` policy, which defaults to the current tab. Pass `target="_blank"` to keep the old behavior. When it opens in a new tab, it shows the new-tab icon and announcement like any other link; `newTabIcon={false}` hides the icon.
+- The badge's logo is now decorative (`aria-hidden`), so its accessible name is "Powered by Cloudflare" instead of "Cloudflare logo Powered by Cloudflare". The standalone `CloudflareLogo` keeps its "Cloudflare logo" label.
 
 ## New-tab behavior (all link components)
 

@@ -281,7 +281,14 @@ export const PoweredByCloudflare = forwardRef<
           className,
         )}
       >
-        <CloudflareLogo variant="glyph" color={color} className="h-4 w-auto" />
+        {/* Decorative: the visible text already names Cloudflare. */}
+        <CloudflareLogo
+          variant="glyph"
+          color={color}
+          className="h-4 w-auto"
+          aria-hidden="true"
+          focusable="false"
+        />
         <span>
           Powered by <span className="font-semibold">Cloudflare</span>
         </span>
