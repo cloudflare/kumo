@@ -4,7 +4,7 @@ import { Loader } from "../loader/loader";
 import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { ResolvedLink } from "../../utils/link-provider";
+import { ResolvedLink, type UseLinkOptions } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
@@ -224,7 +224,7 @@ const ANCHOR_ONLY_PROPS = new Set([
   "media",
   "ping",
   "referrerPolicy",
-  "linksExternal",
+  "newTabIcon",
 ]);
 
 const toDisabledButtonProps = (
@@ -336,36 +336,58 @@ type IconOnlyButtonProps = ButtonBaseProps &
     variant?: KumoButtonVariant;
   };
 
-export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
-
 export type RefreshButtonProps = Omit<
   IconOnlyButtonProps,
   "children" | "icon" | "shape"
 >;
 
+type ButtonLinkBaseProps = Omit<
+  UseLinkOptions,
+  "children" | "className" | "href"
+> & {
+  /**
+   * Renders the button as a link. `LinkProvider` decides whether it renders
+   * through your router or a plain `<a>`, and whether it opens in a new tab.
+   */
+  href: string;
+  /** Content rendered inside the button. */
+  children?: React.ReactNode;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+  /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
+  icon?: Icon | React.ReactNode;
+  /**
+   * Renders a disabled `<button>` instead of a link, with the same behavior as
+   * a disabled `Button`.
+   */
+  disabled?: boolean;
+  loading?: never;
+};
+
+type ButtonLinkProps = ButtonLinkBaseProps &
+  (
+    | { shape?: "base"; size?: KumoButtonSize; variant?: KumoButtonVariant }
+    | (IconOnlyButtonAccessibleNameProps & {
+        shape: "square" | "circle";
+        size?: KumoButtonSize;
+        variant?: KumoButtonVariant;
+      })
+  );
+
+type NativeButtonProps = (ButtonWithTextProps | IconOnlyButtonProps) & {
+  href?: undefined;
+};
+
 /**
- * LinkButton component props — renders an anchor styled as a button.
+ * Button props. Pass `href` to render a link styled as a button.
  *
  * @example
  * ```tsx
- * <LinkButton href="/docs" variant="ghost" icon={BookIcon}>Docs</LinkButton>
- * <LinkButton href="https://example.com" external>Visit Site</LinkButton>
+ * <Button variant="primary">Save</Button>
+ * <Button href="/settings">Settings</Button>
  * ```
  */
-export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
-  KumoButtonVariantsProps & {
-    /** Content rendered inside the link button. */
-    children?: React.ReactNode;
-    /** Additional CSS classes merged via `cn()`. */
-    className?: string;
-    /** When `true`, the button is disabled. We render an actual html button with `disabled` attribute. */
-    disabled?: boolean;
-    /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
-    icon?: Icon | React.ReactNode;
-    /** When `true`, opens in a new tab with `rel="noopener noreferrer"`. */
-    external?: boolean;
-    linksExternal?: boolean;
-  };
+export type ButtonProps = NativeButtonProps | ButtonLinkProps;
 
 /**
  * Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
@@ -376,7 +398,7 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
  * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
  * ```
  */
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const NativeButton = React.forwardRef<HTMLButtonElement, NativeButtonProps>(
   (
     {
       children,
@@ -444,7 +466,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 
-Button.displayName = "Button";
+NativeButton.displayName = "Button";
 
 /**
  * Square button with a rotating arrows icon, used to trigger data refresh actions.
@@ -471,45 +493,31 @@ export const RefreshButton = ({
   </Button>
 );
 
-/**
- * Anchor element styled as a button. Integrates with `LinkProvider` for framework routing.
- *
- * @example
- * ```tsx
- * <LinkButton href="/settings" variant="ghost">Settings</LinkButton>
- * ```
- */
-export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
+const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
   (
     {
       children,
       className,
       disabled = false,
-      external,
-      href,
       shape = "base",
       size = "base",
-      variant = "ghost",
+      variant = "secondary",
       icon: IconComponent,
       style,
       title,
-      // linksExternal = false,
       ...props
     },
     ref,
   ) => {
     const emphasisStyle = getEmphasisStyle(variant);
-    const externalProps = external
-      ? { target: "_blank", rel: "noopener noreferrer" }
-      : {};
 
     if (disabled) {
       // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
       return (
-        <Button
+        <NativeButton
           {...toDisabledButtonProps(props)}
           className={cn("select-text", className)}
-          data-kumo-component="LinkButton"
+          data-kumo-part="link"
           disabled
           icon={IconComponent}
           shape={shape as "base"}
@@ -519,7 +527,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
           variant={variant}
         >
           {children}
-        </Button>
+        </NativeButton>
       );
     }
 
@@ -527,17 +535,16 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     const link = (
       <ResolvedLink
         ref={ref}
-        data-kumo-component="LinkButton"
+        data-kumo-component="Button"
+        data-kumo-part="link"
+        {...props}
         className={cn(
           buttonVariants({ variant, size, shape }),
           getIconPaddingClasses(shape, size, iconNode, children),
           "flex items-center no-underline! select-text",
           className,
         )}
-        href={href}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
-        {...externalProps}
-        {...props}
       >
         {renderButtonContent(variant, iconNode, children)}
       </ResolvedLink>
@@ -551,4 +558,29 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
   },
 );
 
-LinkButton.displayName = "LinkButton";
+ButtonLink.displayName = "Button";
+
+/**
+ * Primary action trigger. Supports multiple variants, sizes, shapes, icons, and
+ * loading state. Pass `href` to render a link styled as a button; it resolves
+ * through `LinkProvider` like `Link`.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary">Save</Button>
+ * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
+ * <Button href="/settings" variant="ghost">Settings</Button>
+ * ```
+ */
+export const Button = React.forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ButtonProps
+>((props, ref) =>
+  props.href !== undefined ? (
+    <ButtonLink ref={ref as React.Ref<HTMLAnchorElement>} {...props} />
+  ) : (
+    <NativeButton ref={ref as React.Ref<HTMLButtonElement>} {...props} />
+  ),
+);
+
+Button.displayName = "Button";

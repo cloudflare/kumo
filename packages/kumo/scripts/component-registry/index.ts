@@ -344,27 +344,45 @@ function generatePropsFromType(
       let properties: Record<string, any> = {};
       let required: string[] = [];
 
-      for (const part of parts) {
+      for (const rawPart of parts) {
+        let part = rawPart;
         if (part.$ref) {
           const refName = decodeURIComponent(part.$ref.split("/").pop()!);
           const refDef = schema.definitions?.[refName] as Definition;
-          if (refDef?.properties) {
-            properties = { ...properties, ...refDef.properties };
-          }
-          if (refDef?.required) {
-            required = [...required, ...(refDef.required as string[])];
-          }
-          // Recursively handle nested allOf/anyOf in referenced definitions
-          if (refDef?.allOf) {
-            const nested = collectFromParts(refDef.allOf as Definition[]);
-            properties = { ...properties, ...nested.properties };
-            required = [...required, ...nested.required];
-          }
-        } else if (part.properties) {
+          if (!refDef) continue;
+          part = refDef;
+        }
+        if (part.properties) {
           properties = { ...properties, ...part.properties };
-          if (part.required) {
-            required = [...required, ...(part.required as string[])];
+        }
+        if (part.required) {
+          required = [...required, ...(part.required as string[])];
+        }
+        // Intersections contribute every member's props.
+        if (part.allOf) {
+          const nested = collectFromParts(part.allOf as Definition[]);
+          properties = { ...properties, ...nested.properties };
+          required = [...required, ...nested.required];
+        }
+        // Nested unions contribute every member's props; a prop is required
+        // only if every member requires it.
+        if (part.anyOf || part.oneOf) {
+          const members = ((part.anyOf || part.oneOf) as Definition[]).map(
+            (member) => collectFromParts([member]),
+          );
+          const memberPropNames = new Set<string>();
+          for (const member of members) {
+            properties = { ...properties, ...member.properties };
+            for (const name of Object.keys(member.properties)) {
+              memberPropNames.add(name);
+            }
           }
+          required = [
+            ...required,
+            ...[...memberPropNames].filter((prop) =>
+              members.every((member) => member.required.includes(prop)),
+            ),
+          ];
         }
       }
       return { properties, required };

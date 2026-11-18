@@ -78,11 +78,11 @@ describe("Toolbar.Button interactions", () => {
 });
 
 describe("Toolbar.Link interactions", () => {
-  test("renders a LinkButton and participates in toolbar focus movement", async () => {
+  test("renders a link Button and participates in toolbar focus movement", async () => {
     const { getByRole } = await render(
       <Toolbar>
         <Toolbar.Button>Before</Toolbar.Button>
-        <Toolbar.Link href="#docs" external>
+        <Toolbar.Link href="#docs" target="_blank">
           Documentation
         </Toolbar.Link>
         <Toolbar.Button>After</Toolbar.Button>
@@ -90,7 +90,9 @@ describe("Toolbar.Link interactions", () => {
     );
 
     const before = getByRole("button", { name: "Before" });
-    const link = getByRole("link", { name: "Documentation" });
+    const link = getByRole("link", {
+      name: "Documentation (opens in a new tab)",
+    });
     const after = getByRole("button", { name: "After" });
 
     await expect

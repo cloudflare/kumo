@@ -7,12 +7,7 @@ import React, {
 import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import type { InputState } from "@base-ui/react/input";
 import { cn } from "../../utils/cn";
-import {
-  Button as KumoButton,
-  LinkButton as KumoLinkButton,
-  type ButtonProps,
-  type LinkButtonProps,
-} from "../button/button";
+import { Button as KumoButton, type ButtonProps } from "../button/button";
 import { Input as KumoInput, type InputProps } from "../input/input";
 import { InputGroup } from "../input-group/input-group";
 
@@ -56,10 +51,16 @@ export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
   size?: ToolbarSize;
 }
 
-export type ToolbarButtonProps = Omit<ButtonProps, "size" | "variant"> &
+export type ToolbarButtonProps = Omit<
+  Exclude<ButtonProps, { href: string }>,
+  "size" | "variant"
+> &
   Pick<ToolbarBase.Button.Props, "focusableWhenDisabled">;
 
-export type ToolbarLinkProps = Omit<LinkButtonProps, "size" | "variant">;
+export type ToolbarLinkProps = Omit<
+  Extract<ButtonProps, { href: string }>,
+  "size" | "variant"
+>;
 
 export type ToolbarInputProps = Omit<
   InputProps,
@@ -198,11 +199,14 @@ const Link = React.forwardRef<HTMLAnchorElement, ToolbarLinkProps>(
         data-kumo-component="Toolbar.Link"
         className={cn(className, TOOLBAR_CONTROL_STYLES)}
         render={
-          <KumoLinkButton
-            icon={IconComponent}
-            shape={resolvedShape}
-            size={toolbar.size}
-            variant="ghost"
+          <KumoButton
+            {...({
+              href: props.href,
+              icon: IconComponent,
+              shape: resolvedShape,
+              size: toolbar.size,
+              variant: "ghost",
+            } as ButtonProps)}
           />
         }
         {...props}

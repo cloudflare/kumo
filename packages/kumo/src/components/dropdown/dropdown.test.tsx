@@ -248,14 +248,16 @@ const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
   },
 );
 
-describe("DropdownMenu.Item href with LinkProvider", () => {
+describe("DropdownMenu.LinkItem with LinkProvider", () => {
   it("renders internal hrefs through the router with href", () => {
     render(
       <LinkProvider router={RouterLink}>
         <DropdownMenu open>
           <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
           <DropdownMenu.Content>
-            <DropdownMenu.Item href="/settings">Settings</DropdownMenu.Item>
+            <DropdownMenu.LinkItem href="/settings">
+              Settings
+            </DropdownMenu.LinkItem>
           </DropdownMenu.Content>
         </DropdownMenu>
       </LinkProvider>,
@@ -264,6 +266,27 @@ describe("DropdownMenu.Item href with LinkProvider", () => {
     const link = screen.getByText("Settings").closest("a");
     expect(link?.hasAttribute("data-router")).toBe(true);
     expect(link?.getAttribute("href")).toBe("/settings");
-    expect(link?.hasAttribute("to")).toBe(false);
+    expect(link?.getAttribute("data-kumo-part")).toBe("link-item");
+  });
+
+  it("applies the new-tab policy to external hrefs", () => {
+    render(
+      <LinkProvider router={RouterLink} externalLinks="new-tab">
+        <DropdownMenu open>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.LinkItem href="https://developers.cloudflare.com">
+              Docs
+            </DropdownMenu.LinkItem>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByText("Docs").closest("a");
+    expect(link?.hasAttribute("data-router")).toBe(false);
+    expect(link?.getAttribute("target")).toBe("_blank");
+    expect(link?.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link?.textContent).toContain("(opens in a new tab)");
   });
 });

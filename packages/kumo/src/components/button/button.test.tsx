@@ -2,7 +2,7 @@ import React from "react";
 import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Plus, type Icon } from "@phosphor-icons/react";
-import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
+import { Button, RefreshButton, buttonVariants } from "./button";
 import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 describe("Button", () => {
@@ -303,47 +303,59 @@ describe("RefreshButton", () => {
   });
 });
 
-describe("LinkButton", () => {
+describe("Button with href", () => {
   it("renders as an <a> element", () => {
-    render(<LinkButton href="/home">Home</LinkButton>);
+    render(<Button href="/home">Home</Button>);
     const link = screen.getByRole("link");
     expect(link).toBeTruthy();
     expect(link.getAttribute("href")).toBe("/home");
   });
 
   it("allows text selection", () => {
-    render(<LinkButton href="/home">Home</LinkButton>);
+    render(<Button href="/home">Home</Button>);
     const link = screen.getByRole("link");
     expect(link.classList.contains("select-text")).toBe(true);
     expect(link.classList.contains("select-none")).toBe(false);
   });
 
-  it("external sets target='_blank' and rel='noopener noreferrer'", () => {
+  it("target='_blank' adds rel='noopener noreferrer' and a new-tab cue", () => {
     render(
-      <LinkButton href="https://example.com" external>
+      <Button href="https://example.com" target="_blank">
         Docs
-      </LinkButton>,
+      </Button>,
     );
-    const link = screen.getByRole("link");
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("defaults to the secondary variant, like Button", () => {
+    render(<Button href="/home">Home</Button>);
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("data-kumo-component")).toBe("Button");
+    expect(link.getAttribute("data-kumo-part")).toBe("link");
+    expect(link.className).toContain(
+      buttonVariants({ variant: "secondary" }).split(" ")[0],
+    );
   });
 
   it("forwards ref to the <a> DOM node", () => {
     const ref = React.createRef<HTMLAnchorElement>();
     render(
-      <LinkButton ref={ref} href="/home">
+      <Button ref={ref} href="/home">
         Home
-      </LinkButton>,
+      </Button>,
     );
     expect(ref.current).toBe(screen.getByRole("link"));
   });
 
   it("title prop wraps the anchor in a Tooltip and removes the native title attribute", () => {
     render(
-      <LinkButton href="/home" title="Go to the home page">
+      <Button href="/home" title="Go to the home page">
         Home
-      </LinkButton>,
+      </Button>,
     );
     const link = screen.getByRole("link", { name: "Home" });
     // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
@@ -354,9 +366,9 @@ describe("LinkButton", () => {
   describe("disabled", () => {
     it("renders a disabled <button> instead of an <a>", () => {
       render(
-        <LinkButton href="/home" disabled>
+        <Button href="/home" disabled>
           Home
-        </LinkButton>,
+        </Button>,
       );
       const button = screen.getByRole("button", { name: "Home" });
       expect(button.tagName).toBe("BUTTON");
@@ -367,7 +379,7 @@ describe("LinkButton", () => {
 
     it("strips anchor-only attributes from the rendered button", () => {
       render(
-        <LinkButton
+        <Button
           href="/home"
           target="_blank"
           rel="noopener"
@@ -375,7 +387,7 @@ describe("LinkButton", () => {
           disabled
         >
           Home
-        </LinkButton>,
+        </Button>,
       );
       const button = screen.getByRole("button", { name: "Home" });
       expect(button.hasAttribute("href")).toBe(false);
@@ -384,21 +396,22 @@ describe("LinkButton", () => {
       expect(button.hasAttribute("download")).toBe(false);
     });
 
-    it("preserves the LinkButton data attribute", () => {
+    it("marks the disabled button as a Button link part", () => {
       render(
-        <LinkButton href="/home" disabled>
+        <Button href="/home" disabled>
           Home
-        </LinkButton>,
+        </Button>,
       );
       const button = screen.getByRole("button", { name: "Home" });
-      expect(button.getAttribute("data-kumo-component")).toBe("LinkButton");
+      expect(button.getAttribute("data-kumo-component")).toBe("Button");
+      expect(button.getAttribute("data-kumo-part")).toBe("link");
     });
 
     it("allows text selection", () => {
       render(
-        <LinkButton href="/home" disabled>
+        <Button href="/home" disabled>
           Home
-        </LinkButton>,
+        </Button>,
       );
       const button = screen.getByRole("button", { name: "Home" });
       expect(button.classList.contains("select-text")).toBe(true);
@@ -407,9 +420,9 @@ describe("LinkButton", () => {
 
     it("wraps a title in an enabled tooltip trigger around the disabled button", () => {
       render(
-        <LinkButton href="/home" disabled title="You need edit access">
+        <Button href="/home" disabled title="You need edit access">
           Home
-        </LinkButton>,
+        </Button>,
       );
       const button = screen.getByRole("button", { name: "Home" });
       const trigger = button.parentElement;
@@ -429,11 +442,11 @@ const RouterLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>(
   },
 );
 
-describe("LinkButton with LinkProvider", () => {
+describe("Button href with LinkProvider", () => {
   it("renders internal hrefs through the router with href", () => {
     render(
       <LinkProvider router={RouterLink}>
-        <LinkButton href="/settings">Settings</LinkButton>
+        <Button href="/settings">Settings</Button>
       </LinkProvider>,
     );
 
@@ -446,9 +459,9 @@ describe("LinkButton with LinkProvider", () => {
   it("announces external links and skips the router", () => {
     render(
       <LinkProvider router={RouterLink}>
-        <LinkButton href="https://example.com" external>
+        <Button href="https://example.com" target="_blank">
           Docs
-        </LinkButton>
+        </Button>
       </LinkProvider>,
     );
 

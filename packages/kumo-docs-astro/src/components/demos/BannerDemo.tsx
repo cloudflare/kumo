@@ -204,7 +204,7 @@ export function BannerWithLinksDemo() {
           <Banner.Action
             variant="secondary"
             href="https://developers.cloudflare.com/billing/"
-            external
+            target="_blank"
           >
             View docs
           </Banner.Action>

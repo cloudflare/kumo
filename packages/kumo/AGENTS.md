@@ -106,14 +106,13 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 
 ### Props (lint-enforced via `no-deprecated-props`)
 
-| Component           | Prop                                | Replacement                                              |
-| ------------------- | ----------------------------------- | -------------------------------------------------------- |
-| `Select`            | `hideLabel`                         | Use `aria-label` instead of `label` + `hideLabel={true}` |
-| `DropdownMenu.Item` | `href`                              | Use `DropdownMenu.LinkItem` for navigation               |
-| `Checkbox`          | `onChange`, `onIndeterminateChange` | Use `onCheckedChange`                                    |
-| `Banner`            | `text`, `children`                  | Use `title` and `description` props                      |
-| `TimeseriesChart`   | `formatValue`                       | Use `tooltipValueFormat`                                 |
-| `Code`              | `CodeLanguage` type                 | Use `CodeLang` type                                      |
+| Component         | Prop                                | Replacement                                              |
+| ----------------- | ----------------------------------- | -------------------------------------------------------- |
+| `Select`          | `hideLabel`                         | Use `aria-label` instead of `label` + `hideLabel={true}` |
+| `Checkbox`        | `onChange`, `onIndeterminateChange` | Use `onCheckedChange`                                    |
+| `Banner`          | `text`, `children`                  | Use `title` and `description` props                      |
+| `TimeseriesChart` | `formatValue`                       | Use `tooltipValueFormat`                                 |
+| `Code`            | `CodeLanguage` type                 | Use `CodeLang` type                                      |
 
 ## NOTES
 
