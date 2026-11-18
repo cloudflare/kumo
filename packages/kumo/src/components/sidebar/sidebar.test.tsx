@@ -853,6 +853,7 @@ describe("Sidebar.Collapsible", () => {
       flushScroll();
 
       expect(scrollTo).not.toHaveBeenCalled();
+      expect(scrollIntoView).not.toHaveBeenCalled();
     });
 
     it("does not scroll on first expand when the sidebar mounts collapsed", () => {
@@ -868,6 +869,7 @@ describe("Sidebar.Collapsible", () => {
       flushScroll();
 
       expect(scrollTo).not.toHaveBeenCalled();
+      expect(scrollIntoView).not.toHaveBeenCalled();
     });
 
     // https://github.com/cloudflare/kumo/issues/951
