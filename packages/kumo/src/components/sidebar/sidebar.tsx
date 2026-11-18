@@ -263,6 +263,62 @@ export interface SidebarScrollToItemOptions {
   behavior?: "auto" | "smooth";
 }
 
+/**
+ * Vertically scrolls the sidebar viewport that contains `target`.
+ *
+ * Assigns `scrollTop` on the viewport instead of calling `scrollIntoView`,
+ * which walks the ancestor chain and scrolls every scrollable ancestor on both
+ * axes, including the `overflow-hidden` SlidingViews track and the document.
+ */
+function scrollWithinViewport(
+  target: HTMLElement,
+  { align = "auto", behavior = "auto" }: SidebarScrollToItemOptions = {},
+) {
+  const viewport = target.closest<HTMLElement>('[data-sidebar="viewport"]');
+  if (!viewport) return;
+
+  const targetRect = target.getBoundingClientRect();
+  const viewportRect = viewport.getBoundingClientRect();
+  const viewportScaleY =
+    viewport.offsetHeight > 0 && viewportRect.height > 0
+      ? viewportRect.height / viewport.offsetHeight
+      : 1;
+  const itemScrollOffset =
+    (targetRect.top - viewportRect.top) / viewportScaleY + viewport.scrollTop;
+
+  let desired: number;
+  if (align === "center") {
+    desired =
+      itemScrollOffset - (viewport.clientHeight - target.offsetHeight) / 2;
+  } else if (align === "end") {
+    desired = itemScrollOffset - (viewport.clientHeight - target.offsetHeight);
+  } else if (align === "auto") {
+    const itemBottom = itemScrollOffset + target.offsetHeight;
+    const viewBottom = viewport.scrollTop + viewport.clientHeight;
+    if (itemScrollOffset < viewport.scrollTop) {
+      desired = itemScrollOffset;
+    } else if (itemBottom > viewBottom) {
+      desired = itemBottom - viewport.clientHeight;
+    } else {
+      return;
+    }
+  } else {
+    desired = itemScrollOffset;
+  }
+
+  const clamped = Math.max(
+    0,
+    Math.min(desired, viewport.scrollHeight - viewport.clientHeight),
+  );
+  const reducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  viewport.scrollTo({
+    top: clamped,
+    behavior: reducedMotion ? "auto" : behavior,
+  });
+}
+
 const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 /**
@@ -464,56 +520,9 @@ function SidebarProvider({
 
   const scrollToItem = useCallback(
     (id: string, options: SidebarScrollToItemOptions = {}) => {
-      const { align = "auto", behavior = "auto" } = options;
       const target = itemsRef.current.get(id);
       if (!target) return;
-      const viewport = target.closest<HTMLElement>('[data-sidebar="viewport"]');
-      if (!viewport) return;
-
-      // Manual scrollTop assignment on the viewport avoids `scrollIntoView`,
-      // which walks the ancestor chain and scrolls the document too.
-      const targetRect = target.getBoundingClientRect();
-      const viewportRect = viewport.getBoundingClientRect();
-      const viewportScaleY =
-        viewport.offsetHeight > 0 && viewportRect.height > 0
-          ? viewportRect.height / viewport.offsetHeight
-          : 1;
-      const itemScrollOffset =
-        (targetRect.top - viewportRect.top) / viewportScaleY +
-        viewport.scrollTop;
-
-      let desired: number;
-      if (align === "center") {
-        desired =
-          itemScrollOffset - (viewport.clientHeight - target.offsetHeight) / 2;
-      } else if (align === "end") {
-        desired =
-          itemScrollOffset - (viewport.clientHeight - target.offsetHeight);
-      } else if (align === "auto") {
-        const itemBottom = itemScrollOffset + target.offsetHeight;
-        const viewBottom = viewport.scrollTop + viewport.clientHeight;
-        if (itemScrollOffset < viewport.scrollTop) {
-          desired = itemScrollOffset;
-        } else if (itemBottom > viewBottom) {
-          desired = itemBottom - viewport.clientHeight;
-        } else {
-          return;
-        }
-      } else {
-        desired = itemScrollOffset;
-      }
-
-      const clamped = Math.max(
-        0,
-        Math.min(desired, viewport.scrollHeight - viewport.clientHeight),
-      );
-      const reducedMotion =
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      viewport.scrollTo({
-        top: clamped,
-        behavior: reducedMotion ? "auto" : behavior,
-      });
+      scrollWithinViewport(target, options);
     },
     [],
   );
@@ -2234,7 +2243,12 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
    * sidebar expands or collapses an open section, including the mobile drawer.
    */
   onOpenChangeComplete?: (open: boolean) => void;
-  /** Scroll the expanded content into view after opening. @default false */
+  /**
+   * After the section opens, scroll the sidebar vertically so its content is
+   * visible. Only the sidebar's own scroll area moves. Expanding the sidebar
+   * does not re-trigger it for sections that are already open.
+   * @default false
+   */
   autoScrollOnOpen?: boolean;
 }
 
@@ -2419,21 +2433,29 @@ const SidebarCollapsibleContent = forwardRef<
 
   const isContentShown = isCollapsibleContentShown(isCollapsibleOpen, sidebar);
 
+  // Auto-scroll once per open of the collapsible itself. Expanding the sidebar
+  // also reveals open sections, but that must not scroll: it would yank the
+  // viewport to whichever open section rendered last.
+  const scrollPendingRef = useRef(false);
+
   useEffect(() => {
-    if (!isContentShown || !autoScrollOnOpen) return;
+    scrollPendingRef.current = isCollapsibleOpen;
+  }, [isCollapsibleOpen]);
+
+  useEffect(() => {
+    if (!isContentShown || !autoScrollOnOpen || !scrollPendingRef.current) {
+      return;
+    }
 
     const timeout = window.setTimeout(() => {
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      contentRef.current?.scrollIntoView({
-        block: "nearest",
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-      });
+      scrollPendingRef.current = false;
+      if (contentRef.current) {
+        scrollWithinViewport(contentRef.current, { behavior: "smooth" });
+      }
     }, animationDuration);
 
     return () => window.clearTimeout(timeout);
-  }, [isContentShown, autoScrollOnOpen, animationDuration]);
+  }, [isCollapsibleOpen, isContentShown, autoScrollOnOpen, animationDuration]);
 
   // Imperatively set inert — React 18 doesn't reliably forward
   // the inert attribute as a JSX prop on initial mount.

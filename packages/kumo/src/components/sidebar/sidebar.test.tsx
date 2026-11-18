@@ -15,7 +15,14 @@ import userEvent from "@testing-library/user-event";
 import { version } from "react";
 import { renderToString } from "react-dom/server";
 import { hydrateRoot } from "react-dom/client";
-import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+} from "vite-plus/test";
 import {
   Sidebar,
   SidebarProvider,
@@ -747,43 +754,165 @@ describe("Sidebar.Collapsible", () => {
     expect(onOpenChangeComplete).toHaveBeenLastCalledWith(false);
   });
 
-  it("should scroll opened content into view when enabled", () => {
-    vi.useFakeTimers();
-    const scrollIntoView = vi.fn();
-    const originalScrollIntoViewDescriptor = Object.getOwnPropertyDescriptor(
+  describe("autoScrollOnOpen", () => {
+    const originalScrollIntoView = Object.getOwnPropertyDescriptor(
       HTMLElement.prototype,
       "scrollIntoView",
     );
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
+    let scrollIntoView: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      scrollIntoView = vi.fn();
+      Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+        configurable: true,
+        value: scrollIntoView,
+      });
     });
 
-    try {
-      render(<CollapsibleTest autoScrollOnOpen />);
-
-      fireEvent.click(screen.getByText("Compute").closest("button")!);
-      act(() => {
-        vi.advanceTimersByTime(250);
-      });
-
-      expect(scrollIntoView).toHaveBeenCalledWith({
-        block: "nearest",
-        behavior: "smooth",
-      });
-    } finally {
-      if (originalScrollIntoViewDescriptor) {
+    afterEach(() => {
+      if (originalScrollIntoView) {
         Object.defineProperty(
           HTMLElement.prototype,
           "scrollIntoView",
-          originalScrollIntoViewDescriptor,
+          originalScrollIntoView,
         );
       } else {
         delete (HTMLElement.prototype as { scrollIntoView?: unknown })
           .scrollIntoView;
       }
       vi.useRealTimers();
+    });
+
+    /** Puts `content` below the fold of a 400px-tall viewport and spies on its scroll. */
+    function stubBelowTheFold(content: HTMLElement) {
+      const viewport = content.closest<HTMLDivElement>(
+        '[data-sidebar="viewport"]',
+      )!;
+      Object.defineProperties(viewport, {
+        scrollHeight: { configurable: true, value: 2000 },
+        clientHeight: { configurable: true, value: 400 },
+        offsetHeight: { configurable: true, value: 400 },
+      });
+      viewport.getBoundingClientRect = () =>
+        ({ top: 0, bottom: 400, height: 400 }) as DOMRect;
+      Object.defineProperty(content, "offsetHeight", {
+        configurable: true,
+        value: 100,
+      });
+      content.getBoundingClientRect = () =>
+        ({ top: 800, bottom: 900, height: 100 }) as DOMRect;
+      const scrollTo = vi.fn();
+      viewport.scrollTo = scrollTo as unknown as typeof viewport.scrollTo;
+      return scrollTo;
     }
+
+    const flushScroll = () =>
+      act(() => {
+        vi.advanceTimersByTime(250);
+      });
+
+    it("scrolls only the sidebar viewport, vertically, after opening", () => {
+      render(<CollapsibleTest autoScrollOnOpen />);
+      const scrollTo = stubBelowTheFold(
+        screen.getByTestId("collapsible-content"),
+      );
+
+      fireEvent.click(screen.getByText("Compute").closest("button")!);
+      flushScroll();
+
+      expect(scrollTo).toHaveBeenCalledWith({ top: 500, behavior: "smooth" });
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    });
+
+    it("does not scroll again when the sidebar re-expands", () => {
+      const { rerender } = render(
+        <CollapsibleTest autoScrollOnOpen sidebarOpen />,
+      );
+      const scrollTo = stubBelowTheFold(
+        screen.getByTestId("collapsible-content"),
+      );
+
+      fireEvent.click(screen.getByText("Compute").closest("button")!);
+      flushScroll();
+      expect(scrollTo).toHaveBeenCalledTimes(1);
+
+      rerender(<CollapsibleTest autoScrollOnOpen sidebarOpen={false} />);
+      flushScroll();
+      rerender(<CollapsibleTest autoScrollOnOpen sidebarOpen />);
+      flushScroll();
+
+      expect(scrollTo).toHaveBeenCalledTimes(1);
+    });
+
+    // https://github.com/cloudflare/kumo/issues/951
+    it("does not shift SlidingViews when the sidebar re-expands", () => {
+      function Repro({
+        activeKey,
+        sidebarOpen,
+      }: {
+        activeKey: string;
+        sidebarOpen: boolean;
+      }) {
+        return (
+          <TestSidebar open={sidebarOpen}>
+            <SidebarSlidingViews activeKey={activeKey}>
+              <SidebarSlidingView value="main">
+                <SidebarContent>
+                  <SidebarMenu>
+                    <SidebarMenuButton>Home</SidebarMenuButton>
+                  </SidebarMenu>
+                </SidebarContent>
+              </SidebarSlidingView>
+              <SidebarSlidingView value="report">
+                <SidebarContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarCollapsible autoScrollOnOpen>
+                        <SidebarCollapsibleTrigger
+                          render={
+                            <SidebarMenuButton>
+                              Sales reports
+                              <SidebarMenuChevron />
+                            </SidebarMenuButton>
+                          }
+                        />
+                        <SidebarCollapsibleContent data-testid="report-content">
+                          <SidebarMenuSub>
+                            <SidebarMenuSubButton>Daily</SidebarMenuSubButton>
+                          </SidebarMenuSub>
+                        </SidebarCollapsibleContent>
+                      </SidebarCollapsible>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarContent>
+              </SidebarSlidingView>
+            </SidebarSlidingViews>
+          </TestSidebar>
+        );
+      }
+
+      const { rerender } = render(<Repro activeKey="report" sidebarOpen />);
+      const scrollTo = stubBelowTheFold(screen.getByTestId("report-content"));
+
+      // Open a section in the report view, then return to the main view so
+      // the report view sits off-screen to the right.
+      fireEvent.click(screen.getByText("Sales reports").closest("button")!);
+      flushScroll();
+      rerender(<Repro activeKey="main" sidebarOpen />);
+
+      rerender(<Repro activeKey="main" sidebarOpen={false} />);
+      flushScroll();
+      rerender(<Repro activeKey="main" sidebarOpen />);
+      flushScroll();
+
+      expect(scrollTo).toHaveBeenCalledTimes(1);
+      expect(scrollIntoView).not.toHaveBeenCalled();
+      const slidingViews = document.querySelector<HTMLElement>(
+        '[data-sidebar="sliding-views"]',
+      )!;
+      expect(slidingViews.scrollLeft).toBe(0);
+    });
   });
 });
 
