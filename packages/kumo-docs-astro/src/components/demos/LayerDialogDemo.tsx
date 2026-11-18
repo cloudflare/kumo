@@ -16,8 +16,8 @@ function LongContent() {
         Navigation and command shortcuts
       </div>
       <Text variant="secondary">
-        The title frame stays visible, receives a divider once content scrolls,
-        and the scroll mask indicates more content below.
+        The title frame stays visible and receives a divider once content
+        scrolls.
       </Text>
       <div className="h-96" />
     </div>

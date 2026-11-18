@@ -2,11 +2,13 @@ name: Package Preview (PR)
 
 on:
   pull_request:
-  # Also trigger on push to PR branches (for bots that push via API)
+  # Also trigger on push to PR branches (for bots that push via API),
+  # and on merges to `next` so the 3.0 branch always has an installable build
   push:
     branches:
       - "opencode/**"
       - "changeset-release/main"
+      - next
 
 permissions:
   contents: write
