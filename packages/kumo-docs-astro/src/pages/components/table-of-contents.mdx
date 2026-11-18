@@ -243,8 +243,9 @@ export default function Example({ headings }) {
 ### `TableOfContents.Item`
 
 <p>
-  Individual navigation link. Set `active` for the current section. Use the
-  `render` prop to swap the anchor for a router link or button.
+  Individual navigation link. Set `active` for the current section. Links
+  resolve through `LinkProvider`; use `render` only for non-link elements, such
+  as a button.
 </p>
 <PropsTable component="TableOfContents.Item" />
 

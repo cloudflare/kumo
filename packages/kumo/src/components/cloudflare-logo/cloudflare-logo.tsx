@@ -268,6 +268,7 @@ export const PoweredByCloudflare = forwardRef<
     return (
       <Component
         ref={ref}
+        data-kumo-component="PoweredByCloudflare"
         {...linkProps}
         className={cn(
           // Base badge styles
