@@ -56,7 +56,6 @@ export function cleanupExample(example: string): string {
  */
 const UNDEFINED_COMPONENTS = [
   "RefreshButton",
-  "LinkButton",
   "DefaultMenuBar",
   "ToastTriggerButton",
 ];

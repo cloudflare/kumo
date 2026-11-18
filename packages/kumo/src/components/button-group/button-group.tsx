@@ -24,7 +24,7 @@ export const KUMO_BUTTON_GROUP_STYLING = {
     // uniform control (the shared rings provide all the definition needed).
     "[&>*>:is(button,a)]:shadow-none [&>:is(button,a)]:shadow-none",
     // Join controls by child position rather than element type so mixed Button
-    // and LinkButton groups retain the correct outer corners. The one-level
+    // and link Button groups retain the correct outer corners. The one-level
     // descendant selectors support Button's tooltip wrapper.
     "[&>*:not(:first-child):is(button,a)]:rounded-s-none",
     "[&>*:is(button,a):has(~_:is(button,a))]:rounded-e-none",

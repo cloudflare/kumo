@@ -37,7 +37,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Badge`            | Display    | Status/label indicator                | `variant`: primary, secondary, destructive, outline, beta                                                                      |
 | `Banner`           | Feedback   | Page-level alert message              | `variant`: default, alert, error; `icon`, `onDismiss`                                                                          |
 | `Breadcrumbs`      | Display    | Navigation breadcrumb trail           | Compound: `.Link` (with `href`), `.Separator`, `.Current`; `size`: sm, base                                                    |
-| `Button`           | Action     | Clickable action trigger              | `variant`: primary, secondary, ghost, destructive, secondary-destructive, outline; `size`, `shape`, `icon`, `loading`          |
+| `Button`           | Action     | Clickable action trigger              | `variant`: primary, secondary, ghost, destructive, secondary-destructive, outline; `size`, `shape`, `icon`, `loading`, `href`  |
 | `Checkbox`         | Input      | Toggle or multi-select control        | `checked`, `onCheckedChange`, `label`, `indeterminate`                                                                         |
 | `Checkbox.Group`   | Input      | Group of checkboxes with fieldset     | `legend`, `orientation`, `allValues`, `value`, `onValueChange`                                                                 |
 | `ClipboardText`    | Action     | Copy-to-clipboard text display        | `value`, `label`                                                                                                               |
@@ -47,14 +47,14 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `CommandPalette`   | Navigation | Spotlight-style search overlay        | `.Root`, `.Input`, `.List`, `.Item`, `.ResultItem`                                                                             |
 | `DateRangePicker`  | Input      | Dual-calendar date range selector     | `onStartDateChange`, `onEndDateChange`, `size`, `timezone`                                                                     |
 | `Dialog`           | Overlay    | Modal dialog with backdrop            | `size`: sm, base, lg, xl; uses `.Root`, `.Trigger`, `.Title`, `.Close`                                                         |
-| `DropdownMenu`     | Overlay    | Context/action menu                   | `.Trigger`, `.Content`, `.Item`; item `variant`: default, danger                                                               |
+| `DropdownMenu`     | Overlay    | Context/action menu                   | `.Trigger`, `.Content`, `.Item`, `.LinkItem`; item `variant`: default, danger                                                  |
 | `Empty`            | Display    | Empty state placeholder               | `icon`, `title`, `description`, `commandLine`, `contents`                                                                      |
 | `Field`            | Input      | Form field wrapper with label/error   | `label`, `description`, `error`, `required`, `labelTooltip`                                                                    |
 | `Grid`             | Layout     | Responsive CSS grid                   | `variant`: 2up, side-by-side, 2-1, 1-2, 1-3up, 3up, 4up, 1-2-4up; `gap`: none, sm, base, lg                                    |
 | `Input`            | Input      | Text input field                      | `size`: xs, sm, base, lg; `variant`: default, error; `label`, `error`                                                          |
 | `Label`            | Other      | Form label with optional tooltip      | `children`, `tooltip`, `required`                                                                                              |
 | `LayerCard`        | Display    | Card with header and collapsible body | `title`, `tag`, `actions`, `icon`                                                                                              |
-| `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `external`                                                                          |
+| `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `target`, `newTabIcon`                                                              |
 | `Loader`           | Feedback   | Animated loading spinner              | `size`: number (default 16)                                                                                                    |
 | `MenuBar`          | Navigation | Horizontal icon toolbar               | `isActive`, `options: { icon, tooltip, onClick }[]`                                                                            |
 | `Meter`            | Display    | Progress/usage meter bar              | `value`, `max`, `label`, `size`                                                                                                |
