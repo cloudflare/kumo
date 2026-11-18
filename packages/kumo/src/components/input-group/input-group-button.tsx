@@ -5,6 +5,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { type ButtonProps, Button as ButtonExternal } from "../button/button";
 import { Tooltip, type KumoTooltipSide } from "../tooltip/tooltip";
@@ -114,7 +115,8 @@ export const Button = forwardRef<
     // internal renderIconNode renders `<Icon />` with no size prop,
     // falling back to CSS font-size (~14px).
     const contextIconSize = context
-      ? INPUT_GROUP_SIZE[context.size ?? "base"].iconSize
+      ? resolveVariant(INPUT_GROUP_SIZE, context.size ?? "base", "base")
+          .iconSize
       : undefined;
 
     const icon = unwrapLazyElement(iconProp);
@@ -145,7 +147,11 @@ export const Button = forwardRef<
           size ??
           (isIndividual
             ? (context?.size ?? "sm")
-            : (COMPACT_BUTTON_SIZE[context?.size ?? "base"] ?? "sm"))
+            : resolveVariant(
+                COMPACT_BUTTON_SIZE,
+                context?.size ?? "base",
+                "base",
+              ))
         }
         className={cn(
           // Ensure clicks register even when parent has pointer-events-none (e.g. disabled overlay)

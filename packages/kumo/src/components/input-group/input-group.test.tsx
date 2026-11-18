@@ -19,6 +19,29 @@ const FakeButton = (props: {
 }) => <button>{props.children}</button>;
 
 describe("InputGroup", () => {
+  it.each(["xs", "lg"])(
+    "falls back to base for the removed %s size instead of crashing",
+    (removedSize) => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      render(
+        // Removed sizes can still arrive from untyped callers.
+        <InputGroup size={removedSize as never} label="Search">
+          <InputGroup.Addon>
+            <svg data-testid="icon" />
+          </InputGroup.Addon>
+          <InputGroup.Input />
+          <InputGroup.Addon align="end">
+            <InputGroup.Button aria-label="Clear" shape="square" />
+          </InputGroup.Addon>
+        </InputGroup>,
+      );
+
+      expect(screen.getByRole("textbox")).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Clear" })).toBeTruthy();
+      warn.mockRestore();
+    },
+  );
+
   describe("rendering", () => {
     it("renders input with addon", () => {
       render(
