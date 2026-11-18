@@ -79,13 +79,43 @@
     text-decoration-color: currentColor;
   }
 
-  /* External link icon stroke width - thicker in dark mode for visibility */
-  .link-external-icon {
-    stroke-width: 1.75;
+  /*
+   * New-tab icon, set by useLink on links that open in a new tab.
+   * - The word joiner (U+2060) glues the icon to the last word, so it wraps
+   *   with the text instead of landing alone on the next line. Its alt text
+   *   is empty, so it stays out of the accessible name; the announcement is
+   *   a separate visually hidden span.
+   * - position: relative paints it above absolutely positioned layers, such
+   *   as the primary Button gradient.
+   * - Thicker stroke in dark mode for visibility.
+   */
+  [data-kumo-new-tab-icon]::after {
+    --kumo-new-tab-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V15'/%3E%3Cpath d='M14 4H20M20 4V10M20 4L11 13'/%3E%3C/svg%3E");
+    content: "\2060" / "";
+    position: relative;
+    flex-shrink: 0;
+    margin-inline-start: 0.1875em;
+    padding-inline-start: 1em;
+    background-color: currentColor;
+    mask: var(--kumo-new-tab-icon) no-repeat center / 1em 1em;
+    /* Forced colors mode drops backgrounds; currentColor is already a system color. */
+    forced-color-adjust: none;
   }
 
-  [data-mode="dark"] .link-external-icon {
-    stroke-width: 2;
+  /* Flex layouts space the icon with their own gap. */
+  [data-kumo-component="Button"][data-kumo-new-tab-icon]::after {
+    margin-inline-start: 0;
+  }
+
+  [data-mode="dark"] [data-kumo-new-tab-icon]::after,
+  [data-mode="dark"][data-kumo-new-tab-icon]::after {
+    --kumo-new-tab-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V15'/%3E%3Cpath d='M14 4H20M20 4V10M20 4L11 13'/%3E%3C/svg%3E");
+  }
+
+  /* The icon points right; mirror it in right-to-left text. */
+  [dir="rtl"] [data-kumo-new-tab-icon]::after,
+  [data-kumo-new-tab-icon]:dir(rtl)::after {
+    scale: -1 1;
   }
 }
 

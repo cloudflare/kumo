@@ -311,7 +311,9 @@ describe("TableOfContents links with LinkProvider", () => {
     });
     const label = screen.getByText("Spec");
     expect(label.className).toContain("truncate");
-    expect(label.parentElement?.contains(link.querySelector("svg"))).toBe(true);
+    // The icon is the link's ::after, a flex item that doesn't shrink.
+    expect(link.className).toContain("flex");
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
   });
 
   it("still renders a custom element via render", () => {

@@ -8,7 +8,6 @@ import {
   type ComponentType,
   type ReactNode,
   type RefAttributes,
-  type SVGProps,
 } from "react";
 import { useKumoLocale } from "./locale-provider";
 
@@ -253,28 +252,6 @@ export function resolveLink(
   };
 }
 
-/** Visual cue for links that open in a new tab. Decorative; the announcement is separate. */
-function NewTabIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      width="1em"
-      height="1em"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-      className="link-external-icon shrink-0"
-      {...props}
-    >
-      <path d="M9 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V15" />
-      <path d="M14 4H20M20 4V10M20 4L11 13" />
-    </svg>
-  );
-}
-
 export type UseLinkOptions = AnchorHTMLAttributes<HTMLAnchorElement> & {
   /**
    * Show the visible new-tab icon. The screen-reader announcement is always
@@ -294,9 +271,16 @@ export type LinkElementType =
 export interface UseLinkResult {
   /** Render this element. Pass your `ref` to it. */
   Component: LinkElementType;
-  /** Resolved anchor props, including `href`, `target`, `rel`, and accessible-name props. */
+  /**
+   * Resolved anchor props, including `href`, `target`, `rel`, and
+   * accessible-name props. Links that open in a new tab also get
+   * `data-kumo-new-tab-icon`, which Kumo's stylesheet uses to draw the icon.
+   */
   linkProps: AnchorHTMLAttributes<HTMLAnchorElement>;
-  /** Render inside `Component`, after the link content. `null` when the link stays in the current tab. */
+  /**
+   * Screen-reader announcement. Render it inside `Component`, after the link
+   * content. `null` when the link stays in the current tab.
+   */
   newTabCue: ReactNode;
   /** Whether the link opens in a new tab. */
   opensInNewTab: boolean;
@@ -353,15 +337,18 @@ export function useLink({
       ariaLabelledBy && resolved.opensInNewTab
         ? `${ariaLabelledBy} ${cueId}`
         : ariaLabelledBy,
+    ...(resolved.opensInNewTab && newTabIcon
+      ? { "data-kumo-new-tab-icon": "" }
+      : {}),
   };
 
+  // The visible icon is drawn by Kumo's CSS as a ::after on the link (see
+  // kumo-binding.css), so it wraps with the last word. The announcement is a
+  // real element so every screen reader reads it.
   const newTabCue = resolved.opensInNewTab ? (
-    <>
-      {newTabIcon ? <NewTabIcon /> : null}
-      <span id={cueId} className="sr-only" data-kumo-part="new-tab-cue">
-        {` ${announcement}`}
-      </span>
-    </>
+    <span id={cueId} className="sr-only" data-kumo-part="new-tab-cue">
+      {` ${announcement}`}
+    </span>
   ) : null;
 
   return {

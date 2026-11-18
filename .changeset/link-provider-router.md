@@ -88,11 +88,14 @@ Every link that opens in a new tab, whether from `target="_blank"` or from `exte
 - shows a new-tab icon (`newTabIcon={false}` hides it). Icon-only `Button href` (`shape="square"` or `"circle"`) hides the icon by default to keep its shape; pass `newTabIcon` to show it.
 - adds "(opens in a new tab)" to its accessible name, whether the link is named by its content, `aria-label`, or `aria-labelledby`. Translate it with `KumoLocaleProvider` (`translations.link.opensInNewTab`).
 
+`Link` now renders inline instead of `inline-flex`, so the icon follows the last word of wrapped text. A `Link` whose direct child is an `<svg>` or a `Badge` keeps `inline-flex` and its old alignment. If you relied on flex behavior for other content, add `className="inline-flex items-center"`.
+
 Update tests that depend on the old output:
 
 - Tests that match exact accessible names, for example `getByRole("link", { name: "Docs" })`, need the suffix: `"Docs (opens in a new tab)"`.
 - The `aria-label` attribute itself includes the suffix, and `aria-labelledby` gains the id of a visually hidden element.
-- The link contains an extra `<svg aria-hidden="true">` and a `<span class="sr-only" data-kumo-part="new-tab-cue">`, so exact `textContent` or `toHaveTextContent` checks change.
+- The link contains an extra `<span class="sr-only" data-kumo-part="new-tab-cue">`, so exact `textContent` or `toHaveTextContent` checks change.
+- The visible icon is not an element: Kumo's stylesheet draws it as a `::after` on links with the `data-kumo-new-tab-icon` attribute. Assert on that attribute instead of looking for an `<svg>`. A word joiner glues the icon to the last word, so it wraps with the text; it has empty alt text and is not part of the accessible name. Apps that don't load Kumo's CSS get the announcement but no icon.
 - Tests that looked for `data-kumo-component="LinkButton"` should look for `data-kumo-component="Button"` with `data-kumo-part="link"`.
 
 ## Added

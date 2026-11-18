@@ -208,7 +208,7 @@ describe("Link new-tab behaviour", () => {
     });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
-    expect(link.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
   });
 
   it("keeps internal links in the same tab with externalLinks='new-tab'", () => {
@@ -231,7 +231,7 @@ describe("Link new-tab behaviour", () => {
     const link = screen.getByRole("link", { name: "Docs" });
     expect(link.getAttribute("target")).toBe("_self");
     expect(link.hasAttribute("rel")).toBe(false);
-    expect(link.querySelector("svg")).toBeNull();
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
   });
 
   it("respects an explicit rel", () => {
@@ -247,6 +247,22 @@ describe("Link new-tab behaviour", () => {
     ).toBe("noopener");
   });
 
+  it("renders inline so the new-tab icon wraps with the last word", () => {
+    render(<Link href="/a">Docs</Link>);
+    expect(screen.getByRole("link").className).not.toMatch(
+      /(^| )inline-flex( |$)/,
+    );
+  });
+
+  it("keeps inline-flex alignment for links that wrap an icon or Badge", () => {
+    render(<Link href="/a">Docs</Link>);
+    const { className } = screen.getByRole("link");
+    expect(className).toContain("has-[>svg]:inline-flex");
+    expect(className).toContain(
+      "has-[>[data-kumo-component=Badge]]:inline-flex",
+    );
+  });
+
   it("hides the icon with newTabIcon={false} but keeps the announcement", () => {
     render(
       <Link href="https://example.com" target="_blank" newTabIcon={false}>
@@ -257,7 +273,7 @@ describe("Link new-tab behaviour", () => {
     const link = screen.getByRole("link", {
       name: "Example (opens in a new tab)",
     });
-    expect(link.querySelector("svg")).toBeNull();
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
   });
 
   it("appends the announcement to aria-label", () => {

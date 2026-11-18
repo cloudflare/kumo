@@ -164,6 +164,8 @@ const isClientRoute = (url: URL) => !PEER_APP_PATH.test(url.pathname);
 <p>
   For cards or other custom links, use `useLink`. It returns the element to
   render, the resolved anchor props, and the new-tab cue. Render all three.
+  The new-tab icon is drawn by Kumo's CSS from `linkProps`, so keep it as the
+  last thing in the element; the cue is a visually hidden announcement.
 </p>
 
 ```tsx

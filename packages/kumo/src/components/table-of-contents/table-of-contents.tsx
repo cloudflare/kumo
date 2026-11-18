@@ -138,16 +138,19 @@ const TableOfContentsItem = forwardRef<
           {...sharedProps}
           {...linkProps}
           ref={ref}
-          className={combinedClassName}
+          className={cn(
+            combinedClassName,
+            // Keep the new-tab icon (a ::after) visible when a long label truncates.
+            newTabCue !== null && "flex items-center",
+          )}
         >
           {newTabCue === null ? (
             innerContent
           ) : (
-            // Keep the new-tab icon visible when a long label truncates.
-            <span className="flex min-w-0 items-center gap-1 leading-5">
-              <span className="min-w-0 truncate">{children}</span>
+            <>
+              <span className="min-w-0 truncate leading-5">{children}</span>
               {newTabCue}
-            </span>
+            </>
           )}
         </Component>
       </li>
@@ -202,15 +205,19 @@ const TableOfContentsGroup = forwardRef<
             aria-current={active ? ("true" as const) : undefined}
             data-kumo-component="TableOfContents"
             data-kumo-part="group-link"
-            className={cn(ITEM_BASE, stateClasses)}
+            className={cn(
+              ITEM_BASE,
+              stateClasses,
+              newTabCue !== null && "flex items-center",
+            )}
           >
             {newTabCue === null ? (
               <span className="block min-w-0 leading-5">{label}</span>
             ) : (
-              <span className="flex min-w-0 items-center gap-1 leading-5">
-                <span className="min-w-0 truncate">{label}</span>
+              <>
+                <span className="min-w-0 truncate leading-5">{label}</span>
                 {newTabCue}
-              </span>
+              </>
             )}
           </Component>
           <ul className={cn(NESTED_UL_CLASSES)}>{children}</ul>

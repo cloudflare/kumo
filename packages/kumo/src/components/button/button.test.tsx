@@ -341,7 +341,7 @@ describe("Button with href", () => {
     );
   });
 
-  it("renders the new-tab icon inside the content layer of emphasis variants", () => {
+  it("marks emphasis-variant links for the new-tab icon", () => {
     render(
       <Button href="https://example.com" target="_blank" variant="primary">
         Docs
@@ -350,10 +350,7 @@ describe("Button with href", () => {
     const link = screen.getByRole("link", {
       name: "Docs (opens in a new tab)",
     });
-    // The gradient layer is absolutely positioned; the icon must sit in the
-    // relative content span above it, not after it.
-    const icon = link.querySelector("svg.link-external-icon");
-    expect(icon?.closest("span.relative")).not.toBeNull();
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
   });
 
   it("keeps icon-only link buttons square: announcement but no visible new-tab icon", () => {
@@ -369,7 +366,7 @@ describe("Button with href", () => {
     const link = screen.getByRole("link", {
       name: "Docs (opens in a new tab)",
     });
-    expect(link.querySelector("svg.link-external-icon")).toBeNull();
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
   });
 
   it("shows the new-tab icon on icon-only link buttons with newTabIcon", () => {
@@ -384,8 +381,8 @@ describe("Button with href", () => {
       />,
     );
     expect(
-      screen.getByRole("link").querySelector("svg.link-external-icon"),
-    ).not.toBeNull();
+      screen.getByRole("link").hasAttribute("data-kumo-new-tab-icon"),
+    ).toBe(true);
   });
 
   it("forwards ref to the <a> DOM node", () => {

@@ -540,8 +540,8 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     }
 
     const iconNode = renderIconNode(IconComponent);
-    // The cue goes inside the button content so it renders above the gradient
-    // layer of emphasis variants.
+    // The announcement goes inside the content layer, above the gradient of
+    // emphasis variants. The visible icon is the link's ::after.
     const content =
       newTabCue === null ? (
         children

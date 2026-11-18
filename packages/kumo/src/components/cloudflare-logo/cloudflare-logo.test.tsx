@@ -39,6 +39,6 @@ describe("PoweredByCloudflare", () => {
     const link = screen.getByRole("link", {
       name: "Powered by Cloudflare (opens in a new tab)",
     });
-    expect(link.querySelector("svg.link-external-icon")).toBeNull();
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
   });
 });

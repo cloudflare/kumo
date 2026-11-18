@@ -103,7 +103,9 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
       {...linkProps}
       className={cn(
         linkVariants({ variant }),
-        "group/link inline-flex items-center gap-[0.1875em] has-[>[data-kumo-component=Badge]]:rounded-full",
+        // Inline by default so the new-tab icon wraps with the last word. Links
+        // that wrap an icon or Badge keep the flex layout for alignment.
+        "group/link items-center gap-[0.1875em] has-[>[data-kumo-component=Badge]]:inline-flex has-[>[data-kumo-component=Badge]]:rounded-full has-[>svg]:inline-flex",
         className,
       )}
     >
