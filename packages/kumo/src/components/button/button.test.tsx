@@ -3,6 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Plus, type Icon } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 describe("Button", () => {
   describe("children wrapper", () => {
@@ -418,5 +419,42 @@ describe("LinkButton", () => {
       expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
       expect(trigger?.hasAttribute("disabled")).toBe(false);
     });
+  });
+});
+
+const RouterLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLink(props, ref) {
+    // oxlint-disable-next-line anchor-has-content
+    return <a ref={ref} data-router="" {...props} />;
+  },
+);
+
+describe("LinkButton with LinkProvider", () => {
+  it("renders internal hrefs through the router with href", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <LinkButton href="/settings">Settings</LinkButton>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", { name: "Settings" });
+    expect(link.hasAttribute("data-router")).toBe(true);
+    expect(link.getAttribute("href")).toBe("/settings");
+    expect(link.hasAttribute("to")).toBe(false);
+  });
+
+  it("announces external links and skips the router", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <LinkButton href="https://example.com" external>
+          Docs
+        </LinkButton>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.hasAttribute("data-router")).toBe(false);
   });
 });

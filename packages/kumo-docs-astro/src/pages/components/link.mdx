@@ -121,11 +121,12 @@ export function App() {
 ```tsx
 // Paths owned by another app on the same origin
 const PEER_APP_PATH = /^\/(?:[^/]+\/)?one(?:\/|$)/;
+const isClientRoute = (url: URL) => !PEER_APP_PATH.test(url.pathname);
 
 <LinkProvider
   router={RouterLink}
   externalLinks="new-tab"
-  isClientRoute={(url) => !PEER_APP_PATH.test(url.pathname)}
+  isClientRoute={isClientRoute}
   origin="https://dash.cloudflare.com"
 >
   <App />
@@ -140,7 +141,8 @@ const PEER_APP_PATH = /^\/(?:[^/]+\/)?one(?:\/|$)/;
   </li>
   <li>
     `isClientRoute`: return `false` to send an internal URL to a plain
-    `&lt;a&gt;` instead of the router.
+    `&lt;a&gt;` instead of the router. Define it outside the component (or
+    with `useCallback`) so it stays stable between renders.
   </li>
   <li>
     `origin`: lets Kumo treat absolute URLs on your own origin as internal

@@ -6,6 +6,8 @@ import {
   type KumoTranslations,
 } from "../../utils/locale-provider";
 import { Breadcrumbs } from "./index";
+import { forwardRef } from "react";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 function Trail(props: { "aria-label"?: string }) {
   return (
@@ -88,5 +90,30 @@ describe("Breadcrumbs", () => {
     expect(
       screen.queryByRole("navigation", { name: "Fil d'Ariane" }),
     ).toBeNull();
+  });
+});
+
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLink(props, ref) {
+    // oxlint-disable-next-line anchor-has-content
+    return <a ref={ref} data-router="" {...props} />;
+  },
+);
+
+describe("Breadcrumbs links with LinkProvider", () => {
+  it("renders links through the router with href", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <Trail />
+      </LinkProvider>,
+    );
+
+    const links = screen.getAllByRole("link", { name: "Home" });
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link.hasAttribute("data-router")).toBe(true);
+      expect(link.getAttribute("href")).toBe("/");
+      expect(link.hasAttribute("to")).toBe(false);
+    }
   });
 });

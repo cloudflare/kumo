@@ -55,6 +55,38 @@ describe("resolveLink", () => {
     ).toBe(false);
   });
 
+  it.each([
+    "/\\example.com",
+    "\\\\example.com",
+    "/\t/example.com",
+    " https://example.com",
+  ])("treats %j as external because it resolves to another host", (href) => {
+    const newTab = { ...config, externalLinks: "new-tab" as const };
+    expect(resolveLink({ href }, newTab)).toMatchObject({
+      useRouter: false,
+      href,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      opensInNewTab: true,
+    });
+  });
+
+  it("never treats absolute URLs as internal without origin", () => {
+    expect(
+      resolveLink({ href: "https://kumo.invalid/zones" }, config).useRouter,
+    ).toBe(false);
+  });
+
+  it("passes the router a normalized path for unusual same-origin hrefs", () => {
+    const withOrigin = { ...config, origin: "https://dash.cloudflare.com" };
+    expect(
+      resolveLink({ href: "\\\\dash.cloudflare.com\\zones" }, withOrigin),
+    ).toMatchObject({ useRouter: true, href: "/zones" });
+    expect(
+      resolveLink({ href: " https://dash.cloudflare.com/zones" }, withOrigin),
+    ).toMatchObject({ useRouter: true, href: "/zones" });
+  });
+
   it("ignores an invalid origin", () => {
     expect(
       resolveLink(

@@ -54,6 +54,9 @@ export interface LinkProviderProps {
    * to render a plain `<a>` instead, for example for paths owned by another
    * app on the same origin. Without `origin`, relative URLs are resolved
    * against a placeholder origin, so read `pathname`, `search`, and `hash`.
+   *
+   * Pass a stable function (module-level or `useCallback`). A new function on
+   * every render re-renders every link under the provider.
    * @default () => true
    */
   isClientRoute?: (url: URL) => boolean;
@@ -121,9 +124,17 @@ export function LinkProvider({
   );
 }
 
-const SCHEME_PATTERN = /^[a-z][a-z\d+.-]*:/i;
-// Relative URLs need a base to parse. Used only when no `origin` is configured.
-const PLACEHOLDER_ORIGIN = "http://localhost";
+// A scheme, or two leading slashes/backslashes in any mix ("//", "/\\", "\\\\"),
+// after optional leading whitespace/control characters that URL parsing strips.
+const ABSOLUTE_HREF_PATTERN =
+  // oxlint-disable-next-line no-control-regex
+  /^[\u0000-\u0020]*(?:[a-z][a-z\d+.-]*:|[\\/]{2})/i;
+// Characters the URL parser removes or rewrites. Hrefs containing them are
+// passed to the router as a normalized path rather than as written.
+const NORMALIZED_HREF_PATTERN = /[\\\t\n\r]/;
+// Base for parsing relative URLs when no `origin` is configured. `.invalid`
+// is reserved, so no real link shares this origin.
+const PLACEHOLDER_ORIGIN = new URL("https://kumo.invalid");
 const SAME_CONTEXT_TARGETS = new Set(["_self", "_parent", "_top"]);
 
 function parseOrigin(origin: string | undefined): URL | undefined {
@@ -144,22 +155,11 @@ function classifyHref(
   href: string,
   appOrigin: URL | undefined,
 ): LinkDestination {
-  const isProtocolRelative = href.startsWith("//");
-
-  if (!isProtocolRelative && !SCHEME_PATTERN.test(href)) {
-    try {
-      const url = new URL(href, appOrigin?.href ?? PLACEHOLDER_ORIGIN);
-      return { kind: "internal", url, routerHref: href };
-    } catch {
-      return { kind: "other" };
-    }
-  }
+  const base = appOrigin ?? PLACEHOLDER_ORIGIN;
 
   let url: URL;
   try {
-    url = new URL(
-      isProtocolRelative ? `${appOrigin?.protocol ?? "https:"}${href}` : href,
-    );
+    url = new URL(href, base);
   } catch {
     return { kind: "other" };
   }
@@ -168,15 +168,24 @@ function classifyHref(
     return { kind: "other" };
   }
 
-  if (appOrigin && url.origin === appOrigin.origin) {
-    return {
-      kind: "internal",
-      url,
-      routerHref: `${url.pathname}${url.search}${url.hash}`,
-    };
+  // Classify by the parsed result, not the string: "/\\evil.com" and
+  // "/\t/evil.com" look relative but resolve to another host.
+  const looksAbsolute = ABSOLUTE_HREF_PATTERN.test(href);
+  const isInternal =
+    url.origin === base.origin && (appOrigin !== undefined || !looksAbsolute);
+
+  if (!isInternal) {
+    return { kind: "external" };
   }
 
-  return { kind: "external" };
+  return {
+    kind: "internal",
+    url,
+    routerHref:
+      looksAbsolute || NORMALIZED_HREF_PATTERN.test(href)
+        ? `${url.pathname}${url.search}${url.hash}`
+        : href,
+  };
 }
 
 export interface LinkResolutionInput {

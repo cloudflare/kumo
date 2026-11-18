@@ -1,8 +1,9 @@
-import { version } from "react";
+import { forwardRef, version } from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import { CopyIcon, GearIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "./dropdown";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 function renderMenu(children: React.ReactNode) {
   return render(
@@ -237,5 +238,32 @@ describe("DropdownMenu", () => {
       expect(popup.className).toContain("bg-kumo-control");
       expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
     });
+  });
+});
+
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLink(props, ref) {
+    // oxlint-disable-next-line anchor-has-content
+    return <a ref={ref} data-router="" {...props} />;
+  },
+);
+
+describe("DropdownMenu.Item href with LinkProvider", () => {
+  it("renders internal hrefs through the router with href", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <DropdownMenu open>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item href="/settings">Settings</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByText("Settings").closest("a");
+    expect(link?.hasAttribute("data-router")).toBe(true);
+    expect(link?.getAttribute("href")).toBe("/settings");
+    expect(link?.hasAttribute("to")).toBe(false);
   });
 });
