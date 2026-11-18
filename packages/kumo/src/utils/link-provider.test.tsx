@@ -127,6 +127,33 @@ describe("resolveLink", () => {
     expect(seen?.href).toBe("https://dash.cloudflare.com/zones?q=1");
   });
 
+  it("treats an empty target like _self", () => {
+    expect(
+      resolveLink(
+        { href: "https://example.com", target: "" },
+        { ...config, externalLinks: "new-tab" },
+      ),
+    ).toMatchObject({ target: "_blank", opensInNewTab: true });
+    expect(resolveLink({ href: "/a", target: "" }, config)).toMatchObject({
+      useRouter: true,
+      target: undefined,
+      opensInNewTab: false,
+    });
+  });
+
+  it("matches target keywords case-insensitively", () => {
+    expect(resolveLink({ href: "/a", target: "_SELF" }, config)).toMatchObject({
+      useRouter: true,
+      opensInNewTab: false,
+    });
+    expect(
+      resolveLink({ href: "/a", target: "_Blank" }, config).opensInNewTab,
+    ).toBe(true);
+    expect(
+      resolveLink({ href: "/a", target: "_TOP" }, config).opensInNewTab,
+    ).toBe(false);
+  });
+
   it("treats named targets as new tabs but not _parent or _top", () => {
     expect(
       resolveLink({ href: "/a", target: "preview" }, config),

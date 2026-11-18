@@ -4,7 +4,7 @@ import { Loader } from "../loader/loader";
 import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { ResolvedLink, type UseLinkOptions } from "../../utils/link-provider";
+import { useLink, type UseLinkOptions } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
@@ -505,11 +505,19 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       icon: IconComponent,
       style,
       title,
+      newTabIcon,
       ...props
     },
     ref,
   ) => {
     const emphasisStyle = getEmphasisStyle(variant);
+    // An icon-only button keeps its square or circle shape: the new-tab icon is
+    // hidden by default, but the announcement is still part of its name.
+    const isIconOnly = shape !== "base" && React.Children.count(children) === 0;
+    const { Component, linkProps, newTabCue } = useLink({
+      ...props,
+      newTabIcon: newTabIcon ?? !isIconOnly,
+    });
 
     if (disabled) {
       // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
@@ -532,12 +540,23 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     }
 
     const iconNode = renderIconNode(IconComponent);
+    // The cue goes inside the button content so it renders above the gradient
+    // layer of emphasis variants.
+    const content =
+      newTabCue === null ? (
+        children
+      ) : (
+        <>
+          {children}
+          {newTabCue}
+        </>
+      );
     const link = (
-      <ResolvedLink
+      <Component
         ref={ref}
         data-kumo-component="Button"
         data-kumo-part="link"
-        {...props}
+        {...linkProps}
         className={cn(
           buttonVariants({ variant, size, shape }),
           getIconPaddingClasses(shape, size, iconNode, children),
@@ -546,8 +565,8 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
         )}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
       >
-        {renderButtonContent(variant, iconNode, children)}
-      </ResolvedLink>
+        {renderButtonContent(variant, iconNode, content)}
+      </Component>
     );
 
     if (title) {

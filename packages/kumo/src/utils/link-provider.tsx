@@ -221,20 +221,24 @@ export function resolveLink(
       ? undefined
       : classifyHref(href, parseOrigin(config.origin));
 
+  // Browsers treat an empty target like "_self" and match keywords such as
+  // "_blank" case-insensitively.
+  const explicitTarget = target === "" ? undefined : target;
   const resolvedTarget =
-    target ??
+    explicitTarget ??
     (destination?.kind === "external" && config.externalLinks === "new-tab"
       ? "_blank"
       : undefined);
+  const targetKeyword = resolvedTarget?.toLowerCase();
 
   const opensInNewTab =
-    resolvedTarget !== undefined && !SAME_CONTEXT_TARGETS.has(resolvedTarget);
+    targetKeyword !== undefined && !SAME_CONTEXT_TARGETS.has(targetKeyword);
 
   const useRouter =
     config.hasRouter &&
     destination?.kind === "internal" &&
     download === undefined &&
-    (resolvedTarget === undefined || resolvedTarget === "_self") &&
+    (targetKeyword === undefined || targetKeyword === "_self") &&
     (config.isClientRoute?.(destination.url) ?? true);
 
   return {

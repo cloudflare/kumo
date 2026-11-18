@@ -341,6 +341,53 @@ describe("Button with href", () => {
     );
   });
 
+  it("renders the new-tab icon inside the content layer of emphasis variants", () => {
+    render(
+      <Button href="https://example.com" target="_blank" variant="primary">
+        Docs
+      </Button>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    // The gradient layer is absolutely positioned; the icon must sit in the
+    // relative content span above it, not after it.
+    const icon = link.querySelector("svg.link-external-icon");
+    expect(icon?.closest("span.relative")).not.toBeNull();
+  });
+
+  it("keeps icon-only link buttons square: announcement but no visible new-tab icon", () => {
+    render(
+      <Button
+        href="https://example.com"
+        target="_blank"
+        shape="square"
+        icon={Plus}
+        aria-label="Docs"
+      />,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.querySelector("svg.link-external-icon")).toBeNull();
+  });
+
+  it("shows the new-tab icon on icon-only link buttons with newTabIcon", () => {
+    render(
+      <Button
+        href="https://example.com"
+        target="_blank"
+        shape="square"
+        icon={Plus}
+        aria-label="Docs"
+        newTabIcon
+      />,
+    );
+    expect(
+      screen.getByRole("link").querySelector("svg.link-external-icon"),
+    ).not.toBeNull();
+  });
+
   it("forwards ref to the <a> DOM node", () => {
     const ref = React.createRef<HTMLAnchorElement>();
     render(

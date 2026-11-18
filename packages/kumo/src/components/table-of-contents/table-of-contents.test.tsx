@@ -304,6 +304,16 @@ describe("TableOfContents links with LinkProvider", () => {
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
   });
 
+  it("truncates the label but keeps the new-tab icon visible", () => {
+    renderToc();
+    const link = screen.getByRole("link", {
+      name: "Spec (opens in a new tab)",
+    });
+    const label = screen.getByText("Spec");
+    expect(label.className).toContain("truncate");
+    expect(label.parentElement?.contains(link.querySelector("svg"))).toBe(true);
+  });
+
   it("still renders a custom element via render", () => {
     renderToc();
     expect(screen.getByRole("button", { name: "Scroll" })).toBeDefined();
