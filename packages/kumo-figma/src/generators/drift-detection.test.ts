@@ -820,7 +820,7 @@ describe("Figma Plugin - Phase 6 Magic Number Enforcement", () => {
       // Check for explicit hardcoded COMPACT_SIZE_MAP definition: { xs: 14, sm: 30, base: 36, lg: 40 }
       // This is the most drift-prone pattern - explicit recreation of button compact sizes
       const hasHardcodedCompactMap =
-        /(?:const|let|var)\s+COMPACT_SIZE_MAP[^=]*=\s*\{[^}]*xs:\s*14[^}]*sm:\s*26/.test(
+        /(?:const|let|var)\s+COMPACT_SIZE_MAP[^=]*=\s*\{[^}]*xs:\s*14[^}]*sm:\s*\d+/.test(
           content,
         );
 
