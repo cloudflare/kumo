@@ -290,3 +290,30 @@ Releases are automated through the [Changesets](https://github.com/changesets/ch
 4. Once merged, the CI pipeline automatically publishes the updated packages to npm.
 
 If you don't see a "Version Packages" PR, it means there are no unreleased changesets on `main`.
+
+Before merging a "Version Packages" PR, check the version in its title. If it proposes a new major version (e.g. `3.0.0`) before 3.0 is ready, a `major` changeset landed on `main` by mistake: remove it in a follow-up PR instead of merging.
+
+### The `next` branch (3.0)
+
+Breaking changes for the next major version are collected on the `next` branch, so `main` can keep shipping 2.x releases. Nothing is published to npm from `next`.
+
+- **PR into `next`**: removals, renames, and changed defaults, with a `major` changeset for `@cloudflare/kumo`.
+- **PR into `main`**: everything else, including deprecations, new APIs, and bug fixes. Deprecating in 2.x first gives consumers warnings before 3.0.
+- **Trying 3.0**: every PR and every merge into `next` publishes a [pkg-pr-new](https://github.com/stackblitz-labs/pkg.pr.new) preview build.
+
+#### Keeping `next` up to date
+
+A maintainer merges `main` into `next` regularly (at least weekly), after a release:
+
+```sh
+git fetch origin
+git checkout -b sync/main-into-next-YYYY-MM-DD origin/next
+git merge origin/main
+# For conflicts in generated files, regenerate instead of hand-merging:
+#   pnpm --filter @cloudflare/kumo codegen
+git push -u origin HEAD
+```
+
+Open the PR into `next` and merge it with a **merge commit** (not squash), so the next sync doesn't re-conflict. Changeset validation is skipped for `sync/*` branches targeting `next`, because the changesets for these changes were already released from `main`.
+
+When 3.0 is ready, `next` is merged into `main` and the regular "Version Packages" PR proposes `3.0.0`.
