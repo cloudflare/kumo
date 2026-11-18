@@ -489,6 +489,18 @@ export const THEME_CONFIG: ThemeConfig = {
      * Subtle variants: tinted background, darker text (flips in dark mode)
      */
 
+    // Secondary
+    "kumo-badge-secondary": {
+      newName: "",
+      description: "Secondary badge background",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-125, oklch(96.5% 0 0))",
+          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+        },
+      },
+    },
+
     // Red
     "kumo-badge-red": {
       newName: "",
