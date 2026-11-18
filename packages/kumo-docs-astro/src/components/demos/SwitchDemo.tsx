@@ -147,12 +147,6 @@ export function SwitchSizesDemo() {
         checked={true}
         onCheckedChange={() => {}}
       />
-      <Switch
-        label="Large"
-        size="lg"
-        checked={true}
-        onCheckedChange={() => {}}
-      />
     </div>
   );
 }

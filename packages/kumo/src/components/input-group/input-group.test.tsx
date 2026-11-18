@@ -336,26 +336,24 @@ describe("InputGroup", () => {
       expect(screen.getByRole("textbox")).toBeTruthy();
 
       rerender(
-        <InputGroup size="lg" label="Large">
+        <InputGroup size="base" label="Base">
           <InputGroup.Addon>
             <svg data-testid="icon" />
           </InputGroup.Addon>
-          <InputGroup.Input placeholder="Large input" />
+          <InputGroup.Input placeholder="Base input" />
         </InputGroup>,
       );
       expect(screen.getByRole("textbox")).toBeTruthy();
     });
 
     // Regression test: addon padding tokens must be static pl-/pr- strings
-    // so Tailwind JIT can detect them. Dynamic "px-N".replace() broke xs/sm.
-    it.each(["xs", "sm", "base", "lg"] as const)(
+    // so Tailwind JIT can detect them. Dynamic "px-N".replace() broke sm.
+    it.each(["sm", "base"] as const)(
       "start addon has correct padding class for size %s",
       (size: KumoInputSize) => {
         const labels: Record<KumoInputSize, string> = {
-          xs: "Extra Small",
           sm: "Small",
           base: "Base (default)",
-          lg: "Large",
         };
         render(
           <InputGroup size={size} label={labels[size]}>
@@ -372,9 +370,9 @@ describe("InputGroup", () => {
       },
     );
 
-    it("uses compact end spacing for a button in a large group", () => {
+    it("uses compact end spacing for a button in a base group", () => {
       render(
-        <InputGroup size="lg" label="Search">
+        <InputGroup size="base" label="Search">
           <InputGroup.Input />
           <InputGroup.Addon align="end">
             <InputGroup.Button aria-label="Clear" shape="square" />
@@ -385,14 +383,14 @@ describe("InputGroup", () => {
       const button = screen.getByRole("button", { name: "Clear" });
       const addon = button.closest("[data-slot=input-group-addon-end]")!;
 
-      expect(INPUT_GROUP_SIZE.lg.addonButtonOuterEnd).toBe("pr-0.5");
-      expect(addon.className).toContain("pr-0.5");
+      expect(INPUT_GROUP_SIZE.base.addonButtonOuterEnd).toBe("pr-1");
+      expect(addon.className).toContain("pr-1");
     });
 
     // Ensure all addonOuter tokens are static directional classes
     // (not symmetric px- that would need runtime string replacement)
     it("all addon tokens use static pl-/pr- classes (not px-)", () => {
-      for (const size of ["xs", "sm", "base", "lg"] as const) {
+      for (const size of ["sm", "base"] as const) {
         const tokens = INPUT_GROUP_SIZE[size];
         expect(tokens.addonOuterStart).toMatch(/^pl-/);
         expect(tokens.addonOuterEnd).toMatch(/^pr-/);
@@ -579,7 +577,7 @@ describe("InputGroup", () => {
       );
     });
 
-    it.each(["xs", "sm", "base", "lg"] as const)(
+    it.each(["sm", "base"] as const)(
       "passes correct icon size for InputGroup size %s",
       (groupSize: KumoInputSize) => {
         render(

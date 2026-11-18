@@ -28,11 +28,10 @@ export type BannerActionVariant = Extract<
 >;
 
 /**
- * Size of a `Banner.Action`, matching the equivalent `Button` size specs.
- * - `"xs"` — extra small for dense/compact banners.
+ * Size of a `Banner.Action`, matching the equivalent `Button` size spec.
  * - `"sm"` — small (default), the standard banner CTA size.
  */
-export type BannerActionSize = Extract<KumoButtonSize, "xs" | "sm">;
+export type BannerActionSize = Extract<KumoButtonSize, "sm">;
 
 /** Value shared from the `Banner` root to its `Banner.Action` children. */
 export interface BannerActionContextValue {
@@ -46,8 +45,8 @@ export interface BannerActionContextValue {
  * Propagates the banner's variant and action size to `Banner.Action`
  * children so each CTA can self-style without prop drilling:
  * - `variant` — selects the matching accent color.
- * - `size` — a compact `size="sm"` banner renders actions at `"xs"`, and a
- *   `"base"` banner renders them at `"sm"`.
+ * - `size` — the action size derived from the banner's size (currently `"sm"`
+ *   for every banner size).
  *
  * The `Banner` root always overrides these defaults via a Provider; the literals
  * mirror a default, base-size banner (kept as literals to avoid a runtime import

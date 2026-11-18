@@ -32,7 +32,8 @@ export const KUMO_CLIPBOARD_TEXT_VARIANTS = {
     },
     lg: {
       classes: "text-sm",
-      buttonSize: "lg" as const,
+      // Button/Input no longer have an `lg` size; render at the `base` control size.
+      buttonSize: "base" as const,
       description: "Large clipboard text for prominent display",
     },
   },

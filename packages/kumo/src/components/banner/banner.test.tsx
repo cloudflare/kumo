@@ -121,7 +121,7 @@ describe("Banner", () => {
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
     expect(link.className).toContain("ring-kumo-danger/50");
-    expect(link.className).toContain("h-5");
+    expect(link.className).toContain("h-6.5");
   });
 
   it("routes link actions through LinkProvider", () => {
@@ -230,7 +230,7 @@ describe("Banner", () => {
     expect(className).not.toContain("items-start");
   });
 
-  it("defaults Banner.Action children to xs in an sm banner", () => {
+  it("defaults Banner.Action children to sm in an sm banner", () => {
     render(
       <Banner
         size="sm"
@@ -241,9 +241,8 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    // Inherits the banner's size => xs (h-5), not the standalone sm default (h-6.5).
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
   });
 
   it("matches an icon-only action to the text action height in an sm banner", () => {
@@ -263,9 +262,9 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
-    expect(cta.className).not.toContain("size-3.5");
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
+    expect(cta.className).not.toContain("size-6.5");
   });
 
   it("renders title and description inline in an sm banner", () => {

@@ -146,9 +146,9 @@ describe("InputArea Generator - WithLabel Configuration", () => {
 });
 
 describe("InputArea Generator - Size Dimensions Calculation", () => {
-  it("should calculate dimensions for xs size", () => {
-    const dims = getInputAreaSizeDimensions("xs");
-    expect(dims.size).toBe("xs");
+  it("should calculate dimensions for sm size", () => {
+    const dims = getInputAreaSizeDimensions("sm");
+    expect(dims.size).toBe("sm");
     expect(typeof dims.minHeight).toBe("number");
     expect(typeof dims.paddingX).toBe("number");
     expect(typeof dims.paddingY).toBe("number");
@@ -157,23 +157,9 @@ describe("InputArea Generator - Size Dimensions Calculation", () => {
     expect(typeof dims.width).toBe("number");
   });
 
-  it("should calculate dimensions for sm size", () => {
-    const dims = getInputAreaSizeDimensions("sm");
-    expect(dims.size).toBe("sm");
-    expect(typeof dims.minHeight).toBe("number");
-    expect(typeof dims.paddingX).toBe("number");
-  });
-
   it("should calculate dimensions for base size", () => {
     const dims = getInputAreaSizeDimensions("base");
     expect(dims.size).toBe("base");
-    expect(typeof dims.minHeight).toBe("number");
-    expect(typeof dims.paddingX).toBe("number");
-  });
-
-  it("should calculate dimensions for lg size", () => {
-    const dims = getInputAreaSizeDimensions("lg");
-    expect(dims.size).toBe("lg");
     expect(typeof dims.minHeight).toBe("number");
     expect(typeof dims.paddingX).toBe("number");
   });

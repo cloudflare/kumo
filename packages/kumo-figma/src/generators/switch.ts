@@ -101,7 +101,6 @@ function parseSwitchDimensions(size: string): {
   // These values are derived from Tailwind fractional classes in switch.tsx:
   // sm: h-5.5 w-8.5 (5.5*4=22px, 8.5*4=34px)
   // base: h-6.5 w-10.5 (6.5*4=26px, 10.5*4=42px)
-  // lg: h-7.5 w-12.5 (7.5*4=30px, 12.5*4=50px)
   //
   // FALLBACK ONLY: These hardcoded values are only used if regex parsing of
   // sizeProp.classes fails. The primary source is the registry classes which
@@ -111,7 +110,6 @@ function parseSwitchDimensions(size: string): {
     {
       sm: { width: 34, height: 22 }, // h-5.5 w-8.5 = 5.5*4, 8.5*4
       base: { width: 42, height: 26 }, // h-6.5 w-10.5 = 6.5*4, 10.5*4
-      lg: { width: 50, height: 30 }, // h-7.5 w-12.5 = 7.5*4, 12.5*4
     };
   return fallbackDimensions[size] || fallbackDimensions.base;
 }

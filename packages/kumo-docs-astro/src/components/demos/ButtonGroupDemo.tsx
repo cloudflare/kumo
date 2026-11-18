@@ -66,7 +66,7 @@ export function ButtonGroupSecondaryDemo() {
  * Match the `size` on both buttons to keep the split button aligned.
  */
 export function ButtonGroupSizesDemo() {
-  const sizes = ["sm", "base", "lg"] as const;
+  const sizes = ["sm", "base"] as const;
   return (
     <div className="flex flex-wrap items-center gap-4">
       {sizes.map((size) => (

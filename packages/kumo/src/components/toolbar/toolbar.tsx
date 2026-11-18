@@ -19,10 +19,6 @@ import { InputGroup } from "../input-group/input-group";
 /** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
 export const KUMO_TOOLBAR_VARIANTS = {
   size: {
-    xs: {
-      classes: "text-xs",
-      description: "Extra small toolbar for compact UIs",
-    },
     sm: {
       classes: "text-xs",
       description: "Small toolbar for secondary controls",
@@ -30,10 +26,6 @@ export const KUMO_TOOLBAR_VARIANTS = {
     base: {
       classes: "text-base",
       description: "Default toolbar size",
-    },
-    lg: {
-      classes: "text-base",
-      description: "Large toolbar for prominent controls",
     },
   },
 } as const;

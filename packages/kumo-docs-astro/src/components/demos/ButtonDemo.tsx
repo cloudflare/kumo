@@ -42,17 +42,11 @@ export function ButtonSecondaryDestructiveDemo() {
 export function ButtonSizesDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button size="xs" variant="secondary">
-        Extra Small
-      </Button>
       <Button size="sm" variant="secondary">
         Small
       </Button>
       <Button size="base" variant="secondary">
         Base
-      </Button>
-      <Button size="lg" variant="secondary">
-        Large
       </Button>
     </div>
   );

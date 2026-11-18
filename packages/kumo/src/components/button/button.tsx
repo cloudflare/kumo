@@ -26,12 +26,8 @@ export const KUMO_BUTTON_VARIANTS = {
   // Each size leaves a whole-pixel gap between the label's line box and the
   // button edge. text-base's 21px line box would leave 7.5px in h-9, and
   // browsers round the text up or down depending on where the button lands
-  // on the page, so base and lg use a 20px line box instead.
+  // on the page, so base uses a 20px line box instead.
   size: {
-    xs: {
-      classes: "h-5 gap-1 rounded-sm px-1.5 text-xs",
-      description: "Extra small button for compact UIs",
-    },
     sm: {
       classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
       description: "Small button for secondary actions",
@@ -40,16 +36,10 @@ export const KUMO_BUTTON_VARIANTS = {
       classes: "h-9 gap-1.5 rounded-lg px-3 text-base leading-5",
       description: "Default button size",
     },
-    lg: {
-      classes: "h-10 gap-2 rounded-lg px-4 text-base leading-5",
-      description: "Large button for primary CTAs",
-    },
   },
   compactSize: {
-    xs: { classes: "size-3.5" },
     sm: { classes: "size-6.5" },
     base: { classes: "size-9" },
-    lg: { classes: "size-10" },
   },
   variant: {
     primary: {
@@ -107,10 +97,8 @@ export interface KumoButtonVariantsProps {
   shape?: KumoButtonShape;
   /**
    * Button size.
-   * - `"xs"` — Extra small for compact UIs
    * - `"sm"` — Small for secondary actions
    * - `"base"` — Default size
-   * - `"lg"` — Large for primary CTAs
    * @default "base"
    */
   size?: KumoButtonSize;
@@ -169,10 +157,8 @@ export function buttonVariants({
 // Icons carry built-in whitespace inside their viewBox, so trim the leading
 // padding of icon + text buttons to optically match the trailing padding.
 const ICON_LEADING_PADDING: Record<KumoButtonSize, string> = {
-  xs: "pl-1",
   sm: "pl-1.5",
   base: "pl-2.5",
-  lg: "pl-3.5",
 };
 
 const getIconPaddingClasses = (
@@ -404,7 +390,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         titleLabel && { "aria-label": titleLabel }),
     };
     const iconNode = loading ? (
-      <Loader size={size === "lg" ? 16 : 14} />
+      <Loader size={14} />
     ) : (
       renderIconNode(IconComponent)
     );
@@ -465,7 +451,6 @@ export const RefreshButton = ({
         "animate-refresh": loading,
         "size-4.5": props.size === "base" || !props.size,
         "size-4": props.size === "sm",
-        "size-5": props.size === "lg",
       })}
     />
   </Button>

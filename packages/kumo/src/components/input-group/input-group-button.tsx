@@ -17,14 +17,13 @@ import {
 
 /**
  * In container mode, buttons render "one size down" so they stay visually
- * subordinate to the input.  In individual mode the size passes through
- * unchanged (pagination / toolbar buttons should match the input height).
+ * subordinate to the input (`sm` is the smallest button size, so `sm` groups
+ * keep `sm` buttons). In individual mode the size passes through unchanged
+ * (pagination / toolbar buttons should match the input height).
  */
 const COMPACT_BUTTON_SIZE: Record<KumoInputSize, KumoInputSize> = {
-  xs: "xs",
-  sm: "xs",
+  sm: "sm",
   base: "sm",
-  lg: "base",
 };
 
 export type InputGroupButtonProps = ButtonProps & {

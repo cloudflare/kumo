@@ -118,8 +118,9 @@ export function Label({
           render={
             <Button
               variant="ghost"
-              size="xs"
+              size="sm"
               shape="square"
+              className="size-3.5 rounded-sm"
               aria-label={resolvedTooltipLabel}
             >
               <Info className="size-4" />

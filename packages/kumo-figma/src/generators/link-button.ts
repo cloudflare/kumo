@@ -4,7 +4,7 @@ import { logComplete } from "../logger";
  *
  * Generates LinkButton ComponentSet in Figma with properties:
  * - variant: primary, secondary, ghost, destructive, secondary-destructive, outline
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - hasIcon: true, false
  *
  * LinkButton is an anchor-styled button for navigation.
@@ -467,8 +467,8 @@ export function getAllLinkButtonVariantData() {
       getLinkButtonLayoutData("primary", "base", false),
       // Ghost + base + with icon (typical for link buttons)
       getLinkButtonLayoutData("ghost", "base", true),
-      // Destructive + lg + with icon
-      getLinkButtonLayoutData("destructive", "lg", true),
+      // Destructive + sm + with icon
+      getLinkButtonLayoutData("destructive", "sm", true),
     ],
   };
 }

@@ -5,7 +5,7 @@
  * the Button component props exactly:
  *
  * - variant: primary, secondary, ghost, destructive, secondary-destructive, outline
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - shape: base, square, circle
  * - disabled: true, false
  * - loading: true, false
@@ -167,10 +167,8 @@ export function getButtonParsedShapeStyles(shape: string) {
  * Parses size-* Tailwind classes to derive pixel values.
  *
  * Source: button.tsx KUMO_BUTTON_VARIANTS.compactSize
- * - xs: size-3.5 = 14px
  * - sm: size-6.5 = 26px
  * - base: size-9 = 36px
- * - lg: size-10 = 40px
  *
  * Note: compactSize is not yet exported to component-registry.json,
  * so we use the class strings directly from the React component.
@@ -178,10 +176,8 @@ export function getButtonParsedShapeStyles(shape: string) {
 export function getCompactSizeMap(): Record<string, number> {
   // Compact size classes from KUMO_BUTTON_VARIANTS.compactSize in button.tsx
   const compactSizeClasses: Record<string, string> = {
-    xs: "size-3.5",
     sm: "size-6.5",
     base: "size-9",
-    lg: "size-10",
   };
 
   const result: Record<string, number> = {};
@@ -502,8 +498,7 @@ async function createButtonComponent(
 
   // Add loader for loading state
   if (loading) {
-    const loaderSize = size === "lg" ? 16 : 14;
-    const loader = createLoader(loaderSize);
+    const loader = createLoader(14);
     component.appendChild(loader);
   }
 
@@ -727,7 +722,7 @@ export async function generateButtonComponents(
   ];
 
   // Define column headers for shape rows (sizes)
-  const shapeColumnHeaders = ["xs", "sm", "base", "lg"];
+  const shapeColumnHeaders = ["sm", "base"];
 
   // Track shape section column headers separately
   const shapeColumnHeaderPositions: { x: number; text: string }[] = [];

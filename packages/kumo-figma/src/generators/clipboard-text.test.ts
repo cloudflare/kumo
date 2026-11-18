@@ -57,14 +57,15 @@ describe("ClipboardText Generator - Styling Section Structure", () => {
     expect(clipboardTextStyling.inputStyles.base.length).toBeGreaterThan(0);
   });
 
-  it("should have inputStyles.sizes defined for all sizes", () => {
+  it("should have inputStyles.sizes defined for every size's buttonSize", () => {
     for (const size of sizeProp.values) {
-      expect(clipboardTextStyling.inputStyles.sizes[size]).toBeDefined();
-      expect(typeof clipboardTextStyling.inputStyles.sizes[size]).toBe(
+      const inputSize = clipboardTextStyling.sizeVariants[size].buttonSize;
+      expect(clipboardTextStyling.inputStyles.sizes[inputSize]).toBeDefined();
+      expect(typeof clipboardTextStyling.inputStyles.sizes[inputSize]).toBe(
         "string",
       );
       expect(
-        clipboardTextStyling.inputStyles.sizes[size].length,
+        clipboardTextStyling.inputStyles.sizes[inputSize].length,
       ).toBeGreaterThan(0);
     }
   });
@@ -183,14 +184,14 @@ describe("ClipboardText Generator - Parser Integration", () => {
 
   describe("inputStyles.sizes parsing", () => {
     it("should parse all inputStyles.sizes without errors", () => {
-      for (const size of sizeProp.values) {
+      for (const size of Object.keys(clipboardTextStyling.inputStyles.sizes)) {
         const classes = clipboardTextStyling.inputStyles.sizes[size];
         expect(() => parseTailwindClasses(classes)).not.toThrow();
       }
     });
 
     it("should produce valid types for all inputStyles.sizes", () => {
-      for (const size of sizeProp.values) {
+      for (const size of Object.keys(clipboardTextStyling.inputStyles.sizes)) {
         const classes = clipboardTextStyling.inputStyles.sizes[size];
         const parsed = parseTailwindClasses(classes);
         expectValidParsedTypes(parsed);
@@ -198,7 +199,7 @@ describe("ClipboardText Generator - Parser Integration", () => {
     });
 
     it("should produce positive layout values for all inputStyles.sizes", () => {
-      for (const size of sizeProp.values) {
+      for (const size of Object.keys(clipboardTextStyling.inputStyles.sizes)) {
         const classes = clipboardTextStyling.inputStyles.sizes[size];
         const parsed = parseTailwindClasses(classes);
         expectPositiveLayoutValues(parsed);
