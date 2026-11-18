@@ -26,6 +26,20 @@ describe("Text", () => {
     expect(heading?.classList.contains("font-semibold")).toBe(true);
   });
 
+  it("renders a compact, muted heading element with a copy variant", () => {
+    const { getByRole } = render(
+      <Text as="h2" variant="secondary" size="base" bold>
+        Payment method
+      </Text>,
+    );
+    const heading = getByRole("heading", { level: 2, name: "Payment method" });
+
+    expect(heading.classList.contains("text-kumo-subtle")).toBe(true);
+    expect(heading.classList.contains("text-kumo-default")).toBe(false);
+    expect(heading.classList.contains("text-base/[inherit]")).toBe(true);
+    expect(heading.classList.contains("font-medium")).toBe(true);
+  });
+
   it("renders body variant as <p> by default", () => {
     const { container } = render(<Text>Body copy</Text>);
     expect(container.querySelector("p")).toBeTruthy();
