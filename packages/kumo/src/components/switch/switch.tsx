@@ -264,7 +264,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
             base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
           };
-          const s = sizeStyles[size];
+          const s = resolveVariant(sizeStyles, size, "base");
 
           // Track colors based on variant
           const trackColors = isNeutral
@@ -416,7 +416,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
               base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
             };
-            const s = sizeStyles[size];
+            const s = resolveVariant(sizeStyles, size, "base");
 
             // Track colors based on variant
             const trackColors = isNeutral

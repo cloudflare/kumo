@@ -3,6 +3,7 @@ import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { buttonVariants } from "../button";
 import { KUMO_INPUT_VARIANTS, type KumoInputSize } from "../input/input";
 import { SkeletonLine } from "../loader";
@@ -516,11 +517,11 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       <SelectBase.Icon
         className={cn(
           "flex shrink-0 items-center",
-          triggerIconStyles[size].className,
+          resolveVariant(triggerIconStyles, size, "base").className,
         )}
       >
         <CaretUpDownIcon
-          size={triggerIconStyles[size].iconSize}
+          size={resolveVariant(triggerIconStyles, size, "base").iconSize}
           className="fill-current"
         />
       </SelectBase.Icon>

@@ -307,7 +307,7 @@ function TriggerValue({
   ...triggerProps
 }: TriggerValueProps) {
   const { size, hasError } = useContext(ComboboxContext);
-  const iconStyles = triggerValueIconStyles[size];
+  const iconStyles = resolveVariant(triggerValueIconStyles, size, "base");
 
   return (
     <ComboboxBase.Trigger
@@ -372,7 +372,7 @@ function TriggerInput({
   showOptionsLabel?: string;
 }) {
   const { size, hasError } = useContext(ComboboxContext);
-  const iconStyles = triggerInputIconStyles[size];
+  const iconStyles = resolveVariant(triggerInputIconStyles, size, "base");
 
   return (
     <div
@@ -592,7 +592,7 @@ function TriggerMultipleWithInput<ValueType>({
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "flex flex-col",
         "gap-1 px-1.5 py-1",
-        sizeToMinHeight[size],
+        resolveVariant(sizeToMinHeight, size, "base"),
         "h-auto",
         "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,

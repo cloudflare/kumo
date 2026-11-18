@@ -32,7 +32,7 @@ export const KUMO_BUTTON_VARIANTS = {
     secondary: { classes: "bg-kumo-elevated ...", description: "Secondary action" },
     // ...
   },
-  size: { xs: {...}, sm: {...}, base: {...}, lg: {...} },
+  size: { sm: {...}, base: {...} },
   shape: { base: {...}, square: {...}, circle: {...} }
 } as const;
 

@@ -7,6 +7,7 @@ import React, {
 import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import type { InputState } from "@base-ui/react/input";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   Button as KumoButton,
   LinkButton as KumoLinkButton,
@@ -107,7 +108,7 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
           "[&>*:first-child]:rounded-l-lg [&>*:not([aria-hidden='true']):not([type='hidden']):not(:has(~_:not([aria-hidden='true']):not([type='hidden'])))]:rounded-r-lg",
           "[&>*_[data-kumo-toolbar-input]:focus]:rounded-[inherit]",
           "[&>*:not([aria-hidden='true']):not(:first-child)]:border-l [&>*:not([aria-hidden='true']):not(:first-child)]:border-kumo-line",
-          KUMO_TOOLBAR_VARIANTS.size[size].classes,
+          resolveVariant(KUMO_TOOLBAR_VARIANTS.size, size, "base").classes,
           className,
         )}
         {...props}
