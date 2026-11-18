@@ -240,7 +240,7 @@ function getShadowLayer(
  */
 export const SHADOWS = {
   /** Extra small shadow - minimal elevation
-   *  Used for: Surface, MenuBar, subtle elevation
+   *  Used for: LayerCard, subtle elevation
    *  Matches Tailwind: shadow-xs
    *  Generated from theme-data.json
    */
@@ -316,13 +316,13 @@ export const SHADOWS = {
 export const GRID_LAYOUT = {
   /** Vertical gap between component rows (common: 24-80px depending on component density) */
   rowGap: {
-    /** Compact spacing for dense components (e.g., tabs, menubar, clipboard-text) */
+    /** Compact spacing for dense components (e.g., tabs, clipboard-text) */
     compact: 24,
     /** Medium spacing for standard components (e.g., badge, breadcrumbs, empty, meter) */
     medium: 40,
     /** Standard spacing for most components (e.g., banner, checkbox, switch, pagination) */
     standard: 48,
-    /** Spacious layout for large components (e.g., refresh-button, code-block) */
+    /** Spacious layout for large components (e.g., refresh-button) */
     spacious: 60,
     /** Extra spacious for complex components (e.g., button, link-button) */
     extraSpacious: 80,
@@ -335,9 +335,9 @@ export const GRID_LAYOUT = {
     compact: 120,
     /** Small width for slightly longer labels (e.g., clipboard-text, refresh-button) */
     small: 140,
-    /** Standard width for typical labels (e.g., code, banner, menubar, tabs, text, layer-card) */
+    /** Standard width for typical labels (e.g., banner, tabs, text, layer-card) */
     standard: 160,
-    /** Medium width for longer labels (e.g., badge, breadcrumbs, empty, meter, pagination, checkbox, dropdown, date-range-picker, select, combobox) */
+    /** Medium width for longer labels (e.g., badge, breadcrumbs, empty, meter, pagination, checkbox, dropdown, select, combobox) */
     medium: 180,
     /** Wide for complex labels (e.g., input, input-area) */
     wide: 200,
