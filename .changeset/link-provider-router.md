@@ -46,7 +46,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 ### `LinkButton` → `Button` with `href`
 
 - `LinkButton` and `LinkButtonProps` are removed. Replace `<LinkButton href="…">` with `<Button href="…">`.
-- `Button` defaults to `variant="secondary"`. `LinkButton` defaulted to `"ghost"`, so add `variant="ghost"` where you relied on that default.
+- `href` only changes the element, not the styling: a `Button href` takes the same `variant`, `size`, and `shape` defaults as any `Button` (`variant="secondary"`). `LinkButton` had its own default of `"ghost"`, so a `LinkButton` without a `variant` needs `variant="ghost"` to look the same.
 - `external` (and the undocumented `linksExternal`) are removed. Use the provider's `externalLinks="new-tab"`, or `target="_blank"` on the button.
 - An icon-only `Button href` (`shape="square"` or `"circle"`) now requires `aria-label`, `aria-labelledby`, or `title`, like an icon-only `Button`. `loading` isn't accepted with `href`.
 - A disabled `Button href` still renders a disabled `<button>` instead of a link, with the same behavior as any disabled `Button`.
