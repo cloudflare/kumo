@@ -28,14 +28,12 @@ import { paginationVariants } from "../components/pagination/pagination";
 import { dialogVariants } from "../components/dialog/dialog";
 import { emptyVariants } from "../components/empty/empty";
 import { breadcrumbsVariants } from "../components/breadcrumbs/breadcrumbs";
-import { surfaceVariants } from "../components/surface/surface";
 import { loaderVariants } from "../components/loader/loader";
 import { comboboxVariants } from "../components/combobox/combobox";
 import { gridVariants } from "../components/grid/grid";
 import { clipboardTextVariants } from "../components/clipboard-text/clipboard-text";
 import { autocompleteVariants } from "../components/autocomplete/autocomplete";
 import { badgeVariants } from "../components/badge/badge";
-import { codeVariants } from "../components/code/code";
 import { switchVariants } from "../components/switch/switch";
 import { selectVariants } from "../components/select/select";
 
@@ -117,11 +115,6 @@ describe("variant functions survive invalid variant values", () => {
     expect(typeof breadcrumbsVariants({ size: BOGUS })).toBe("string");
   });
 
-  it("surfaceVariants", () => {
-    expect(() => surfaceVariants({ color: BOGUS })).not.toThrow();
-    expect(typeof surfaceVariants({ color: BOGUS })).toBe("string");
-  });
-
   it("loaderVariants", () => {
     expect(() => loaderVariants({ size: BOGUS })).not.toThrow();
     expect(typeof loaderVariants({ size: BOGUS })).toBe("number");
@@ -153,11 +146,6 @@ describe("variant functions survive invalid variant values", () => {
     ).not.toThrow();
     expect(typeof badgeVariants({ variant: BOGUS })).toBe("string");
     expect(typeof badgeVariants({ appearance: BOGUS })).toBe("string");
-  });
-
-  it("codeVariants", () => {
-    expect(() => codeVariants({ lang: BOGUS })).not.toThrow();
-    expect(typeof codeVariants({ lang: BOGUS })).toBe("string");
   });
 
   it("switchVariants", () => {

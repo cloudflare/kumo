@@ -96,10 +96,6 @@
       "types": "./dist/components/cloudflare-logo.d.ts",
       "import": "./dist/components/cloudflare-logo.js"
     },
-    "./components/code": {
-      "types": "./dist/components/code.d.ts",
-      "import": "./dist/components/code.js"
-    },
     "./components/collapsible": {
       "types": "./dist/components/collapsible.d.ts",
       "import": "./dist/components/collapsible.js"
@@ -115,10 +111,6 @@
     "./components/date-picker": {
       "types": "./dist/components/date-picker.d.ts",
       "import": "./dist/components/date-picker.js"
-    },
-    "./components/date-range-picker": {
-      "types": "./dist/components/date-range-picker.d.ts",
-      "import": "./dist/components/date-range-picker.js"
     },
     "./components/dialog": {
       "types": "./dist/components/dialog.d.ts",
@@ -176,10 +168,6 @@
       "types": "./dist/components/loader.d.ts",
       "import": "./dist/components/loader.js"
     },
-    "./components/menubar": {
-      "types": "./dist/components/menubar.d.ts",
-      "import": "./dist/components/menubar.js"
-    },
     "./components/meter": {
       "types": "./dist/components/meter.d.ts",
       "import": "./dist/components/meter.js"
@@ -211,10 +199,6 @@
     "./components/slider": {
       "types": "./dist/components/slider.d.ts",
       "import": "./dist/components/slider.js"
-    },
-    "./components/surface": {
-      "types": "./dist/components/surface.d.ts",
-      "import": "./dist/components/surface.js"
     },
     "./components/switch": {
       "types": "./dist/components/switch.d.ts",

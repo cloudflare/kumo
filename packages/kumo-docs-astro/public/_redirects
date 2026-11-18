@@ -1,7 +1,8 @@
 # Renamed routes — keep old URLs working
-/components/menubar /components/menu-bar 301
-/components/menubar/ /components/menu-bar/ 301
-
-# Deprecated components
+# Removed components
+/components/menubar /components/tabs 301
+/components/menubar/ /components/tabs/ 301
+/components/menu-bar /components/tabs 301
+/components/menu-bar/ /components/tabs/ 301
 /components/date-range-picker /components/date-picker 301
 /components/date-range-picker/ /components/date-picker/ 301

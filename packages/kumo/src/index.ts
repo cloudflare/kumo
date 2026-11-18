@@ -11,11 +11,11 @@
  *
  * **Component categories:**
  * - **Action:** Button, ClipboardText, InlineCopyText
- * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Surface (deprecated), Text
+ * - **Display:** Badge, Breadcrumbs, Empty, LayerCard, Meter, Text
  * - **Feedback:** Banner, Loader, Toast
- * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
- * - **Layout:** Grid, Surface
- * - **Navigation:** CommandPalette, MenuBar (deprecated), Pagination, Tabs
+ * - **Input:** Checkbox, Combobox, DatePicker, Field, Input, Radio, Select, SensitiveInput, Switch
+ * - **Layout:** Grid
+ * - **Navigation:** CommandPalette, Pagination, Tabs
  * - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
  * - **Other:** Label, Link
  *
@@ -39,10 +39,6 @@ export {
   type ButtonProps,
   type LinkButtonProps,
 } from "./components/button";
-/**
- * @deprecated Use {@link DatePicker} with `mode="range"` instead.
- */
-export { DateRangePicker } from "./components/date-range-picker";
 export {
   Checkbox,
   type CheckboxProps,
@@ -58,7 +54,6 @@ export {
   type InlineCopyTextLabels,
   type InlineCopyTextProps,
 } from "./components/inline-copy-text";
-export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
 export {
   Toolbar,
@@ -135,17 +130,9 @@ export {
   type DeleteResourceProps,
 } from "./blocks/delete-resource";
 export { Loader, SkeletonLine } from "./components/loader";
-/**
- * @deprecated Use {@link Tabs} with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
- */
-export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
 export { Select } from "./components/select";
-/**
- * @deprecated Use {@link LayerCard} instead.
- */
-export { Surface } from "./components/surface";
 export { Switch, type SwitchLegendProps } from "./components/switch";
 export { Tabs, type TabsProps, type TabsItem } from "./components/tabs";
 export { Table } from "./components/table";

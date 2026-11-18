@@ -86,7 +86,7 @@ Consider a `ProductCard`. It's a specific arrangement of components for a specif
 // This is a "block" or "recipe" - a specific composition
 // of design system components for a particular pattern
 
-<Surface className="rounded-lg p-4">
+<LayerCard className="rounded-lg p-4">
   <img src={imgSrc} alt={imgAlt} className="rounded-md" />
   <div className="mt-3">
     <Text size="lg" weight="semibold">
@@ -98,10 +98,10 @@ Consider a `ProductCard`. It's a specific arrangement of components for a specif
   <div className="mt-4">
     <Button variant="primary">Add to cart</Button>
   </div>
-</Surface>
+</LayerCard>
 ```
 
-All those components (`Surface`, `Text`, `Button`) come from Kumo. But the specific arrangement? That's a pattern you own and customize.
+All those components (`LayerCard`, `Text`, `Button`) come from Kumo. But the specific arrangement? That's a pattern you own and customize.
 
 ## Decision Framework
 

@@ -77,7 +77,7 @@ import { ResourceListPage } from "./components/kumo/resource-list/resource-list"
 
 ```tsx
 import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
-import { Surface } from "@cloudflare/kumo";
+import { LayerCard } from "@cloudflare/kumo";
 import { DatabaseIcon } from "@phosphor-icons/react";
 
 export default function DatabasesPage() {
@@ -87,7 +87,7 @@ export default function DatabasesPage() {
       description="Manage your database instances and configurations"
       icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
     >
-      <Surface className="p-6">{/* Your resource list content */}</Surface>
+      <LayerCard className="p-6">{/* Your resource list content */}</LayerCard>
     </ResourceListPage>
   );
 }

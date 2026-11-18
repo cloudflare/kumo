@@ -41,11 +41,9 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Checkbox`         | Input      | Toggle or multi-select control        | `checked`, `onCheckedChange`, `label`, `indeterminate`                                                                         |
 | `Checkbox.Group`   | Input      | Group of checkboxes with fieldset     | `legend`, `orientation`, `allValues`, `value`, `onValueChange`                                                                 |
 | `ClipboardText`    | Action     | Copy-to-clipboard text display        | `value`, `label`                                                                                                               |
-| `Code`             | Display    | Inline code or multi-line code block  | `children`; use `CodeBlock` for multi-line with copy                                                                           |
 | `Collapsible`      | Display    | Expandable/collapsible section        | `title`, `defaultOpen`                                                                                                         |
 | `Combobox`         | Input      | Autocomplete input with dropdown      | `items`, `value`, `onValueChange`, `multiple`, `label`                                                                         |
 | `CommandPalette`   | Navigation | Spotlight-style search overlay        | `.Root`, `.Input`, `.List`, `.Item`, `.ResultItem`                                                                             |
-| `DateRangePicker`  | Input      | Dual-calendar date range selector     | `onStartDateChange`, `onEndDateChange`, `size`, `timezone`                                                                     |
 | `Dialog`           | Overlay    | Modal dialog with backdrop            | `size`: sm, base, lg, xl; uses `.Root`, `.Trigger`, `.Title`, `.Close`                                                         |
 | `DropdownMenu`     | Overlay    | Context/action menu                   | `.Trigger`, `.Content`, `.Item`; item `variant`: default, danger                                                               |
 | `Empty`            | Display    | Empty state placeholder               | `icon`, `title`, `description`, `commandLine`, `contents`                                                                      |
@@ -56,14 +54,12 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `LayerCard`        | Display    | Card with header and collapsible body | `title`, `tag`, `actions`, `icon`                                                                                              |
 | `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `external`                                                                          |
 | `Loader`           | Feedback   | Animated loading spinner              | `size`: number (default 16)                                                                                                    |
-| `MenuBar`          | Navigation | Horizontal icon toolbar               | `isActive`, `options: { icon, tooltip, onClick }[]`                                                                            |
 | `Meter`            | Display    | Progress/usage meter bar              | `value`, `max`, `label`, `size`                                                                                                |
 | `Pagination`       | Navigation | Page navigation controls              | `page`, `setPage`, `perPage`, `totalCount`; `controls`: full, simple                                                           |
 | `Popover`          | Overlay    | Popup content anchored to trigger     | `.Trigger`, `.Content`, `.Title`, `.Description`, `.Close`; `side`, `align`                                                    |
 | `Radio`            | Input      | Single-select radio group             | `.Group` with `legend`, `.Item` with `label`, `value`                                                                          |
 | `Select`           | Input      | Dropdown select menu                  | `value`, `onValueChange`, `label`, `hideLabel` (default: true); children: `<Select.Option value="…">`                          |
 | `SensitiveInput`   | Input      | Input with show/hide toggle           | `label`, `size`, `variant`                                                                                                     |
-| `Surface`          | Layout     | Themed container panel                | `variant`: flat, raised; `as` for polymorphic rendering                                                                        |
 | `Switch`           | Input      | Toggle switch control                 | `checked`, `onCheckedChange`, `label`, `size`                                                                                  |
 | `Table`            | Display    | Data table with selection             | `.Header`, `.Head`, `.Body`, `.Row`, `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`; `layout`: auto, fixed    |
 | `Tabs`             | Navigation | Tabbed navigation                     | `tabs: { value, label, render? }[]`; `variant`: segmented, underline; `value`, `onValueChange`                                 |
@@ -200,7 +196,7 @@ Buttons support a `loading` prop that shows a spinner and disables interaction:
 Some components accept an `as` prop or Base UI's `render` prop:
 
 ```tsx
-<Surface as="section" variant="raised">Content</Surface>
+<LayerCard render={<section />}>Content</LayerCard>
 <Text variant="heading1" as="h2">Custom heading level</Text>
 <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
 ```

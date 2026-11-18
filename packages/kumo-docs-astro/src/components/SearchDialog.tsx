@@ -18,15 +18,7 @@ import {
  * 2. Remove it from this exclusion list
  * 3. Add its description to COMPONENT_DESCRIPTIONS below
  */
-const COMPONENTS_WITHOUT_DOCS = new Set([
-  "Code", // Deprecated: use CodeHighlighted from @cloudflare/kumo/code
-  "CodeBlock", // Deprecated: use CodeHighlighted from @cloudflare/kumo/code
-  "DateRangePicker", // Deprecated: use DatePicker with mode="range"
-  "Field",
-  "Icon",
-  "MenuBar", // Deprecated; use Tabs with variant="segmented" instead
-  "Surface", // Deprecated compatibility export; no dedicated docs page
-]);
+const COMPONENTS_WITHOUT_DOCS = new Set(["Field", "Icon"]);
 
 /**
  * Chart components are auto-discovered from the @cloudflare/kumo registry, but

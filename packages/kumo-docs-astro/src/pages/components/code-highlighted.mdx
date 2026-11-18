@@ -456,12 +456,12 @@ const html = await highlightCode(code, lang);
 ## Migration from Code/CodeBlock
 
   <p>
-    The legacy `Code` and `CodeBlock` components are deprecated.
-    They will be removed in v2.0.
+    The legacy `Code` and `CodeBlock` components have been removed.
+    Use `CodeHighlighted` instead.
   </p>
 
 ```tsx
-// Before (deprecated)
+// Before (removed)
 import { Code, CodeBlock } from "@cloudflare/kumo";
 <CodeBlock code="const x = 1;" lang="ts" />
 

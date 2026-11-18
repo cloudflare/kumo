@@ -13,7 +13,6 @@ components/
 ├── button/button.tsx           # Simple component
 ├── dialog/dialog.tsx           # Compound (Root, Trigger, Title, Description, Close)
 ├── command-palette/            # Complex: 865 lines, 14 sub-components, 2 contexts
-├── date-range-picker/          # Complex: 667 lines (DEPRECATED, refactoring target)
 ├── combobox/                   # Complex: 561 lines (Root, Content, TriggerValue, TriggerInput, Item, Chip)
 ├── flow/                       # 8 files, descendants tracking system
 ├── chart/                      # 5 files, ECharts wrapper + timeseries + sparkline
@@ -172,14 +171,13 @@ classes: "bg-kumo-elevated hover:bg-kumo-base focus:ring-kumo-hairline disabled:
 
 ## COMPLEXITY HOTSPOTS
 
-| Component           | Lines   | Notes                                              |
-| ------------------- | ------- | -------------------------------------------------- |
-| `command-palette`   | 865     | 14 sub-components, two-level context, keyboard nav |
-| `date-range-picker` | 667     | 150 lines duplicated ternary (DEPRECATED)          |
-| `combobox`          | 561     | Complex async filtering                            |
-| `pagination`        | 510     | Multiple layout modes                              |
-| `flow`              | 8 files | Descendants tracking, connector drawing            |
-| `chart`             | 5 files | ECharts passed externally to avoid bundling        |
+| Component         | Lines   | Notes                                              |
+| ----------------- | ------- | -------------------------------------------------- |
+| `command-palette` | 865     | 14 sub-components, two-level context, keyboard nav |
+| `combobox`        | 561     | Complex async filtering                            |
+| `pagination`      | 510     | Multiple layout modes                              |
+| `flow`            | 8 files | Descendants tracking, connector drawing            |
+| `chart`           | 5 files | ECharts passed externally to avoid bundling        |
 
 ## NOTES
 

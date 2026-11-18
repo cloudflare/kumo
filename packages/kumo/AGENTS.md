@@ -100,9 +100,7 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 
 ### Components
 
-| Component         | Replacement                          |
-| ----------------- | ------------------------------------ |
-| `DateRangePicker` | Use `DatePicker` with `mode="range"` |
+`Code`, `CodeBlock`, `DateRangePicker`, `MenuBar`, and `Surface` were removed in 3.0. Use `CodeHighlighted`, `DatePicker` with `mode="range"`, `Tabs` with `variant="segmented"`, and `LayerCard` respectively.
 
 ### Props (lint-enforced via `no-deprecated-props`)
 
@@ -113,13 +111,11 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 | `Checkbox`          | `onChange`, `onIndeterminateChange` | Use `onCheckedChange`                                    |
 | `Banner`            | `text`, `children`                  | Use `title` and `description` props                      |
 | `TimeseriesChart`   | `formatValue`                       | Use `tooltipValueFormat`                                 |
-| `Code`              | `CodeLanguage` type                 | Use `CodeLang` type                                      |
 
 ## NOTES
 
 - **Compound components**: CommandPalette (14 sub-components), Dialog, Select use two-level contexts
 - **13 components use createContext**: SwitchGroup, PaginationContext, RadioGroup, FlowNodeAnchor, Diagram, Descendants, InputGroup, DialogRole, ComboboxSize, Grid, CheckboxGroup, CommandPalette (2)
-- **DateRangePicker**: Contains 150 lines of duplicated ternary logic (refactoring target)
 - **Catalog `initCatalog`**: Appears to have race condition with async schema loading
 - **CLI path inconsistency**: `ls`/`doc` read from `catalog/`, `blocks` from `ai/` directory
 - **`PLOP_INJECT_EXPORT`** in `src/index.ts` and `PLOP_INJECT_COMPONENT_ENTRY` in `vite.config.ts` are scaffolding markers

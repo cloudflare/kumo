@@ -387,16 +387,6 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
         "Custom equality function for comparing items. Required when value is an object, since object identity (`===`) won't match across renders.",
     },
   },
-  DateRangePicker: {
-    onStartDateChange: {
-      type: "(date: Date | null) => void",
-      description: "Callback when start date changes",
-    },
-    onEndDateChange: {
-      type: "(date: Date | null) => void",
-      description: "Callback when end date changes",
-    },
-  },
   Tabs: {
     onValueChange: {
       type: "(value: string) => void",
@@ -643,9 +633,6 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
  * Maps component name -> prop name -> cleaner type string.
  */
 export const PROP_TYPE_OVERRIDES: Record<string, Record<string, string>> = {
-  Code: {
-    values: "Record<string, { value: string; highlight?: boolean }>",
-  },
   Combobox: {
     items: "T[]",
     value: "T | T[]",
@@ -757,27 +744,6 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
         size: 16,
       },
     ],
-  },
-  Code: {
-    baseTokens: ["text-kumo-subtle"],
-    dimensions: "m-0 w-auto p-0",
-    borderRadius: "rounded-none",
-    states: {
-      base: [
-        "bg-transparent",
-        "border-none",
-        "font-mono",
-        "text-sm",
-        "leading-[20px]",
-      ],
-      code_block_container: [
-        "min-w-0",
-        "rounded-md",
-        "border",
-        "border-kumo-fill",
-        "bg-kumo-base",
-      ],
-    },
   },
   Input: {
     baseTokens: [
@@ -909,49 +875,6 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     },
   },
   // Note: Toasty styling is now extracted from KUMO_TOAST_STYLING in toast.tsx
-  DateRangePicker: {
-    sizeVariants: {
-      sm: {
-        height: 0,
-        classes: "p-3 gap-2",
-        dimensions: {
-          calendarWidth: 168,
-          cellHeight: 22,
-          cellWidth: 24,
-          textSize: 12,
-          iconSize: 14,
-          padding: 12,
-          gap: 8,
-        },
-      },
-      base: {
-        height: 0,
-        classes: "p-4 gap-2.5",
-        dimensions: {
-          calendarWidth: 196,
-          cellHeight: 26,
-          cellWidth: 28,
-          textSize: 14,
-          iconSize: 16,
-          padding: 16,
-          gap: 10,
-        },
-      },
-      lg: {
-        height: 0,
-        classes: "p-5 gap-3",
-        dimensions: {
-          calendarWidth: 252,
-          cellHeight: 32,
-          cellWidth: 36,
-          textSize: 16,
-          iconSize: 18,
-          padding: 20,
-          gap: 12,
-        },
-      },
-    },
-  },
   Pagination: {
     layout: {
       height: 36,
@@ -990,19 +913,6 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
       fontSize: 16,
       fontWeight: 400,
       borderRadius: 8,
-    },
-  },
-  MenuBar: {
-    container: {
-      height: 32,
-      borderRadius: 8,
-      padding: 2,
-      gap: 2,
-    },
-    button: {
-      width: 36,
-      borderRadius: 6,
-      iconSize: 18,
     },
   },
   Select: {
