@@ -1,9 +1,28 @@
-import { describe, it, expect } from "vite-plus/test";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { createElement } from "react";
 import { render } from "@testing-library/react";
 import { SensitiveInput } from "./sensitive-input";
 
 describe("SensitiveInput", () => {
+  it.each(["xs", "lg"])(
+    "uses base padding for the removed %s size",
+    (removedSize) => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const { container } = render(
+        // Removed sizes can still arrive from untyped callers.
+        <SensitiveInput
+          aria-label="API key"
+          defaultValue="secret"
+          size={removedSize as never}
+        />,
+      );
+
+      const input = container.querySelector("input")!;
+      expect(input.className).toContain("pr-8");
+      warn.mockRestore();
+    },
+  );
+
   it("should be defined", () => {
     expect(SensitiveInput).toBeDefined();
   });

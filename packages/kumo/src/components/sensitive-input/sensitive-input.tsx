@@ -90,7 +90,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       onChange,
       onValueChange,
       onCopy,
-      size = KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS.size,
+      size: sizeProp = KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS.size,
       variant: variantProp,
       disabled = false,
       readOnly = false,
@@ -318,11 +318,21 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
     const showEyeButton =
       !disabled && (mode === "revealed" || (mode === "empty" && hasValue));
 
+    // Removed sizes (xs/lg) can still arrive from untyped callers; treat any
+    // unknown size as base so the padding/offset classes below still apply.
+    // `inputVariants` receives the raw prop so it can emit its dev warning.
+    const size: KumoInputSize = Object.hasOwn(
+      KUMO_INPUT_VARIANTS.size,
+      sizeProp,
+    )
+      ? sizeProp
+      : "base";
+
     // Icon sizes matching input sizes
     const iconSize = size === "sm" ? "size-3" : "size-4";
 
     const containerClassName = cn(
-      inputVariants({ size, variant, parentFocusIndicator: true }),
+      inputVariants({ size: sizeProp, variant, parentFocusIndicator: true }),
       "group/container relative flex w-full items-center",
       // Show browser-native focus outline on container when child input is focused
       "focus-within:outline-2 focus-within:outline-kumo-focus",
