@@ -17,7 +17,7 @@ import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
-import { useLinkComponent } from "../../utils/link-provider";
+import { ResolvedLink } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -1476,7 +1476,6 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     ref,
   ) => {
     const { state, peekable, registerItem } = useSidebar();
-    const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
 
     const registerAutoWrap = useCallback(
@@ -1568,12 +1567,11 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     if (href) {
       button = (
-        <LinkComponent
+        <ResolvedLink
           ref={registerInteractive}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           className={cn(buttonClasses, "no-underline!")}
           href={href}
-          to={href}
           target={target}
           data-active={active || undefined}
           data-sidebar="menu-button"
@@ -1583,7 +1581,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           data-size={size}
         >
           {content}
-        </LinkComponent>
+        </ResolvedLink>
       );
     } else {
       button = (
@@ -1777,7 +1775,6 @@ const SidebarMenuSubButton = forwardRef<
   HTMLButtonElement,
   SidebarMenuSubButtonProps
 >(({ className, active = false, href, target, children, ...props }, ref) => {
-  const LinkComponent = useLinkComponent();
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
@@ -1806,12 +1803,11 @@ const SidebarMenuSubButton = forwardRef<
 
   if (href) {
     button = (
-      <LinkComponent
+      <ResolvedLink
         ref={ref as React.Ref<HTMLAnchorElement>}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         className={cn(buttonClasses, "no-underline!")}
         href={href}
-        to={href}
         target={target}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
@@ -1819,7 +1815,7 @@ const SidebarMenuSubButton = forwardRef<
         data-kumo-part="menu-sub-button-link"
       >
         {content}
-      </LinkComponent>
+      </ResolvedLink>
     );
   } else {
     button = (
