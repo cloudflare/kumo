@@ -60,37 +60,39 @@ export default function Example() {
   <Text variant="heading3" as="h3">Semantic HTML</Text>
   <Text>
     The `variant` prop controls visual styling only—it does not determine the HTML element rendered.
-    Heading variants **require** the `as` prop to avoid silently excluding real section headings from
-    the document outline. Body and monospace variants have sensible defaults (`<p>` and `<span>`
-    respectively) and accept `as` optionally.
+    Use `as` to choose the element. The `heading` variant renders a `<span>` unless you pass a
+    heading element, so real section headings must set `as` to join the document outline.
   </Text>
 
 ```tsx
-// Heading variants REQUIRE `as` — TypeScript will flag usages missing it
-<Text variant="heading1">Page Title</Text> // Doesn't compile
-
 // Real section headings (contribute to the document outline)
-<Text variant="heading1" as="h1">Page Title</Text>
-<Text variant="heading2" as="h2">Section Title</Text>
+<Text variant="heading" size="lg" as="h1">Page Title</Text>
+<Text variant="heading" as="h2">Section Title</Text>
 
 // Decorative heading-styled text that is NOT a section heading
-<Text variant="heading1" as="span">Big bold card label</Text>
+<Text variant="heading">Card label</Text> // Renders <span>
 
 // Visually one size, semantically another
-<Text variant="heading1" as="h3">Visually large, but semantically h3</Text>
+<Text variant="heading" size="lg" as="h3">Visually large, but semantically h3</Text>
+
+// Deprecated heading variants still require `as`
+<Text variant="heading1">Page Title</Text> // Doesn't compile
 ```
 
   <Text>
-    The `as` prop accepts: `"h1"` through `"h6"`, `"p"`, and `"span"`.
-    Body variants default to `"p"`, monospace variants default to `"span"`,
-    and heading variants have no default — you must choose explicitly.
+    The `as` prop accepts headings (`"h1"`–`"h6"`), block text (`"p"`, `"pre"`),
+    inline text (`"span"`, `"code"`, `"em"`, `"strong"`, `"small"`, `"abbr"`,
+    `"time"`), and structural text (`"label"`, `"dt"`, `"dd"`, `"li"`,
+    `"figcaption"`, `"legend"`). Body variants default to `"p"`; monospace and
+    `heading` variants default to `"span"`. The deprecated `heading1`–`heading3`
+    variants have no default and require `as`.
   </Text>
 </section>
 
 <section class="mt-8 space-y-4">
   <Text variant="heading3" as="h3">Restrictions</Text>
   <Text>
-    The `bold` and `size` props are intentionally restricted to the `base`, `secondary`, `success`, and `error` text variants.
+    The `bold` and `size` props are fully available only on the copy variants: `body`, `secondary`, `success`, and `error`.
   </Text>
 
 ```tsx
@@ -112,14 +114,15 @@ export default function Example() {
 ```
 
 <Text>
-  Headings (i.e. `heading1`, `heading2` and `heading3` variants) cannot use
-  these props at all:
+  The `heading` variant can only set `size` to `lg` and cannot use `bold`. The
+  deprecated `heading1`, `heading2`, and `heading3` variants cannot use either
+  prop:
 </Text>
 
 ```tsx
-<Text variant="heading1" bold>
-  Heading 1
-</Text> // Doesn't compile
+<Text variant="heading" size="lg" as="h2">Heading</Text>
+<Text variant="heading" as="h2" bold>Heading</Text> // Doesn't compile
+<Text variant="heading1" as="h1" bold>Heading 1</Text> // Doesn't compile
 ```
 
 <Text>

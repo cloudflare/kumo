@@ -35,6 +35,7 @@ describe("Text", () => {
     const heading = getByRole("heading", { level: 2, name: "Payment method" });
 
     expect(heading.classList.contains("text-kumo-subtle")).toBe(true);
+    expect(heading.classList.contains("text-kumo-default")).toBe(false);
     expect(heading.classList.contains("text-base/[inherit]")).toBe(true);
     expect(heading.classList.contains("font-medium")).toBe(true);
   });
