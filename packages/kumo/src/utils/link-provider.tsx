@@ -155,6 +155,11 @@ function classifyHref(
   href: string,
   appOrigin: URL | undefined,
 ): LinkDestination {
+  // In-page fragments are the browser's job: router links don't scroll to them.
+  if (href.startsWith("#")) {
+    return { kind: "other" };
+  }
+
   const base = appOrigin ?? PLACEHOLDER_ORIGIN;
 
   let url: URL;

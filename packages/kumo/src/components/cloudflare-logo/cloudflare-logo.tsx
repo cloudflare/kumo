@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils/cn";
+import { useLink } from "../../utils/link-provider";
 
 // =============================================================================
 // Brand Colors (internal)
@@ -219,12 +220,20 @@ export interface PoweredByCloudflareProps extends React.AnchorHTMLAttributes<HTM
    * @default "color"
    */
   color?: CloudflareLogoColor;
+  /**
+   * Show the visible new-tab icon. The screen-reader announcement is always
+   * included when the badge opens in a new tab.
+   * @default true
+   */
+  newTabIcon?: boolean;
 }
 
 /**
  * "Powered by Cloudflare" badge component.
  *
  * Renders a link to cloudflare.com with the Cloudflare glyph and "Powered by Cloudflare" text.
+ * The link resolves through `LinkProvider`, so it follows the app's new-tab
+ * policy. Pass `target="_blank"` to always open it in a new tab.
  *
  * @example Basic usage
  * ```tsx
@@ -254,12 +263,12 @@ export const PoweredByCloudflare = forwardRef<
     },
     ref,
   ) => {
+    const { Component, linkProps, newTabCue } = useLink({ href, ...props });
+
     return (
-      <a
+      <Component
         ref={ref}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        {...linkProps}
         className={cn(
           // Base badge styles
           "inline-flex items-center gap-2 rounded-lg py-2 pr-3 pl-2.5 text-sm font-medium",
@@ -271,13 +280,13 @@ export const PoweredByCloudflare = forwardRef<
           color === "white" && "bg-black text-white ring-white/20",
           className,
         )}
-        {...props}
       >
         <CloudflareLogo variant="glyph" color={color} className="h-4 w-auto" />
         <span>
           Powered by <span className="font-semibold">Cloudflare</span>
         </span>
-      </a>
+        {newTabCue}
+      </Component>
     );
   },
 );

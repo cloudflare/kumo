@@ -89,7 +89,8 @@ export default function Example() {
   Configure a `LinkProvider` once at your app root. Call sites then only need
   an `href`. Kumo resolves each link before rendering: internal routes render
   your router's link component, and everything else (other origins, `mailto:`,
-  `tel:`, downloads) renders a plain `&lt;a&gt;`.
+  `tel:`, downloads, and in-page fragments like `#section`) renders a plain
+  `&lt;a&gt;`.
 </p>
 
 ```tsx

@@ -2,11 +2,12 @@
 "@cloudflare/kumo": major
 ---
 
-Links now resolve navigation in one place. `LinkProvider` decides whether a link renders through your router or a plain `<a>`, and whether it opens in a new tab. `Link`, `Button` with `href`, `Banner.Action`, `Toolbar.Link`, `DropdownMenu.LinkItem`, `Sidebar` menu buttons, and `Breadcrumbs.Link` all follow the same rules. Links that open in a new tab get a visible icon and a localized screen-reader announcement automatically.
+Links now resolve navigation in one place. `LinkProvider` decides whether a link renders through your router or a plain `<a>`, and whether it opens in a new tab. `Link`, `Button` with `href`, `Banner.Action`, `Toolbar.Link`, `DropdownMenu.LinkItem`, `Sidebar` menu buttons, `Breadcrumbs.Link`, `TableOfContents.Item` and `.Group`, and `PoweredByCloudflare` all follow the same rules. Links that open in a new tab get a visible icon and a localized screen-reader announcement automatically.
 
 ## How links resolve
 
-- Relative URLs (`/zones`, `settings`, `#top`, `?q=1`) are internal and render through `router`, unless `isClientRoute` returns `false`.
+- Relative URLs (`/zones`, `settings`, `?q=1`) are internal and render through `router`, unless `isClientRoute` returns `false`.
+- In-page fragments (`#top`) always render a plain `<a>`, so the browser scrolls to them. Router links don't.
 - Absolute `http(s)` URLs are external and render a plain `<a>`, unless they match `origin`. Protocol-relative URLs (`//example.com`) and hrefs that the URL parser resolves to another host (such as `/\example.com`) are treated the same way: external unless they match `origin`.
 - `mailto:`, `tel:`, and other non-HTTP schemes, links with `download`, and links with a `target` other than `_self` always render a plain `<a>`.
 - External links stay in the current tab unless the provider sets `externalLinks="new-tab"`. A link's own `target` always wins: `target="_blank"` opens a new tab, including for internal paths, and `target="_self"` keeps the current tab.
@@ -69,6 +70,15 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 
 - `Sidebar.MenuButton` and `Sidebar.MenuSubButton` with `href`, and `Breadcrumbs.Link`, resolve through `LinkProvider`. External URLs and links with `target="_blank"` no longer reach your router component.
 
+### `TableOfContents`
+
+- `TableOfContents.Item` and `TableOfContents.Group` with `href` resolve through `LinkProvider`. Items with in-page fragments (`#intro`) stay plain anchors.
+- `TableOfContents.Item`'s `render` is now only for custom non-link elements, such as `render={<button type="button" />}`. Remove `render={<RouterLink />}`; configure the router on `LinkProvider` instead. An element passed to `render` doesn't go through `LinkProvider`.
+
+### `PoweredByCloudflare`
+
+- The badge no longer always opens in a new tab. It follows the provider's `externalLinks` policy, which defaults to the current tab. Pass `target="_blank"` to keep the old behavior. When it opens in a new tab, it shows the new-tab icon and announcement like any other link; `newTabIcon={false}` hides the icon.
+
 ## New-tab behavior (all link components)
 
 Every link that opens in a new tab, whether from `target="_blank"` or from `externalLinks="new-tab"`, now:
@@ -87,5 +97,5 @@ Update tests that depend on the old output:
 ## Added
 
 - `useLink` hook, plus the `RouterLinkProps`, `RouterLinkComponent`, `LinkProviderProps`, `ExternalLinksPolicy`, `UseLinkOptions`, `UseLinkResult`, and `LinkElementType` types
-- `newTabIcon` on `Link`, `Button` with `href`, and `DropdownMenu.LinkItem`
+- `newTabIcon` on `Link`, `Button` with `href`, `DropdownMenu.LinkItem`, `TableOfContents.Item`, and `PoweredByCloudflare`
 - `link.opensInNewTab` in `KumoTranslations`

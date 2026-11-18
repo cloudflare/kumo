@@ -21,7 +21,15 @@ describe("resolveLink", () => {
       opensInNewTab: false,
     });
     expect(resolveLink({ href: "settings" }, config).useRouter).toBe(true);
-    expect(resolveLink({ href: "#section" }, config).useRouter).toBe(true);
+    expect(resolveLink({ href: "?page=2" }, config).useRouter).toBe(true);
+  });
+
+  it("renders fragment-only hrefs as plain anchors so the browser scrolls", () => {
+    expect(resolveLink({ href: "#section" }, config)).toMatchObject({
+      useRouter: false,
+      href: "#section",
+      opensInNewTab: false,
+    });
   });
 
   it("does not route without a router", () => {
