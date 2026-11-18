@@ -845,6 +845,31 @@ describe("Sidebar.Collapsible", () => {
       expect(scrollTo).toHaveBeenCalledTimes(1);
     });
 
+    it("does not scroll sections that mount open", () => {
+      render(<CollapsibleTest autoScrollOnOpen defaultOpen />);
+      const scrollTo = stubBelowTheFold(
+        screen.getByTestId("collapsible-content"),
+      );
+      flushScroll();
+
+      expect(scrollTo).not.toHaveBeenCalled();
+    });
+
+    it("does not scroll on first expand when the sidebar mounts collapsed", () => {
+      const { rerender } = render(
+        <CollapsibleTest autoScrollOnOpen defaultOpen sidebarOpen={false} />,
+      );
+      const scrollTo = stubBelowTheFold(
+        screen.getByTestId("collapsible-content"),
+      );
+      flushScroll();
+
+      rerender(<CollapsibleTest autoScrollOnOpen defaultOpen sidebarOpen />);
+      flushScroll();
+
+      expect(scrollTo).not.toHaveBeenCalled();
+    });
+
     // https://github.com/cloudflare/kumo/issues/951
     it("does not shift SlidingViews when the sidebar re-expands", () => {
       function Repro({

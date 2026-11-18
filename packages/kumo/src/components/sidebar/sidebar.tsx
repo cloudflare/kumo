@@ -2245,8 +2245,8 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
   onOpenChangeComplete?: (open: boolean) => void;
   /**
    * After the section opens, scroll the sidebar vertically so its content is
-   * visible. Only the sidebar's own scroll area moves. Expanding the sidebar
-   * does not re-trigger it for sections that are already open.
+   * visible. Only the sidebar's own scroll area moves. Sections that are
+   * already open when they mount, or when the sidebar expands, don't scroll.
    * @default false
    */
   autoScrollOnOpen?: boolean;
@@ -2433,13 +2433,20 @@ const SidebarCollapsibleContent = forwardRef<
 
   const isContentShown = isCollapsibleContentShown(isCollapsibleOpen, sidebar);
 
-  // Auto-scroll once per open of the collapsible itself. Expanding the sidebar
-  // also reveals open sections, but that must not scroll: it would yank the
-  // viewport to whichever open section rendered last.
+  // Auto-scroll once per closed → open change of the collapsible itself.
+  // Mounting open or expanding the sidebar also reveals sections, but neither
+  // may scroll: with several open sections the viewport would jump to
+  // whichever rendered last.
   const scrollPendingRef = useRef(false);
+  const wasCollapsibleOpenRef = useRef(isCollapsibleOpen);
 
   useEffect(() => {
-    scrollPendingRef.current = isCollapsibleOpen;
+    if (isCollapsibleOpen && !wasCollapsibleOpenRef.current) {
+      scrollPendingRef.current = true;
+    } else if (!isCollapsibleOpen) {
+      scrollPendingRef.current = false;
+    }
+    wasCollapsibleOpenRef.current = isCollapsibleOpen;
   }, [isCollapsibleOpen]);
 
   useEffect(() => {
