@@ -52,7 +52,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Input`            | Input      | Text input field                      | `size`: xs, sm, base, lg; `variant`: default, error; `label`, `error`                                                          |
 | `Label`            | Other      | Form label with optional tooltip      | `children`, `tooltip`, `required`                                                                                              |
 | `LayerCard`        | Display    | Card with header and collapsible body | `title`, `tag`, `actions`, `icon`                                                                                              |
-| `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `external`                                                                          |
+| `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `target`, `newTabIcon`                                                              |
 | `Loader`           | Feedback   | Animated loading spinner              | `size`: number (default 16)                                                                                                    |
 | `Meter`            | Display    | Progress/usage meter bar              | `value`, `max`, `label`, `size`                                                                                                |
 | `Pagination`       | Navigation | Page navigation controls              | `page`, `setPage`, `perPage`, `totalCount`; `controls`: full, simple                                                           |
