@@ -17,7 +17,7 @@ export const KUMO_BADGE_VARIANTS = {
       description: "Primary badge",
     },
     secondary: {
-      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
+      classes: "bg-kumo-badge-secondary text-kumo-badge-neutral-subtle",
       description: "Secondary badge",
     },
     error: {
