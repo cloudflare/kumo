@@ -282,6 +282,14 @@ type StandardDialogRootProps = BaseDialogRootProps & {
 };
 
 type AlertDialogRootProps = BaseAlertDialogRootProps & {
+  /**
+   * Renders an alert dialog for destructive or confirmation flows. Outside
+   * clicks never dismiss it.
+   *
+   * Do not include a header close button (`Dialog.Close` with an X icon) in an
+   * alert dialog. Users must respond through explicit action buttons in the
+   * footer (for example, Cancel and Delete).
+   */
   role: "alertdialog";
 };
 
