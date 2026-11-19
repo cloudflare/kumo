@@ -86,7 +86,7 @@ describe("Banner", () => {
 
     const link = screen.getByRole("link", { name: "Manage payments" });
     expect(link.getAttribute("href")).toBe("/billing");
-    expect(link.getAttribute("data-kumo-component")).toBe("LinkButton");
+    expect(link.getAttribute("data-kumo-component")).toBe("Button");
     expect(link.className).toContain("extra");
     expect(link.className).toContain("h-6.5");
     expect(
@@ -106,7 +106,7 @@ describe("Banner", () => {
           <Banner.Action
             variant="secondary"
             href="https://example.com"
-            external
+            target="_blank"
           >
             View docs
           </Banner.Action>

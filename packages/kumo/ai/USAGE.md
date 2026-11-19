@@ -37,7 +37,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Badge`            | Display    | Status/label indicator                | `variant`: primary, secondary, destructive, outline, beta                                                                      |
 | `Banner`           | Feedback   | Page-level alert message              | `variant`: default, alert, error; `icon`, `onDismiss`                                                                          |
 | `Breadcrumbs`      | Display    | Navigation breadcrumb trail           | Compound: `.Link` (with `href`), `.Separator`, `.Current`; `size`: sm, base                                                    |
-| `Button`           | Action     | Clickable action trigger              | `variant`: primary, secondary, ghost, destructive, secondary-destructive, outline; `size`, `shape`, `icon`, `loading`          |
+| `Button`           | Action     | Clickable action trigger              | `variant`: primary, secondary, ghost, destructive, secondary-destructive, outline; `size`, `shape`, `icon`, `loading`, `href`  |
 | `Checkbox`         | Input      | Toggle or multi-select control        | `checked`, `onCheckedChange`, `label`, `indeterminate`                                                                         |
 | `Checkbox.Group`   | Input      | Group of checkboxes with fieldset     | `legend`, `orientation`, `allValues`, `value`, `onValueChange`                                                                 |
 | `ClipboardText`    | Action     | Copy-to-clipboard text display        | `value`, `label`                                                                                                               |

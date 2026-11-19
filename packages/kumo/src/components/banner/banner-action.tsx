@@ -1,17 +1,14 @@
 import {
   type CSSProperties,
-  type Ref,
   createContext,
   forwardRef,
   useContext,
 } from "react";
 import {
   Button,
-  LinkButton,
   type ButtonProps,
   type KumoButtonSize,
   type KumoButtonVariant,
-  type LinkButtonProps,
 } from "../button/button";
 import { cn } from "../../utils/cn";
 import type { KumoBannerVariant } from "./banner";
@@ -111,24 +108,15 @@ type WithBannerActionVariants<Props> = Props extends unknown
     }
   : never;
 
-type BannerActionButtonProps = WithBannerActionVariants<ButtonProps> & {
-  href?: never;
-};
-
-type BannerActionLinkProps = WithBannerActionVariants<LinkButtonProps> & {
-  /**
-   * Renders the action as a link via `LinkButton`, so it uses the app's
-   * `LinkProvider` component for client-side routing.
-   */
-  href: string;
-};
-
-/** Props for {@link BannerAction}. Pass `href` to render a link. */
-export type BannerActionProps = BannerActionButtonProps | BannerActionLinkProps;
+/**
+ * Props for {@link BannerAction}. Pass `href` to render a link; it resolves
+ * through `LinkProvider` like `Button href`.
+ */
+export type BannerActionProps = WithBannerActionVariants<ButtonProps>;
 
 /**
- * A banner CTA built on Kumo's `Button`, or `LinkButton` when `href` is set. It
- * inherits their sizing, interaction, and accessibility behavior while supplying
+ * A banner CTA built on Kumo's `Button` (a link when `href` is set). It
+ * inherits its sizing, interaction, and accessibility behavior while supplying
  * banner-specific accent styles.
  *
  * @example
@@ -155,13 +143,7 @@ export const BannerAction = forwardRef<
         : props.style,
   } as const;
 
-  if (props.href !== undefined) {
-    return (
-      <LinkButton ref={ref as Ref<HTMLAnchorElement>} {...props} {...shared} />
-    );
-  }
-
-  return <Button ref={ref as Ref<HTMLButtonElement>} {...props} {...shared} />;
+  return <Button ref={ref} {...(props as ButtonProps)} {...shared} />;
 });
 
 BannerAction.displayName = "Banner.Action";
