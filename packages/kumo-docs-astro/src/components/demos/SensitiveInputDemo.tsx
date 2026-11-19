@@ -10,7 +10,7 @@ export function SensitiveInputDemo() {
 }
 
 export function SensitiveInputSizesDemo() {
-  const sizes = ["xs", "sm", "base", "lg"] as const;
+  const sizes = ["sm", "base"] as const;
   return (
     <div className="flex flex-col gap-4">
       {sizes.map((size) => (

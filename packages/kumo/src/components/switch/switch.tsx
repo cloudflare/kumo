@@ -23,10 +23,6 @@ export const KUMO_SWITCH_VARIANTS = {
       classes: "h-6.5 w-10.5",
       description: "Default switch size",
     },
-    lg: {
-      classes: "h-7.5 w-12.5",
-      description: "Large switch for prominent toggles",
-    },
   },
   variant: {
     default: {
@@ -54,7 +50,6 @@ export interface KumoSwitchVariantsProps {
    * Switch size.
    * - `"sm"` — Small for compact UIs
    * - `"base"` — Default size
-   * - `"lg"` — Large for prominent toggles
    * @default "base"
    */
   size?: KumoSwitchSize;
@@ -268,9 +263,8 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           const sizeStyles = {
             sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
             base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
-            lg: { track: "h-5 w-10", thumb: "w-5", slide: "left-5" },
           };
-          const s = sizeStyles[size];
+          const s = resolveVariant(sizeStyles, size, "base");
 
           // Track colors based on variant
           const trackColors = isNeutral
@@ -421,9 +415,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             const sizeStyles = {
               sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
               base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
-              lg: { track: "h-5 w-10", thumb: "w-5", slide: "left-5" },
             };
-            const s = sizeStyles[size];
+            const s = resolveVariant(sizeStyles, size, "base");
 
             // Track colors based on variant
             const trackColors = isNeutral

@@ -3,7 +3,7 @@ import { logComplete } from "../logger";
  * RefreshButton Component Generator
  *
  * Generates RefreshButton ComponentSet in Figma with properties:
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - loading: true, false
  *
  * RefreshButton is a specialized square icon button with a refresh icon.
@@ -57,14 +57,12 @@ const sizeProp = buttonProps.size as {
 
 /**
  * Refresh icon size by button size
- * From RefreshButton component: size-4.5 (base), size-4 (sm), size-5 (lg)
+ * From RefreshButton component: size-4.5 (base), size-4 (sm)
  * Uses FALLBACK_VALUES.iconSize from shared.ts to prevent drift
  */
 const REFRESH_ICON_SIZE: Record<string, number> = {
-  xs: FALLBACK_VALUES.iconSize.xs, // size-3 = 12px
   sm: FALLBACK_VALUES.iconSize.sm, // size-4 = 16px
   base: FALLBACK_VALUES.iconSize.medium, // size-4.5 = 18px
-  lg: FALLBACK_VALUES.iconSize.base, // size-5 = 20px
 };
 
 /**

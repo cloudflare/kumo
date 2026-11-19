@@ -81,7 +81,7 @@ const BANNER_SIZE_PARTS: Record<
     row: "gap-2",
     icon: "h-[1.25em]",
     description: "text-sm",
-    action: "xs",
+    action: "sm",
   },
 };
 
@@ -187,9 +187,8 @@ export interface BannerProps extends Omit<
   variant?: KumoBannerVariant;
   /**
    * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`,
-   * renders a Kumo `Link` action inline with the description, and sets its
-   * `Banner.Action` children to the `"xs"` size — suited to dialogs and other
-   * tight spaces.
+   * renders a Kumo `Link` action inline with the description — suited to
+   * dialogs and other tight spaces.
    * @default "base"
    */
   size?: KumoBannerSize;

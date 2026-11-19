@@ -1,5 +1,6 @@
 import { forwardRef, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { useInputGroupContext, INPUT_GROUP_SIZE } from "./context";
 
 export interface InputGroupSuffixProps {
@@ -18,7 +19,7 @@ export const Suffix = forwardRef<HTMLDivElement, InputGroupSuffixProps>(
     const context = useInputGroupContext("Suffix");
 
     const size = context?.size ?? "base";
-    const tokens = INPUT_GROUP_SIZE[size];
+    const tokens = resolveVariant(INPUT_GROUP_SIZE, size, "base");
 
     return (
       <div

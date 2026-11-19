@@ -255,8 +255,9 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
               )}
               icon={<XIcon size={10} />}
               shape="square"
-              size="xs"
+              size="sm"
               variant="ghost"
+              className="size-3.5 rounded-sm"
               disabled={disabled || readOnly}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() =>

@@ -7,6 +7,7 @@ import React, {
 import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import type { InputState } from "@base-ui/react/input";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   Button as KumoButton,
   LinkButton as KumoLinkButton,
@@ -19,10 +20,6 @@ import { InputGroup } from "../input-group/input-group";
 /** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
 export const KUMO_TOOLBAR_VARIANTS = {
   size: {
-    xs: {
-      classes: "text-xs",
-      description: "Extra small toolbar for compact UIs",
-    },
     sm: {
       classes: "text-xs",
       description: "Small toolbar for secondary controls",
@@ -30,10 +27,6 @@ export const KUMO_TOOLBAR_VARIANTS = {
     base: {
       classes: "text-base",
       description: "Default toolbar size",
-    },
-    lg: {
-      classes: "text-base",
-      description: "Large toolbar for prominent controls",
     },
   },
 } as const;
@@ -115,7 +108,7 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
           "[&>*:first-child]:rounded-l-lg [&>*:not([aria-hidden='true']):not([type='hidden']):not(:has(~_:not([aria-hidden='true']):not([type='hidden'])))]:rounded-r-lg",
           "[&>*_[data-kumo-toolbar-input]:focus]:rounded-[inherit]",
           "[&>*:not([aria-hidden='true']):not(:first-child)]:border-l [&>*:not([aria-hidden='true']):not(:first-child)]:border-kumo-line",
-          KUMO_TOOLBAR_VARIANTS.size[size].classes,
+          resolveVariant(KUMO_TOOLBAR_VARIANTS.size, size, "base").classes,
           className,
         )}
         {...props}

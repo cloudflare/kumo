@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Input as InputExternal, type InputProps } from "../input/input";
 import { useInputGroupContext, INPUT_GROUP_SIZE } from "./context";
 
@@ -42,7 +43,7 @@ export const Input = forwardRef<HTMLInputElement, InputGroupInputProps>(
     }
 
     const size = context?.size ?? "base";
-    const tokens = INPUT_GROUP_SIZE[size];
+    const tokens = resolveVariant(INPUT_GROUP_SIZE, size, "base");
     const isIndividual = context?.focusMode === "individual";
 
     // Auto-set aria-invalid when error is present in context

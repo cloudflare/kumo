@@ -42,13 +42,14 @@ const PLACEHOLDER_CORNER_RADIUS_MULTIPLIER = 0.2;
 
 /**
  * Icon size mapping for different button sizes
- * Matches Tailwind size classes used in components
+ * Matches Tailwind size classes used in components.
+ * `xs` is not a Button size; it is the 12px icon used by menu items
+ * (dropdown, command palette).
  */
 export const ICON_SIZE_MAP: Record<string, number> = {
   xs: FALLBACK_VALUES.iconSize.xs, // size-3 = 12px
   sm: FALLBACK_VALUES.iconSize.sm, // size-4 = 16px
   base: FALLBACK_VALUES.iconSize.base, // size-5 = 20px
-  lg: FALLBACK_VALUES.iconSize.base, // size-5 = 20px
 };
 
 /**
@@ -156,7 +157,7 @@ export function createPlaceholderIcon(size: number): FrameNode {
  * Get an icon instance for a button, with fallback to placeholder
  *
  * @param iconId - Icon ID (e.g., "ph-plus")
- * @param size - Button size key (xs, sm, base, lg)
+ * @param size - Button size key (sm, base), or `xs` for a 12px menu icon
  * @returns FrameNode of the icon or a placeholder frame
  */
 export function getButtonIcon(iconId: string, size: string): FrameNode {

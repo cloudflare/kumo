@@ -49,7 +49,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Empty`            | Display    | Empty state placeholder               | `icon`, `title`, `description`, `commandLine`, `contents`                                                                      |
 | `Field`            | Input      | Form field wrapper with label/error   | `label`, `description`, `error`, `required`, `labelTooltip`                                                                    |
 | `Grid`             | Layout     | Responsive CSS grid                   | `variant`: 2up, side-by-side, 2-1, 1-2, 1-3up, 3up, 4up, 1-2-4up; `gap`: none, sm, base, lg                                    |
-| `Input`            | Input      | Text input field                      | `size`: xs, sm, base, lg; `variant`: default, error; `label`, `error`                                                          |
+| `Input`            | Input      | Text input field                      | `size`: sm, base; `variant`: default, error; `label`, `error`                                                                  |
 | `Label`            | Other      | Form label with optional tooltip      | `children`, `tooltip`, `required`                                                                                              |
 | `LayerCard`        | Display    | Card with header and collapsible body | `title`, `tag`, `actions`, `icon`                                                                                              |
 | `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `external`                                                                          |

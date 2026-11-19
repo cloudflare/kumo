@@ -4,7 +4,7 @@
  * Generates an InputArea ComponentSet in Figma that matches
  * the InputArea component props:
  *
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - variant: default, error
  * - state: default, focus, disabled
  * - withLabel: false (bare textarea), true (with Field wrapper)
@@ -65,7 +65,7 @@ const VARIANT_VALUES = inputProps.variant.values;
  * InputArea uses the same paddingX, fontSize, borderRadius as Input,
  * but with larger minHeight for multi-line content and py-2 instead of Input's height.
  * minHeight and width come from InputArea registry, other dimensions from Input registry.
- * @param size - Size variant (xs, sm, base, lg)
+ * @param size - Size variant (sm, base)
  * @returns Size dimensions including layout-specific width
  */
 function getSizeConfigFromRegistry(size: string) {
@@ -74,10 +74,8 @@ function getSizeConfigFromRegistry(size: string) {
     string,
     { minHeight: number; width: number }
   > = {
-    xs: { minHeight: 60, width: 200 },
     sm: { minHeight: 72, width: 240 },
     base: { minHeight: 88, width: 320 },
-    lg: { minHeight: 100, width: 360 },
   };
 
   const FALLBACK_INPUT_CONFIG = {
@@ -124,10 +122,8 @@ const SIZE_CONFIG: Record<
     width: number;
   }
 > = {
-  xs: getSizeConfigFromRegistry("xs"),
   sm: getSizeConfigFromRegistry("sm"),
   base: getSizeConfigFromRegistry("base"),
-  lg: getSizeConfigFromRegistry("lg"),
 };
 
 /**
@@ -193,7 +189,7 @@ const VARIANT_CONFIG: Record<
 /**
  * Create a single InputArea component variant
  *
- * @param size - Size (xs, sm, base, lg)
+ * @param size - Size (sm, base)
  * @param variant - Variant type (default, error)
  * @param state - Interaction state (default, focus, disabled)
  * @param withLabel - Whether to show Field wrapper (label, description, error)
@@ -362,7 +358,7 @@ async function createInputAreaComponent(
  * Generate InputArea ComponentSet with size, variant, state, and withLabel properties
  *
  * Creates an "InputArea" ComponentSet with all combinations of:
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - variant: default, error
  * - state: default, focus, disabled
  * - withLabel: false (bare textarea), true (with Field wrapper)

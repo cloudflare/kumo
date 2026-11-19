@@ -25,10 +25,8 @@ describe("Loader visual contracts", () => {
   });
 
   test.each([
-    ["xs", 14],
     ["sm", 14],
     ["base", 14],
-    ["lg", 16],
   ] as const)(
     "keeps the Button size=%s loading spinner at %ipx",
     async (size, expected) => {

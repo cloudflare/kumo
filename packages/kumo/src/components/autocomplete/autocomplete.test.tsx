@@ -44,10 +44,12 @@ describe("Autocomplete", () => {
   // Variants export
 
   it("exports KUMO_AUTOCOMPLETE_VARIANTS with size axis", () => {
-    expect(KUMO_AUTOCOMPLETE_VARIANTS.size.xs).toBeDefined();
     expect(KUMO_AUTOCOMPLETE_VARIANTS.size.sm).toBeDefined();
     expect(KUMO_AUTOCOMPLETE_VARIANTS.size.base).toBeDefined();
-    expect(KUMO_AUTOCOMPLETE_VARIANTS.size.lg).toBeDefined();
+    expect(Object.keys(KUMO_AUTOCOMPLETE_VARIANTS.size)).toEqual([
+      "sm",
+      "base",
+    ]);
   });
 
   it("exports KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS with correct defaults", () => {

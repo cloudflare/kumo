@@ -54,10 +54,8 @@ export type KumoComboboxInputSide =
 export interface KumoComboboxVariantsProps {
   /**
    * Size of the combobox trigger. Matches Input component sizes.
-   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
    * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
    * - `"base"` — Default size (h-9 / 36px)
-   * - `"lg"` — Large for prominent fields (h-10 / 40px)
    * @default "base"
    */
   size?: KumoComboboxSize;
@@ -274,10 +272,8 @@ const triggerValueIconStyles: Record<
   KumoComboboxSize,
   { padding: string; iconSize: number; iconRight: string }
 > = {
-  xs: { padding: "pr-5", iconSize: 12, iconRight: "right-1" },
   sm: { padding: "pr-6", iconSize: 14, iconRight: "right-1.5" },
   base: { padding: "pr-8", iconSize: 16, iconRight: "right-2" },
-  lg: { padding: "pr-10", iconSize: 18, iconRight: "right-3" },
 };
 
 /**
@@ -311,7 +307,7 @@ function TriggerValue({
   ...triggerProps
 }: TriggerValueProps) {
   const { size, hasError } = useContext(ComboboxContext);
-  const iconStyles = triggerValueIconStyles[size];
+  const iconStyles = resolveVariant(triggerValueIconStyles, size, "base");
 
   return (
     <ComboboxBase.Trigger
@@ -347,12 +343,6 @@ const triggerInputIconStyles: Record<
   KumoComboboxSize,
   { padding: string; iconSize: number; clearRight: string; caretRight: string }
 > = {
-  xs: {
-    padding: "pr-7",
-    iconSize: 12,
-    clearRight: "right-5",
-    caretRight: "right-1",
-  },
   sm: {
     padding: "pr-9",
     iconSize: 14,
@@ -364,12 +354,6 @@ const triggerInputIconStyles: Record<
     iconSize: 16,
     clearRight: "right-8",
     caretRight: "right-2",
-  },
-  lg: {
-    padding: "pr-14",
-    iconSize: 18,
-    clearRight: "right-9",
-    caretRight: "right-3",
   },
 };
 
@@ -388,7 +372,7 @@ function TriggerInput({
   showOptionsLabel?: string;
 }) {
   const { size, hasError } = useContext(ComboboxContext);
-  const iconStyles = triggerInputIconStyles[size];
+  const iconStyles = resolveVariant(triggerInputIconStyles, size, "base");
 
   return (
     <div
@@ -569,10 +553,8 @@ function Chip({
 
 // Map size to min-height class for TriggerMultipleWithInput
 const sizeToMinHeight: Record<KumoComboboxSize, string> = {
-  xs: "min-h-5",
   sm: "min-h-6.5",
   base: "min-h-9",
-  lg: "min-h-10",
 };
 
 function TriggerMultipleWithInput<ValueType>({
@@ -610,7 +592,7 @@ function TriggerMultipleWithInput<ValueType>({
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "flex flex-col",
         "gap-1 px-1.5 py-1",
-        sizeToMinHeight[size],
+        resolveVariant(sizeToMinHeight, size, "base"),
         "h-auto",
         "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,

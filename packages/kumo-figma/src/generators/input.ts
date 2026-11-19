@@ -4,7 +4,7 @@
  * Generates an Input ComponentSet in Figma that matches
  * the Input component props:
  *
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - variant: default, error
  * - state: default, focus, disabled
  *
@@ -68,7 +68,7 @@ const WITH_LABEL_VALUES = [false, true];
 
 /**
  * Get size configuration from registry
- * @param size - Size variant (xs, sm, base, lg)
+ * @param size - Size variant (sm, base)
  * @returns Size dimensions including layout-specific width
  */
 function getSizeConfigFromRegistry(size: string) {
@@ -84,10 +84,8 @@ function getSizeConfigFromRegistry(size: string) {
     string,
     { height: number; paddingX: number; fontSize: number; borderRadius: number }
   > = {
-    xs: { height: 20, paddingX: 6, fontSize: 12, borderRadius: 2 },
     sm: { height: 26, paddingX: 8, fontSize: 12, borderRadius: 6 },
     base: { height: 36, paddingX: 12, fontSize: 16, borderRadius: 8 },
-    lg: { height: 40, paddingX: 16, fontSize: 16, borderRadius: 8 },
   };
 
   const dims =
@@ -95,10 +93,8 @@ function getSizeConfigFromRegistry(size: string) {
 
   // Layout-specific widths (not in registry - generator specific)
   const widthMap: Record<string, number> = {
-    xs: 160,
     sm: 200,
     base: 280,
-    lg: 320,
   };
 
   return {
@@ -123,10 +119,8 @@ const SIZE_CONFIG: Record<
     width: number;
   }
 > = {
-  xs: getSizeConfigFromRegistry("xs"),
   sm: getSizeConfigFromRegistry("sm"),
   base: getSizeConfigFromRegistry("base"),
-  lg: getSizeConfigFromRegistry("lg"),
 };
 
 /**
@@ -182,7 +176,7 @@ const VARIANT_CONFIG: Record<
 /**
  * Create a single Input component variant
  *
- * @param size - Size (xs, sm, base, lg)
+ * @param size - Size (sm, base)
  * @param variant - Variant type (default, error)
  * @param state - Interaction state (default, focus, disabled)
  * @param withLabel - Whether to show Field wrapper (label, description, error)
@@ -349,7 +343,7 @@ async function createInputComponent(
  * Generate Input ComponentSet with size, variant, state, and withLabel properties
  *
  * Creates an "Input" ComponentSet with all combinations of:
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - variant: default, error
  * - state: default, focus, disabled
  * - withLabel: false (bare input), true (with Field wrapper)

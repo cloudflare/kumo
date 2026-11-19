@@ -367,10 +367,10 @@ function generateSpacingScale(baseUnitPx: number): Record<string, number> {
  */
 function parseButtonCompactSizes(tsx: string): Record<string, number> {
   const sizes: Record<string, number> = {};
-  const sizeNames = ["xs", "sm", "base", "lg"];
+  const sizeNames = ["sm", "base"];
 
   for (const name of sizeNames) {
-    // Match: xs: { classes: "size-3.5" }
+    // Match: sm: { classes: "size-6.5" }
     const pattern = new RegExp(
       `${name}:\\s*\\{\\s*classes:\\s*["']size-([\\d.]+)["']`,
     );

@@ -878,13 +878,11 @@ async function generateRegistry(): Promise<GenerateRegistryResult> {
           type: "enum",
           optional: true,
           description:
-            'Input size.\n- `"xs"` — Extra small for compact UIs\n- `"sm"` — Small for secondary fields\n- `"base"` — Default size\n- `"lg"` — Large for prominent fields',
-          values: ["xs", "sm", "base", "lg"],
+            'Input size.\n- `"sm"` — Small for secondary fields\n- `"base"` — Default size',
+          values: ["sm", "base"],
           descriptions: {
-            xs: "Extra small for compact UIs",
             sm: "Small for secondary fields",
             base: "Default size",
-            lg: "Large for prominent fields",
           },
           default: "base",
         },

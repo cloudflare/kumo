@@ -435,14 +435,10 @@ export const FALLBACK_VALUES = {
    * Generated from: button.tsx KUMO_BUTTON_VARIANTS.compactSize
    */
   buttonCompactSize: {
-    /** Extra small compact button (size-3.5) */
-    xs: themeData.computed.buttonCompactSize.xs,
     /** Small compact button (size-6.5) */
     sm: themeData.computed.buttonCompactSize.sm,
     /** Base compact button (size-9) */
     base: themeData.computed.buttonCompactSize.base,
-    /** Large compact button (size-10) */
-    lg: themeData.computed.buttonCompactSize.lg,
   },
   /** Default stroke weight for borders */
   strokeWeight: 1,

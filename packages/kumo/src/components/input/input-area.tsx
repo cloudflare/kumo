@@ -286,7 +286,7 @@ export const Textarea = InputArea;
 export type InputAreaProps = {
   onValueChange?: (value: string) => void;
   variant?: "default" | "error";
-  size?: "xs" | "sm" | "base" | "lg";
+  size?: "sm" | "base";
   // Then other custom props
   children?: React.ReactNode;
   className?: string;

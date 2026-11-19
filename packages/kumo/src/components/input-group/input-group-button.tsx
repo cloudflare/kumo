@@ -5,6 +5,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { type ButtonProps, Button as ButtonExternal } from "../button/button";
 import { Tooltip, type KumoTooltipSide } from "../tooltip/tooltip";
@@ -17,14 +18,13 @@ import {
 
 /**
  * In container mode, buttons render "one size down" so they stay visually
- * subordinate to the input.  In individual mode the size passes through
- * unchanged (pagination / toolbar buttons should match the input height).
+ * subordinate to the input (`sm` is the smallest button size, so `sm` groups
+ * keep `sm` buttons). In individual mode the size passes through unchanged
+ * (pagination / toolbar buttons should match the input height).
  */
 const COMPACT_BUTTON_SIZE: Record<KumoInputSize, KumoInputSize> = {
-  xs: "xs",
-  sm: "xs",
+  sm: "sm",
   base: "sm",
-  lg: "base",
 };
 
 export type InputGroupButtonProps = ButtonProps & {
@@ -115,7 +115,8 @@ export const Button = forwardRef<
     // internal renderIconNode renders `<Icon />` with no size prop,
     // falling back to CSS font-size (~14px).
     const contextIconSize = context
-      ? INPUT_GROUP_SIZE[context.size ?? "base"].iconSize
+      ? resolveVariant(INPUT_GROUP_SIZE, context.size ?? "base", "base")
+          .iconSize
       : undefined;
 
     const icon = unwrapLazyElement(iconProp);
@@ -146,7 +147,11 @@ export const Button = forwardRef<
           size ??
           (isIndividual
             ? (context?.size ?? "sm")
-            : (COMPACT_BUTTON_SIZE[context?.size ?? "base"] ?? "sm"))
+            : resolveVariant(
+                COMPACT_BUTTON_SIZE,
+                context?.size ?? "base",
+                "base",
+              ))
         }
         className={cn(
           // Ensure clicks register even when parent has pointer-events-none (e.g. disabled overlay)

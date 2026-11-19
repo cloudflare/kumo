@@ -611,7 +611,7 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       default: '"ghost"',
     },
     size: {
-      type: '"xs" | "sm" | "base" | "lg"',
+      type: '"sm" | "base"',
       description: "Button size.",
       default: '"sm"',
     },
@@ -691,10 +691,8 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     inputStyles: {
       base: "bg-kumo-control text-kumo-default ring ring-kumo-line",
       sizes: {
-        xs: "h-5 gap-1 rounded-sm px-1.5 text-xs",
         sm: "h-6.5 gap-1 rounded-md px-2 text-xs",
         base: "h-9 gap-1.5 rounded-lg px-3 text-base",
-        lg: "h-10 gap-2 rounded-lg px-4 text-base",
       },
     },
     sizeVariants: {
@@ -721,12 +719,12 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
         },
       },
       lg: {
-        height: 40,
+        height: 36,
         classes: "text-sm",
-        buttonSize: "lg",
+        buttonSize: "base",
         dimensions: {
-          paddingX: 16,
-          gap: 8,
+          paddingX: 12,
+          gap: 6,
           borderRadius: 8,
           fontSize: 14,
         },

@@ -13,7 +13,7 @@
  * ## Size Variants
  * - sm: Extra small for compact UIs (text-xs, button size sm)
  * - base: Default size (text-sm, button size base)
- * - lg: Large for prominent display (text-sm, button size lg)
+ * - lg: Large for prominent display (text-sm, button size base)
  */
 
 import {
@@ -132,7 +132,7 @@ export function getInputSizeClasses(size: string) {
   const config = getSizeConfig(size);
   const buttonSize = config.buttonSize;
 
-  // Get input size classes for the button size (sm->sm, base->base, lg->lg)
+  // Get input size classes for the button size (sm->sm, base->base, lg->base)
   const inputSizeClasses = clipboardTextStyling.inputStyles.sizes[
     buttonSize
   ] as string | undefined;

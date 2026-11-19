@@ -62,19 +62,9 @@ describe("Input", () => {
     expect(screen.getByRole("textbox").className).toContain("h-9");
   });
 
-  it("renders with size 'xs'", () => {
-    render(<Input aria-label="Test" size="xs" />);
-    expect(screen.getByRole("textbox").className).toContain("h-5");
-  });
-
   it("renders with size 'sm'", () => {
     render(<Input aria-label="Test" size="sm" />);
     expect(screen.getByRole("textbox").className).toContain("h-6.5");
-  });
-
-  it("renders with size 'lg'", () => {
-    render(<Input aria-label="Test" size="lg" />);
-    expect(screen.getByRole("textbox").className).toContain("h-10");
   });
 
   // Variant styles
@@ -192,9 +182,9 @@ describe("Input", () => {
   });
 
   it("applies size classes from KUMO_INPUT_VARIANTS", () => {
-    const classes = inputVariants({ size: "lg" });
-    expect(classes).toContain("h-10");
-    expect(classes).toContain("px-4");
+    const classes = inputVariants({ size: "sm" });
+    expect(classes).toContain("h-6.5");
+    expect(classes).toContain("px-2");
   });
 
   it("applies variant classes from KUMO_INPUT_VARIANTS", () => {
@@ -214,10 +204,9 @@ describe("Input", () => {
 
   // Variants export
   it("exports KUMO_INPUT_VARIANTS with size and variant axes", () => {
-    expect(KUMO_INPUT_VARIANTS.size.xs).toBeDefined();
     expect(KUMO_INPUT_VARIANTS.size.sm).toBeDefined();
     expect(KUMO_INPUT_VARIANTS.size.base).toBeDefined();
-    expect(KUMO_INPUT_VARIANTS.size.lg).toBeDefined();
+    expect(Object.keys(KUMO_INPUT_VARIANTS.size)).toEqual(["sm", "base"]);
     expect(KUMO_INPUT_VARIANTS.variant.default).toBeDefined();
     expect(KUMO_INPUT_VARIANTS.variant.error).toBeDefined();
   });

@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   useInputGroupContext,
   INPUT_GROUP_SIZE,
@@ -32,7 +33,7 @@ export const Addon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
     const context = useInputGroupContext("Addon");
 
     const size = context?.size ?? "base";
-    const tokens = INPUT_GROUP_SIZE[size];
+    const tokens = resolveVariant(INPUT_GROUP_SIZE, size, "base");
 
     // Inject size into direct icon children that don't already have one set.
     // Skips buttons (which have their own size handling) and non-element nodes.

@@ -6,6 +6,7 @@ import {
   type PropsWithChildren,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { inputVariants } from "../input/input";
 import { Field } from "../field/field";
 import {
@@ -28,10 +29,6 @@ export { type InputGroupSuffixProps } from "./input-group-suffix";
 
 export const KUMO_INPUT_GROUP_VARIANTS = {
   size: {
-    xs: {
-      classes: "h-6 text-xs",
-      description: "Extra small size.",
-    },
     sm: {
       classes: "h-7 text-xs",
       description: "Small size.",
@@ -39,10 +36,6 @@ export const KUMO_INPUT_GROUP_VARIANTS = {
     base: {
       classes: "h-9 text-base",
       description: "Default size.",
-    },
-    lg: {
-      classes: "h-11 text-base",
-      description: "Large size.",
     },
   },
 } as const;
@@ -148,7 +141,7 @@ const Root = forwardRef<
       "has-[[data-slot=input-group-suffix]]:[&_input]:grow-0",
       "has-[[data-slot=input-group-suffix]]:[&_input]:pr-0",
       // Size-specific padding adjustments when addons or suffixes are present
-      INPUT_GROUP_HAS_CLASSES[size],
+      resolveVariant(INPUT_GROUP_HAS_CLASSES, size, "base"),
       // Reset bottom margin to avoid inherited spacing from parent <label> styles
       "!mb-0",
       className,
@@ -206,7 +199,7 @@ const Root = forwardRef<
                 // Outer edges inherit radius; inner edges are flat against sibling buttons
                 "rounded-none first:rounded-l-[inherit] last:rounded-r-[inherit]",
                 // Size-specific padding adjustments when addons or suffixes are present
-                INPUT_GROUP_HAS_CLASSES[size],
+                resolveVariant(INPUT_GROUP_HAS_CLASSES, size, "base"),
                 // When a suffix is present, let the input shrink to its content width
                 "has-data-[slot=input-group-suffix]:[&_input]:field-sizing-content",
                 "has-data-[slot=input-group-suffix]:[&_input]:max-w-full",

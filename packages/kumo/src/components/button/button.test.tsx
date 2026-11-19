@@ -135,7 +135,7 @@ describe("Button", () => {
       expect(button.className).not.toContain("pl-2.5");
     });
 
-    it.each(["xs", "sm", "base", "lg"] as const)(
+    it.each(["sm", "base"] as const)(
       "does not shift %s text off the line box center",
       (size) => {
         render(
@@ -149,15 +149,12 @@ describe("Button", () => {
       },
     );
 
-    it.each(["base", "lg"] as const)(
-      "uses a 20px line box at %s so the label gap is a whole pixel",
-      (size) => {
-        render(<Button size={size}>Add</Button>);
-        const button = screen.getByRole("button", { name: "Add" });
-        expect(button.className).toContain("text-base");
-        expect(button.className).toContain("leading-5");
-      },
-    );
+    it("uses a 20px line box at base so the label gap is a whole pixel", () => {
+      render(<Button size="base">Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("text-base");
+      expect(button.className).toContain("leading-5");
+    });
 
     it.each([false, "", [null, false]])(
       "keeps symmetric padding when children render nothing (%j)",

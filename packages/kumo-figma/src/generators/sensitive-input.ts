@@ -5,7 +5,7 @@ import { logComplete } from "../logger";
  * Generates a SensitiveInput ComponentSet in Figma that matches
  * the SensitiveInput component props:
  *
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - variant: default, error
  * - state: default, focus, disabled
  * - mode: masked, revealed
@@ -73,20 +73,16 @@ const VARIANT_VALUES = variantProp.values;
  * Width mapping for SensitiveInput (layout-specific)
  */
 const SIZE_WIDTHS: Record<string, number> = {
-  xs: 200,
   sm: 220,
   base: 280,
-  lg: 320,
 };
 
 /**
  * Icon size mapping for SensitiveInput (layout-specific)
  */
 const ICON_SIZES: Record<string, string> = {
-  xs: "sm",
   sm: "sm",
   base: "base",
-  lg: "base",
 };
 
 /**
@@ -120,12 +116,6 @@ function getSizeConfigFromRegistry(size: string): {
     string,
     { height: number; paddingX: number; fontSize: number; borderRadius: number }
   > = {
-    xs: {
-      height: 20,
-      paddingX: 6,
-      fontSize: 12,
-      borderRadius: BORDER_RADIUS.xs,
-    },
     sm: {
       height: 26,
       paddingX: 8,
@@ -135,12 +125,6 @@ function getSizeConfigFromRegistry(size: string): {
     base: {
       height: 36,
       paddingX: 12,
-      fontSize: 16,
-      borderRadius: BORDER_RADIUS.lg,
-    },
-    lg: {
-      height: 40,
-      paddingX: 16,
       fontSize: 16,
       borderRadius: BORDER_RADIUS.lg,
     },
@@ -424,7 +408,7 @@ async function createSensitiveInputComponent(
  * Generate SensitiveInput ComponentSet
  *
  * Creates a "SensitiveInput" ComponentSet with all combinations of:
- * - size: xs, sm, base, lg
+ * - size: sm, base
  * - variant: default, error
  * - state: default, focus, disabled
  * - mode: masked, revealed
