@@ -152,8 +152,11 @@ export default function Example() {
 ### Navigation Links
 
 <p>
-  Use `DropdownMenu.LinkItem` for menu items that navigate to a URL.
-  This renders a semantic `<a>` element with full control over link attributes like `target` and `rel`.
+  Use `DropdownMenu.LinkItem` for menu items that navigate to a URL. It
+  resolves through [`LinkProvider`](/components/link#framework-integration-linkprovider)
+  like `Link`: internal routes render your router's link, and everything else
+  renders an `&lt;a&gt;`. Items that open in a new tab show an icon and
+  announce it to screen readers.
 </p>
 <ComponentExample demo="DropdownLinkItemDemo">
   <DropdownLinkItemDemo client:load />
