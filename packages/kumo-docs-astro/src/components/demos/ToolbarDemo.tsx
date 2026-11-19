@@ -82,7 +82,7 @@ export function ToolbarActionsDemo() {
   );
 }
 
-/** Toolbar links use LinkButton for navigation with toolbar styling. */
+/** Toolbar links render a link Button with toolbar styling. */
 export function ToolbarLinksDemo() {
   return (
     <Toolbar>

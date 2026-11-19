@@ -34,10 +34,8 @@ export { Banner, BannerVariant } from "./components/banner";
 export {
   Button,
   RefreshButton,
-  LinkButton,
   buttonVariants,
   type ButtonProps,
-  type LinkButtonProps,
 } from "./components/button";
 export {
   Checkbox,
