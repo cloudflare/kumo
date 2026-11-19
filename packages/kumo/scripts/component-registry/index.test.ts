@@ -335,7 +335,6 @@ describe("shouldIncludeExample", () => {
   ): boolean {
     const undefinedComponents = [
       "RefreshButton",
-      "LinkButton",
       "DefaultMenuBar",
       "ToastTriggerButton",
     ];
