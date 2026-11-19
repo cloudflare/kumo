@@ -2,7 +2,7 @@ import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { useLinkComponent } from "../../utils/link-provider";
+import { ResolvedLink } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import {
   usePortalContainer,
@@ -345,8 +345,6 @@ const DropdownMenuItem = React.forwardRef<
     },
     ref,
   ) => {
-    const LinkComponent = useLinkComponent();
-
     // Build the inner content with icon, children, and selected indicator
     const innerContent = React.useMemo(
       () => (
@@ -388,16 +386,15 @@ const DropdownMenuItem = React.forwardRef<
         );
       }
       return (
-        <LinkComponent
+        <ResolvedLink
           className={cn(styles, "w-full text-inherit! no-underline!")}
           href={href}
-          to={href}
           onClick={(e) => e.stopPropagation()}
         >
           {innerContent}
-        </LinkComponent>
+        </ResolvedLink>
       );
-    }, [href, innerContent, variant, LinkComponent]);
+    }, [href, innerContent, variant]);
 
     // When href is provided, use linkContent as render prop
     // When render prop is provided, caller controls children rendering

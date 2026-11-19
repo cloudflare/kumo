@@ -9,7 +9,7 @@ import {
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { Button } from "../../components/button";
 import { SkeletonLine } from "../../components/loader/skeleton-line";
-import { useLinkComponent } from "../../utils/link-provider";
+import { ResolvedLink } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
 import { useKumoLocale } from "../../utils/locale-provider";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -68,13 +68,11 @@ const Link = ({
   icon,
   children,
 }: PropsWithChildren<BreadcrumbsItemProps>) => {
-  const LinkComponent = useLinkComponent();
-
   return (
-    <LinkComponent
+    <ResolvedLink
       data-kumo-component="Breadcrumbs"
       data-kumo-part="link"
-      to={href}
+      href={href}
       // Ancestors do not shrink. Letting every crumb truncate proportionally
       // turns the whole trail into unreadable stubs ("Com… › Anal… › Acco…");
       // the current page is the only crumb allowed to give up width.
@@ -82,7 +80,7 @@ const Link = ({
     >
       {!!icon && <span className="flex shrink-0 items-center">{icon}</span>}
       <span>{children}</span>
-    </LinkComponent>
+    </ResolvedLink>
   );
 };
 

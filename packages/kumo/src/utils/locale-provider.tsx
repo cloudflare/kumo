@@ -13,6 +13,13 @@ export interface KumoTranslations {
     optional: string;
     tooltip: string;
   };
+  link?: {
+    /**
+     * Appended to the accessible name of links that open in a new tab.
+     * Include any surrounding punctuation, e.g. `"(opens in a new tab)"`.
+     */
+    opensInNewTab: string;
+  };
   layerDialog: {
     close: string;
     cancel: string;
@@ -36,6 +43,9 @@ const defaultTranslations: ResolvedKumoTranslations = {
   label: {
     optional: "(optional)",
     tooltip: "More information",
+  },
+  link: {
+    opensInNewTab: "(opens in a new tab)",
   },
   layerDialog: {
     close: "Close",
@@ -72,6 +82,10 @@ export function KumoLocaleProvider({
       label: {
         ...defaultTranslations.label,
         ...translations?.label,
+      },
+      link: {
+        ...defaultTranslations.link,
+        ...translations?.link,
       },
       layerDialog: {
         ...defaultTranslations.layerDialog,

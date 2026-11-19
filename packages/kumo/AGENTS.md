@@ -120,4 +120,4 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 - **CLI path inconsistency**: `ls`/`doc` read from `catalog/`, `blocks` from `ai/` directory
 - **`PLOP_INJECT_EXPORT`** in `src/index.ts` and `PLOP_INJECT_COMPONENT_ENTRY` in `vite.config.ts` are scaffolding markers
 - **5th lint rule** (`no-deprecated-props`): Only in `packages/kumo/lint/`, reads deprecation data from registry
-- **LinkProvider**: Framework-agnostic link abstraction; wrap app with custom Link component (e.g., Next.js)
+- **LinkProvider**: Resolves every link-like component's `href` in one place (`utils/link-provider.tsx`). `router` renders internal routes; everything else is a plain `<a>`. New-tab links get an icon and localized announcement. Use `useLink` for custom link UI

@@ -1,4 +1,4 @@
-import { Link } from "@cloudflare/kumo";
+import { Link, LinkProvider, useLink } from "@cloudflare/kumo";
 
 export function LinkBasicDemo() {
   return (
@@ -24,15 +24,11 @@ export function LinkInParagraphDemo() {
   );
 }
 
+/** Links that open in a new tab get an icon and a screen-reader announcement. */
 export function LinkExternalDemo() {
   return (
-    <Link
-      href="https://cloudflare.com"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-base"
-    >
-      Visit Cloudflare <Link.ExternalIcon />
+    <Link href="https://cloudflare.com" target="_blank" className="text-base">
+      Visit Cloudflare
     </Link>
   );
 }
@@ -49,34 +45,42 @@ export function LinkCurrentVariantDemo() {
   );
 }
 
-// Helper component simulating a framework link (e.g., React Router's Link)
-const CustomRouterLink = ({
-  children,
-  ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-  <a data-custom-router-link {...props}>
-    {children}
-  </a>
-);
-
-export function LinkRenderDemo() {
+/** `externalLinks="new-tab"` opens every external link in a new tab. */
+export function LinkNewTabPolicyDemo() {
   return (
-    <div className="flex flex-col gap-x-6 gap-y-4 text-base md:flex-row">
-      <Link render={<CustomRouterLink href="/dashboard" />} variant="inline">
-        Dashboard (via render)
-      </Link>
-      <Link
-        render={
-          <CustomRouterLink
-            href="https://developers.cloudflare.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-        }
-        variant="inline"
-      >
-        Cloudflare Docs <Link.ExternalIcon />
-      </Link>
-    </div>
+    <LinkProvider externalLinks="new-tab">
+      <div className="flex flex-col gap-x-6 gap-y-4 text-base md:flex-row">
+        <Link href="#">Internal link</Link>
+        <Link href="https://developers.cloudflare.com">External link</Link>
+        <Link href="https://developers.cloudflare.com" target="_self">
+          External, same tab
+        </Link>
+      </div>
+    </LinkProvider>
+  );
+}
+
+function ZoneCard({ href, name }: { href: string; name: string }) {
+  const { Component, linkProps, newTabCue } = useLink({ href });
+  return (
+    <Component
+      {...linkProps}
+      className="flex items-center gap-1 rounded-lg bg-kumo-elevated p-4 text-kumo-default no-underline ring ring-kumo-hairline"
+    >
+      {name}
+      {newTabCue}
+    </Component>
+  );
+}
+
+/** `useLink` resolves a link for custom UI such as cards. */
+export function LinkUseLinkDemo() {
+  return (
+    <LinkProvider externalLinks="new-tab">
+      <div className="grid gap-3 text-base md:grid-cols-2">
+        <ZoneCard href="#" name="example.com" />
+        <ZoneCard href="https://www.cloudflare.com" name="cloudflare.com" />
+      </div>
+    </LinkProvider>
   );
 }

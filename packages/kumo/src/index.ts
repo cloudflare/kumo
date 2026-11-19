@@ -376,8 +376,14 @@ export {
 export { cn, safeRandomId } from "./utils/cn";
 export {
   LinkProvider,
-  useLinkComponent,
-  type LinkComponentProps,
+  useLink,
+  type ExternalLinksPolicy,
+  type LinkElementType,
+  type LinkProviderProps,
+  type RouterLinkComponent,
+  type RouterLinkProps,
+  type UseLinkOptions,
+  type UseLinkResult,
 } from "./utils/link-provider";
 export {
   KumoPortalProvider,

@@ -4,7 +4,7 @@ import { Loader } from "../loader/loader";
 import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { useLinkComponent } from "../../utils/link-provider";
+import { ResolvedLink } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
@@ -498,7 +498,6 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     },
     ref,
   ) => {
-    const LinkComponent = useLinkComponent();
     const emphasisStyle = getEmphasisStyle(variant);
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
@@ -526,7 +525,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
 
     const iconNode = renderIconNode(IconComponent);
     const link = (
-      <LinkComponent
+      <ResolvedLink
         ref={ref}
         data-kumo-component="LinkButton"
         className={cn(
@@ -537,12 +536,11 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         )}
         href={href}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
-        to={typeof href === "string" ? href : undefined}
         {...externalProps}
         {...props}
       >
         {renderButtonContent(variant, iconNode, children)}
-      </LinkComponent>
+      </ResolvedLink>
     );
 
     if (title) {

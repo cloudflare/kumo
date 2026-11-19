@@ -1,8 +1,14 @@
 export { cn, safeRandomId } from "./cn";
 export {
   LinkProvider,
-  useLinkComponent,
-  type LinkComponentProps,
+  useLink,
+  type ExternalLinksPolicy,
+  type LinkElementType,
+  type LinkProviderProps,
+  type RouterLinkComponent,
+  type RouterLinkProps,
+  type UseLinkOptions,
+  type UseLinkResult,
 } from "./link-provider";
 export { KumoPortalProvider, type PortalContainer } from "./portal-provider";
 export {
