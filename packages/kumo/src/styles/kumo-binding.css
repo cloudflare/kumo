@@ -271,7 +271,9 @@
 /* Scroll-fade: gradient masks that appear on the edges of a horizontally
    scrollable container based on scroll position. Uses scroll-driven
    animations (Chrome 115+, Edge 115+). Degrades gracefully to no fade.
-   Activated by the `data-overflowing` attribute (set via JS ResizeObserver). */
+   Activated by the `data-overflowing` attribute (set via JS ResizeObserver).
+   Scroll timelines start at the inline start, so Tabs sets
+   `--scroll-fade-direction: to left` when its list is right-to-left. */
 @property --fade-left-n {
   syntax: "<number>";
   inherits: false;
@@ -305,7 +307,7 @@
 [data-overflowing] {
   @supports (animation-timeline: scroll()) {
     mask-image: linear-gradient(
-      to right,
+      var(--scroll-fade-direction, to right),
       transparent,
       white calc(var(--fade-left-n) * var(--scroll-fade-width, 3rem)),
       white calc(100% - var(--fade-right-n) * var(--scroll-fade-width, 3rem)),
