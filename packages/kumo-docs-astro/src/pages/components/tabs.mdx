@@ -125,7 +125,9 @@ export default function Example() {
 <p>
   When segmented tabs overflow their container, scroll buttons appear at the
   clipped edge. Use them, horizontal scrolling, or mouse drag to reveal
-  off-screen tabs.
+  off-screen tabs. In a right-to-left layout (<code>dir="rtl"</code>), the
+  buttons and the edge fades mirror, and the default button labels name the
+  side each button is on.
 </p>
 <ComponentExample demo="TabsOverflowDemo">
   <TabsOverflowDemo client:visible />
