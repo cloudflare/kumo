@@ -91,7 +91,7 @@ describe("Banner", () => {
     expect(link.getAttribute("href")).toBe("/billing");
     expect(link.getAttribute("data-kumo-component")).toBe("LinkButton");
     expect(link.className).toContain("extra");
-    expect(link.className).toContain("h-6.5");
+    expect(link.className).toContain("h-7.5");
     expect(
       link.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
     ).toBe("var(--color-kumo-warning)");
@@ -196,7 +196,7 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("h-7.5");
     expect(cta.className).toContain("px-2");
     expect(cta.getAttribute("aria-label")).toBe("Dismiss");
     expect(screen.getByTestId("icon")).toBeTruthy();
@@ -212,9 +212,9 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("h-7.5");
     expect(cta.className).toContain("px-2");
-    expect(cta.className).toContain("text-xs");
+    expect(cta.className).toContain("text-base");
   });
 
   it("applies compact spacing for the sm banner size", () => {
@@ -241,7 +241,7 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    // Inherits the banner's size => xs (h-5), not the standalone sm default (h-6.5).
+    // Inherits the banner's size => xs (h-5), not the standalone sm default (h-7.5).
     expect(cta.className).toContain("h-5");
     expect(cta.className).toContain("px-1.5");
   });
