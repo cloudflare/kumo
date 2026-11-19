@@ -191,35 +191,25 @@ export default function Example({ headings }) {
   <TableOfContentsWithoutTitleDemo client:visible />
 </ComponentExample>
 
+### Routing
+
+<p>
+  Items and group labels with an `href` resolve through
+  [`LinkProvider`](/components/link#framework-integration-linkprovider):
+  internal routes render your router's link. In-page fragments such as
+  `#intro` always render a plain `&lt;a&gt;` so the browser scrolls to them.
+  Configure routing once on `LinkProvider` instead of per item.
+</p>
+
 ### Custom element
 
 <p>
-  Use the `render` prop to swap the default anchor for a button, router link, or
-  any element.
+  Use the `render` prop to render something other than a link, such as a
+  button that scrolls to a section.
 </p>
 <ComponentExample demo="TableOfContentsRenderPropDemo">
   <TableOfContentsRenderPropDemo client:load />
 </ComponentExample>
-
-#### React Router
-
-```tsx
-<TableOfContents.Item render={<Link to="/intro" />} active>
-  Introduction
-</TableOfContents.Item>
-```
-
-#### Next.js
-
-```tsx
-import Link from "next/link";
-
-<TableOfContents.Item render={<Link href="/intro" />} active>
-  Introduction
-</TableOfContents.Item>;
-```
-
-#### Button (no navigation)
 
 ```tsx
 <TableOfContents.Item render={<button type="button" />} onClick={handleClick}>
@@ -253,8 +243,9 @@ import Link from "next/link";
 ### `TableOfContents.Item`
 
 <p>
-  Individual navigation link. Set `active` for the current section. Use the
-  `render` prop to swap the anchor for a router link or button.
+  Individual navigation link. Set `active` for the current section. Links
+  resolve through `LinkProvider`; use `render` only for non-link elements, such
+  as a button.
 </p>
 <PropsTable component="TableOfContents.Item" />
 
