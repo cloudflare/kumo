@@ -32,11 +32,6 @@ export const COMPONENT_ACTIONS: Record<string, ComponentAction> = {
   toast: { type: "click", selector: "main button", waitAfter: 500 },
   collapsible: { type: "click", selector: "main button", waitAfter: 300 },
   "command-palette": { type: "click", selector: "main button", waitAfter: 300 },
-  "date-range-picker": {
-    type: "click",
-    selector: "main button",
-    waitAfter: 300,
-  },
 };
 
 /**

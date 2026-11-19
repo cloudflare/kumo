@@ -37,7 +37,6 @@ export const CATEGORY_MAP: Record<string, string> = {
   badge: "Display",
   breadcrumbs: "Display",
   chart: "Data Visualization",
-  code: "Display",
   collapsible: "Display",
   empty: "Display",
   "layer-card": "Display",
@@ -50,7 +49,6 @@ export const CATEGORY_MAP: Record<string, string> = {
   // Input
   checkbox: "Input",
   combobox: "Input",
-  "date-range-picker": "Input",
   field: "Input",
   input: "Input",
   "input-group": "Input",
@@ -60,10 +58,8 @@ export const CATEGORY_MAP: Record<string, string> = {
   switch: "Input",
   // Layout
   grid: "Layout",
-  surface: "Layout",
   // Navigation
   "command-palette": "Navigation",
-  menubar: "Navigation",
   pagination: "Navigation",
   tabs: "Navigation",
   // Overlay

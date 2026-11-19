@@ -13,12 +13,9 @@ import { generateBreadcrumbsComponents } from "./generators/breadcrumbs";
 import { generateButtonComponents } from "./generators/button";
 import { generateCheckboxComponents } from "./generators/checkbox";
 import { generateClipboardTextComponents } from "./generators/clipboard-text";
-import { generateCodeComponents } from "./generators/code";
-import { generateCodeBlockComponents } from "./generators/code-block";
 import { generateCollapsibleComponents } from "./generators/collapsible";
 import { generateCommandPaletteComponents } from "./generators/command-palette";
 import { generateComboboxComponents } from "./generators/combobox";
-import { generateDateRangePickerComponents } from "./generators/date-range-picker";
 import { generateDialogComponents } from "./generators/dialog";
 import { generateDropdownComponents } from "./generators/dropdown";
 import { generateEmptyComponents } from "./generators/empty";
@@ -29,7 +26,6 @@ import { generateLabelComponents } from "./generators/label";
 import { generateLinkComponents } from "./generators/link";
 import { generateLoaderComponents } from "./generators/loader";
 import { generateLinkButtonComponents } from "./generators/link-button";
-import { generateMenuBarComponents } from "./generators/menubar";
 import { generateMeterComponents } from "./generators/meter";
 
 import { generatePaginationComponents } from "./generators/pagination";
@@ -40,7 +36,6 @@ import {
 import { generateRefreshButtonComponents } from "./generators/refresh-button";
 import { generateSelectComponents } from "./generators/select";
 import { generateSensitiveInputComponents } from "./generators/sensitive-input";
-import { generateSurfaceComponents } from "./generators/surface";
 import {
   generateSwitchComponents,
   generateSwitchGroupComponents,
@@ -206,20 +201,6 @@ figma.ui.onmessage = async (msg: { type: string }) => {
           },
         },
         {
-          name: "Code",
-          execute: async (page, y) => {
-            const result = await generateCodeComponents(page, y);
-            return { nextY: result };
-          },
-        },
-        {
-          name: "CodeBlock",
-          execute: async (page, y) => {
-            const result = await generateCodeBlockComponents(page, y);
-            return { nextY: result };
-          },
-        },
-        {
           name: "Collapsible",
           execute: async (_page, y) => {
             const result = await generateCollapsibleComponents(y);
@@ -237,13 +218,6 @@ figma.ui.onmessage = async (msg: { type: string }) => {
           name: "CommandPalette",
           execute: async (page, y) => {
             const result = await generateCommandPaletteComponents(page, y);
-            return { nextY: result };
-          },
-        },
-        {
-          name: "DateRangePicker",
-          execute: async (page, y) => {
-            const result = await generateDateRangePickerComponents(page, y);
             return { nextY: result };
           },
         },
@@ -318,13 +292,6 @@ figma.ui.onmessage = async (msg: { type: string }) => {
           },
         },
         {
-          name: "MenuBar",
-          execute: async (page, y) => {
-            const result = await generateMenuBarComponents(page, y);
-            return { nextY: result };
-          },
-        },
-        {
           name: "Meter",
           execute: async (_page, y) => {
             const result = await generateMeterComponents(y);
@@ -371,13 +338,6 @@ figma.ui.onmessage = async (msg: { type: string }) => {
           name: "SensitiveInput",
           execute: async (page, y) => {
             const result = await generateSensitiveInputComponents(page, y);
-            return { nextY: result };
-          },
-        },
-        {
-          name: "Surface",
-          execute: async (page, y) => {
-            const result = await generateSurfaceComponents(page, y);
             return { nextY: result };
           },
         },

@@ -82,9 +82,9 @@ export type KumoGridGap = keyof typeof KUMO_GRID_VARIANTS.gap;
  * @example
  * ```tsx
  * <Grid variant="3up" gap="sm">
- *   <GridItem><Surface className="p-4">1</Surface></GridItem>
- *   <GridItem><Surface className="p-4">2</Surface></GridItem>
- *   <GridItem><Surface className="p-4">3</Surface></GridItem>
+ *   <GridItem><LayerCard className="p-4">1</LayerCard></GridItem>
+ *   <GridItem><LayerCard className="p-4">2</LayerCard></GridItem>
+ *   <GridItem><LayerCard className="p-4">3</LayerCard></GridItem>
  * </Grid>
  * ```
  */

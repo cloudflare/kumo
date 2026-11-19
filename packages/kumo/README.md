@@ -34,7 +34,7 @@ The CLI reads from `ai/component-registry.json` (generated from TypeScript types
 
 ```tsx
 // Main package import
-import { Button, Input, Surface } from "@cloudflare/kumo";
+import { Button, Input, LayerCard } from "@cloudflare/kumo";
 
 // Granular imports (recommended for tree-shaking)
 import { Button } from "@cloudflare/kumo/components/button";

@@ -38,7 +38,6 @@ const COMPONENT_NAME_MAPPING: Record<string, string> = {
   "Switch.Group": "switch", // Switch.Group is in switch.ts
   ClipboardText: "clipboard-text",
   CommandPalette: "command-palette",
-  DateRangePicker: "date-range-picker",
   DropdownMenu: "dropdown", // Registry name differs from file name
   InputArea: "input-area", // Synthetic component - uses Input's props but has own styling
   LayerCard: "layer-card",
@@ -295,7 +294,7 @@ describe("Figma Plugin - No Magic Numbers", () => {
 
   it("should not have hardcoded shadow effects (use SHADOWS from shared.ts)", () => {
     // Files known to use shadows
-    const shadowFiles = ["dialog.ts", "tabs.ts", "surface.ts", "menubar.ts"];
+    const shadowFiles = ["dialog.ts", "tabs.ts"];
 
     const violations: string[] = [];
 
@@ -1117,11 +1116,9 @@ describe("Figma Plugin - Test File Assertions Enforcement", () => {
 describe("Figma Plugin - Registry Styling Integration", () => {
   // Generators that MUST read from registry.styling
   const GENERATORS_REQUIRING_STYLING = [
-    { file: "date-range-picker.ts", component: "DateRangePicker" },
     { file: "pagination.ts", component: "Pagination" },
     { file: "input-area.ts", component: "InputArea" },
     { file: "layer-card.ts", component: "LayerCard" },
-    { file: "menubar.ts", component: "MenuBar" },
   ];
 
   it("should read styling from registry for components with hardcoded configs", () => {

@@ -162,7 +162,7 @@ export interface UIElement<
  * {
  *   root: "card-1",
  *   elements: {
- *     "card-1": { key: "card-1", type: "Surface", props: { variant: "card" }, children: ["text-1"] },
+ *     "card-1": { key: "card-1", type: "LayerCard", props: {}, children: ["text-1"] },
  *     "text-1": { key: "text-1", type: "Text", props: { children: "Hello" }, parentKey: "card-1" }
  *   }
  * }

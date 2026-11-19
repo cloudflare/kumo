@@ -80,7 +80,7 @@ The UI tree uses a flat structure optimized for LLM generation and streaming. El
   "elements": {
     "card-1": {
       "key": "card-1",
-      "type": "Surface",
+      "type": "LayerCard",
       "props": { "className": "p-4" },
       "children": ["heading-1", "text-1", "button-1"]
     },
@@ -363,7 +363,7 @@ import {
   evaluateVisibility,
   createVisibilityContext,
 } from "@cloudflare/kumo/catalog";
-import { Button, Text, Surface } from "@cloudflare/kumo";
+import { Button, Text, LayerCard } from "@cloudflare/kumo";
 
 // 1. Create and initialize catalog
 const catalog = createKumoCatalog({
@@ -379,7 +379,7 @@ const aiJson = {
   elements: {
     container: {
       key: "container",
-      type: "Surface",
+      type: "LayerCard",
       props: { className: "p-4 space-y-4" },
       children: ["greeting", "action-btn"],
     },
@@ -433,7 +433,7 @@ function renderElement(element, elements) {
   );
 
   // Map to components
-  const Component = { Surface, Text, Button }[element.type];
+  const Component = { LayerCard, Text, Button }[element.type];
   return <Component {...props}>{children}</Component>;
 }
 
