@@ -9,8 +9,8 @@
  *
  * Sizes: sm (16px), base (24px), lg (32px)
  *
- * Note: Figma doesn't support SVG animations, so this shows a static
- * representation at the animation midpoint.
+ * Note: Figma doesn't support animations, so this shows the static arc
+ * without its turn.
  *
  * @see packages/kumo/src/components/loader/loader.tsx
  * @see packages/kumo-figma/src/build-loader-data.ts

@@ -4,9 +4,11 @@ import { Button } from "../button/button";
 import { Loader } from "./loader";
 
 // Loader animates, so assert rendered geometry rather than pixel snapshots.
+// Read the layout size, not getBoundingClientRect(): the Loader turns with a
+// CSS transform, and the bounding box of a rotated square is larger than it.
 function renderedSize(element: Element) {
-  const { width, height } = element.getBoundingClientRect();
-  return { width, height };
+  const { width, height } = getComputedStyle(element);
+  return { width: parseFloat(width), height: parseFloat(height) };
 }
 
 describe("Loader visual contracts", () => {
