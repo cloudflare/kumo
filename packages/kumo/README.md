@@ -62,6 +62,31 @@ Alternatively, you can use the default style export (`@cloudflare/kumo/styles`) 
 
 If you are **not** using Tailwind CSS, use the standalone build instead (see below) — no `@source` directive is needed.
 
+##### Scan Only the Components You Use (Optional)
+
+The `@source` line above scans all of `dist/`, so Tailwind writes the utilities of every Kumo component, whether your app renders it or not. To ship less CSS, scan only the chunks of the components you use. In a Vite app that renders only `Button`, this cut the stylesheet from 156 KB to 40 KB.
+
+For an app that renders only `Button`:
+
+```css
+@import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss" source(none);
+
+/* Your own files */
+@source "./";
+
+/* Button, and the components it draws: Loader and Tooltip */
+@source "../node_modules/@cloudflare/kumo/dist/chunks/{button,loader,tooltip}-*.js";
+@source not "../node_modules/@cloudflare/kumo/dist/chunks/button-group-*.js";
+```
+
+Before you use it:
+
+- **`source(none)` is required.** It turns off Tailwind's automatic detection, so add an `@source` for every folder that holds your own class names. Without it, an `@source` that points into `node_modules` scans that whole folder ([tailwindlabs/tailwindcss#20637](https://github.com/tailwindlabs/tailwindcss/issues/20637)), and the setup saves almost nothing.
+- **Add the components that each component draws.** `Button` draws `Loader` and `Tooltip`. `Empty` draws `Button` and `Text`. `Checkbox` draws `Label`, which draws `Button` and `Tooltip`. `Dialog` draws `LayerCard`. The `import` lines at the top of a chunk in `dist/chunks/` show which other components it uses. If a chunk is missing from the list, its component renders unstyled, and nothing reports an error.
+- **A name can match a longer one.** `button-*` also matches `button-group-*`, so exclude it with `@source not` unless you use `ButtonGroup`. The same goes for `input-*` and `input-group-*`, and for `table-*` and `table-of-contents-*`.
+- **Chunk names carry a content hash** that changes between releases. Match them with `-*.js`, never a full file name, and check the list again when you upgrade Kumo.
+
 #### For Non-Tailwind Users (Standalone)
 
 ```js

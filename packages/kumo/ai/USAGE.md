@@ -17,6 +17,23 @@ In your main CSS file (e.g. `global.css`), add **all three lines in this order**
 - **`@source`** — Tells Tailwind to scan kumo's compiled JS for class names. Without this, kumo component internals will be unstyled. Adjust the relative path so it resolves to your project's `node_modules/`.
 - **Import order matters** — `@cloudflare/kumo/styles` must come **before** `@import "tailwindcss"` so kumo's `@theme` tokens are registered first.
 
+### Smaller CSS (optional)
+
+Use the setup above by default. Its `@source` scans all of `dist/`, so Tailwind writes the utilities of every kumo component. If the app needs a smaller stylesheet, scan only the chunks of the components it renders. For an app that renders only `Button`:
+
+```css
+@import "@cloudflare/kumo/styles";
+@import "tailwindcss" source(none);
+@source "./"; /* the app's own files */
+@source "path/to/node_modules/@cloudflare/kumo/dist/chunks/{button,loader,tooltip}-*.js";
+@source not "path/to/node_modules/@cloudflare/kumo/dist/chunks/button-group-*.js";
+```
+
+- **`source(none)` is required.** Without it, an `@source` into `node_modules` scans that whole folder ([tailwindlabs/tailwindcss#20637](https://github.com/tailwindlabs/tailwindcss/issues/20637)). Add an `@source` for every folder that holds the app's own class names.
+- **List the components each component draws, recursively.** `Button` draws `Loader` and `Tooltip`. `Empty` draws `Button` and `Text`. `Checkbox` draws `Label`, which draws `Button` and `Tooltip`. `Dialog` draws `LayerCard`. A chunk's `import` lines show the rest. A missing chunk renders its component unstyled, with no error.
+- **`button-*` also matches `button-group-*`** (likewise `input-group-*` and `table-of-contents-*`). Exclude them with `@source not` unless the app uses them.
+- **Chunk names are content-hashed.** Use `-*.js` globs, never full file names.
+
 ### Component usage
 
 ```tsx
