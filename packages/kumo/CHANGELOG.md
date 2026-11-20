@@ -1,5 +1,18 @@
 # @cloudflare/kumo
 
+## 2.19.1
+
+### Patch Changes
+
+- da3095f: fix(badge): lighten the secondary badge background with a dedicated `kumo-badge-secondary` token instead of the shared `kumo-fill`
+- 0d67ba1: fix(layer-dialog): remove the top/bottom fade mask from the scrollable body
+- eb12be5: Fix `Sidebar.SlidingViews` showing the wrong view, shifted sideways, after the sidebar collapses and expands. `Sidebar.Collapsible` with `autoScrollOnOpen` now scrolls only the sidebar's own scroll area, vertically, and only when the section itself opens. Sections that are already open when they mount, or when the sidebar expands, no longer scroll.
+- 5fb25c7: Document on `Dialog.Root` that `role="alertdialog"` should not include a header close button.
+- 6bbcb03: Fix Tabs overflow controls in right-to-left layouts. The scroll buttons and edge fades now sit on the side where tabs are clipped, the buttons scroll toward the hidden tabs, and the default button labels name the side each button is on.
+- 46917b4: Document and test that copy `Text` variants can render heading elements, for example `<Text as="h2" variant="secondary" size="base" bold>`.
+- 36a96e5: `Text` sizes now use the line height from their `--text-*` token instead of inheriting it from the parent. `--text-sm` (13px) now uses Tailwind v4's default line-height ratio (`calc(1.25 / 0.875)`).
+- 3de47f8: Fix Toasty positioning, close button placement, and swipe direction in RTL layouts.
+
 ## 2.19.0
 
 ### Minor Changes
