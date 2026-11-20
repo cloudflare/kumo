@@ -631,7 +631,7 @@ export const THEME_CONFIG: ThemeConfig = {
     "sm--line-height": {
       newName: "",
       theme: {
-        kumo: "calc(1 / 0.85)",
+        kumo: "calc(1.25 / 0.875)",
       },
     },
     base: {

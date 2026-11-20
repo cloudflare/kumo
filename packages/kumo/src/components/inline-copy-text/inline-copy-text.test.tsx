@@ -77,7 +77,7 @@ describe("InlineCopyText", () => {
 
     const text = screen.getByText("Visible resource").closest("strong");
     expect(text).toBeTruthy();
-    expect(text?.classList.contains("text-lg/[inherit]")).toBe(true);
+    expect(text?.classList.contains("text-lg")).toBe(true);
     expect(text?.classList.contains("font-medium")).toBe(true);
 
     await clickCopyButton();
