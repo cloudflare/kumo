@@ -101,6 +101,8 @@ const Root = forwardRef<
     forwardedRef,
   ) => {
     const inputId = useId();
+    const labelId = useId();
+    const hasLabel = Boolean(label);
     const focusMode = detectFocusMode(children);
 
     const contextValue = useMemo(
@@ -109,9 +111,10 @@ const Root = forwardRef<
         focusMode,
         disabled,
         error,
+        labelId: hasLabel ? labelId : undefined,
         inputId,
       }),
-      [size, focusMode, disabled, error, inputId],
+      [size, focusMode, disabled, error, hasLabel, inputId, labelId],
     );
 
     // When label is provided, Field already renders a <label> with htmlFor
@@ -250,7 +253,7 @@ const Root = forwardRef<
       if (label) {
         return (
           <Field
-            label={label}
+            label={<span id={labelId}>{label}</span>}
             description={description}
             error={error}
             required={required}
@@ -313,7 +316,7 @@ const Root = forwardRef<
     if (label) {
       return (
         <Field
-          label={label}
+          label={<span id={labelId}>{label}</span>}
           description={description}
           error={error}
           required={required}
