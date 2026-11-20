@@ -52,4 +52,16 @@ describe("SensitiveInput", () => {
     expect(inputEl?.required).toBe(true);
     expect(inputEl?.checkValidity()).toBe(false);
   });
+
+  it.each([
+    ["description", { description: "Help text" }, "Help text"],
+    ["error", { error: "Required" }, "Required"],
+  ])("renders a %s without a label", (_, props, text) => {
+    const { container, getByText } = render(
+      <SensitiveInput aria-label="API Key" {...props} />,
+    );
+
+    expect(getByText(text)).toBeTruthy();
+    expect(container.querySelector("label")).toBeNull();
+  });
 });
