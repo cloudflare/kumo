@@ -501,7 +501,7 @@
     "@vitest/browser-playwright": "catalog:",
     "@vitest/ui": "catalog:",
     "esbuild": "0.27.2",
-    "glob": "13.0.0",
+    "glob": "14.0.2",
     "happy-dom": "catalog:",
     "playwright": "catalog:",
     "plop": "4.0.4",
