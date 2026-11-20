@@ -284,7 +284,7 @@
   --text-xs: 12px;
   --text-xs--line-height: calc(1 / 0.75);
   --text-sm: 13px;
-  --text-sm--line-height: calc(1 / 0.85);
+  --text-sm--line-height: calc(1.25 / 0.875);
   --text-base: 14px;
   --text-base--line-height: 1.5;
   --text-lg: 16px;

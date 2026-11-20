@@ -36,7 +36,7 @@ describe("Text", () => {
 
     expect(heading.classList.contains("text-kumo-subtle")).toBe(true);
     expect(heading.classList.contains("text-kumo-default")).toBe(false);
-    expect(heading.classList.contains("text-base/[inherit]")).toBe(true);
+    expect(heading.classList.contains("text-base")).toBe(true);
     expect(heading.classList.contains("font-medium")).toBe(true);
   });
 
@@ -47,27 +47,27 @@ describe("Text", () => {
 
   it("inherits line height for every body font size", () => {
     expect(textVariants({ variant: "body", size: "xs" })).toContain(
-      "text-xs/[inherit]",
+      "text-xs",
     );
     expect(textVariants({ variant: "body", size: "sm" })).toContain(
-      "text-sm/[inherit]",
+      "text-sm",
     );
     expect(textVariants({ variant: "body", size: "base" })).toContain(
-      "text-base/[inherit]",
+      "text-base",
     );
     expect(textVariants({ variant: "body", size: "lg" })).toContain(
-      "text-lg/[inherit]",
+      "text-lg",
     );
     expect(textVariants({ variant: "secondary" })).toContain(
-      "text-base/[inherit]",
+      "text-base",
     );
     expect(textVariants({ variant: "success" })).toContain(
-      "text-base/[inherit]",
+      "text-base",
     );
-    expect(textVariants({ variant: "error" })).toContain("text-base/[inherit]");
-    expect(textVariants({ variant: "mono" })).toContain("text-sm/[inherit]");
+    expect(textVariants({ variant: "error" })).toContain("text-base");
+    expect(textVariants({ variant: "mono" })).toContain("text-sm");
     expect(textVariants({ variant: "mono-secondary" })).toContain(
-      "text-sm/[inherit]",
+      "text-sm",
     );
   });
 
