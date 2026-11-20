@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
-import { Tooltip } from "../tooltip/tooltip";
+import { LazyTooltip } from "../tooltip/lazy-tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
@@ -301,7 +301,11 @@ type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: Icon | React.ReactNode;
   /** Shows a loading spinner and disables interaction. */
   loading?: boolean;
-  /** When set, wraps the button in a Tooltip with this content. */
+  /**
+   * When set, wraps the button in a Tooltip with this content. The tooltip
+   * code loads when the first titled button mounts; until then the button
+   * renders without it.
+   */
   title?: React.ReactNode;
 };
 
@@ -368,6 +372,22 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
   };
 
 /**
+ * `React.forwardRef` that also sets `displayName`. Bundlers can drop the call
+ * when its result is unused, so a bundle that imports only `buttonVariants`
+ * leaves out `Button` and `LinkButton`. A top-level
+ * `Button.displayName = "Button"` statement is a side effect they must keep.
+ */
+/* @__NO_SIDE_EFFECTS__ */
+function forwardRefWithDisplayName<T, P>(
+  render: Parameters<typeof React.forwardRef<T, P>>[0],
+  displayName: string,
+): ReturnType<typeof React.forwardRef<T, P>> {
+  const component = React.forwardRef<T, P>(render);
+  component.displayName = displayName;
+  return component;
+}
+
+/**
  * Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
  *
  * @example
@@ -376,7 +396,7 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
  * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
  * ```
  */
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRefWithDisplayName<HTMLButtonElement, ButtonProps>(
   (
     {
       children,
@@ -430,21 +450,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (title && (disabled || loading)) {
       return (
-        <Tooltip content={title} render={<span className="inline-flex" />}>
+        <LazyTooltip content={title} render={<span className="inline-flex" />}>
           {button}
-        </Tooltip>
+        </LazyTooltip>
       );
     }
 
     if (title) {
-      return <Tooltip content={title} render={button} />;
+      return <LazyTooltip content={title} render={button} />;
     }
 
     return button;
   },
+  "Button",
 );
-
-Button.displayName = "Button";
 
 /**
  * Square button with a rotating arrows icon, used to trigger data refresh actions.
@@ -479,7 +498,10 @@ export const RefreshButton = ({
  * <LinkButton href="/settings" variant="ghost">Settings</LinkButton>
  * ```
  */
-export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
+export const LinkButton = forwardRefWithDisplayName<
+  HTMLAnchorElement,
+  LinkButtonProps
+>(
   (
     {
       children,
@@ -546,11 +568,10 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     );
 
     if (title) {
-      return <Tooltip content={title} render={link} />;
+      return <LazyTooltip content={title} render={link} />;
     }
 
     return link;
   },
+  "LinkButton",
 );
-
-LinkButton.displayName = "LinkButton";

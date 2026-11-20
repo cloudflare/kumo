@@ -38,6 +38,7 @@ interface Fixture {
 const FIXTURE_ENTRIES = {
   "root-button": `export { Button } from "@cloudflare/kumo";`,
   "subpath-button": `export { Button } from "@cloudflare/kumo/components/button";`,
+  "root-tooltip": `export { Tooltip } from "@cloudflare/kumo";`,
   "root-trio": `export { Button, Dialog, Select } from "@cloudflare/kumo";`,
   "subpath-trio": `
       export { Button } from "@cloudflare/kumo/components/button";
