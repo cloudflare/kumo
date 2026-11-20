@@ -17,7 +17,7 @@ describe("Empty", () => {
     expect(title.tagName).toBe("H2");
     expect(title.className).toContain("text-xl");
     expect(title.className).toContain("font-semibold");
-    expect(description.className).toContain("text-base");
+    expect(description.classList.contains("text-base")).toBe(true);
     expect(description.className).toContain("text-kumo-subtle");
     expect(description.className).toContain("text-balance");
     expect(description.className).toContain("leading-normal");
@@ -31,7 +31,7 @@ describe("Empty", () => {
     const title = screen.getByText("Nothing here");
 
     expect(title.tagName).toBe("H2");
-    expect(title.className).toContain("text-base");
+    expect(title.classList.contains("text-base")).toBe(true);
     expect(title.className).toContain("text-kumo-subtle");
     expect(title.className).not.toContain("font-semibold");
   });

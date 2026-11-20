@@ -45,30 +45,24 @@ describe("Text", () => {
     expect(container.querySelector("p")).toBeTruthy();
   });
 
-  it("inherits line height for every body font size", () => {
-    expect(textVariants({ variant: "body", size: "xs" })).toContain(
-      "text-xs",
-    );
-    expect(textVariants({ variant: "body", size: "sm" })).toContain(
-      "text-sm",
-    );
-    expect(textVariants({ variant: "body", size: "base" })).toContain(
-      "text-base",
-    );
-    expect(textVariants({ variant: "body", size: "lg" })).toContain(
-      "text-lg",
-    );
-    expect(textVariants({ variant: "secondary" })).toContain(
-      "text-base",
-    );
-    expect(textVariants({ variant: "success" })).toContain(
-      "text-base",
-    );
-    expect(textVariants({ variant: "error" })).toContain("text-base");
-    expect(textVariants({ variant: "mono" })).toContain("text-sm");
-    expect(textVariants({ variant: "mono-secondary" })).toContain(
-      "text-sm",
-    );
+  it("uses the token line height for every body font size", () => {
+    const cases = [
+      [{ variant: "body", size: "xs" }, "text-xs"],
+      [{ variant: "body", size: "sm" }, "text-sm"],
+      [{ variant: "body", size: "base" }, "text-base"],
+      [{ variant: "body", size: "lg" }, "text-lg"],
+      [{ variant: "secondary" }, "text-base"],
+      [{ variant: "success" }, "text-base"],
+      [{ variant: "error" }, "text-base"],
+      [{ variant: "mono" }, "text-sm"],
+      [{ variant: "mono-secondary" }, "text-sm"],
+    ] as const;
+
+    for (const [props, sizeClass] of cases) {
+      const classes = textVariants(props).split(" ");
+      expect(classes).toContain(sizeClass);
+      expect(classes.some((c) => c.includes("[inherit]"))).toBe(false);
+    }
   });
 
   it("keeps the configured line height for heading variants", () => {
