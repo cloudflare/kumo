@@ -284,7 +284,7 @@ export function Tabs({
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
                 isSegmented &&
                   cn(
-                    "top-(--active-tab-top) h-(--active-tab-height) bg-kumo-base shadow-sm ring ring-kumo-line",
+                    "top-(--active-tab-top) h-(--active-tab-height) bg-kumo-control shadow-sm ring ring-kumo-line",
                     isSm ? "rounded" : "rounded-md",
                   ),
                 isUnderline && "bottom-0 h-0.5 bg-kumo-brand",

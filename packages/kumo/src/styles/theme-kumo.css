@@ -108,7 +108,7 @@
 
   --color-kumo-tint: light-dark(
     var(--color-neutral-100, oklch(97% 0 0)),
-    oklch(25% 0.003 260)
+    oklch(28% 0.003 260)
   );
 
   --color-kumo-contrast: light-dark(
@@ -123,7 +123,7 @@
 
   --color-kumo-control: light-dark(
     var(--color-white, #fff),
-    oklch(20.5% 0.003 260)
+    oklch(23% 0.003 260)
   );
 
   --color-kumo-interact: light-dark(
@@ -412,10 +412,10 @@
     --color-kumo-elevated: oklch(17.5% 0.003 260);
     --color-kumo-recessed: oklch(13% 0.003 260);
     --color-kumo-base: oklch(20.5% 0.003 260);
-    --color-kumo-tint: oklch(25% 0.003 260);
+    --color-kumo-tint: oklch(28% 0.003 260);
     --color-kumo-contrast: var(--color-kumo-neutral-25, oklch(98.5% 0 0));
     --color-kumo-overlay: oklch(25% 0.003 260);
-    --color-kumo-control: oklch(20.5% 0.003 260);
+    --color-kumo-control: oklch(23% 0.003 260);
     --color-kumo-interact: oklch(40% 0.003 260);
     --color-kumo-fill: oklch(27% 0.003 260);
     --color-kumo-fill-hover: oklch(31% 0.003 260);
