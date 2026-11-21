@@ -72,7 +72,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-500, oklch(55.6% 0 0))",
+          dark: "var(--color-neutral-400, oklch(70.8% 0 0))",
         },
       },
     },
@@ -189,7 +189,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-25, oklch(98.75% 0 0))",
-          dark: "var(--color-kumo-neutral-1000, oklch(10% 0 0))",
+          dark: "oklch(15.5% 0.003 260)",
         },
         fedramp: {
           light: "#5b697c",
@@ -202,7 +202,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-75, oklch(98% 0 0))",
-          dark: "var(--color-kumo-neutral-975, oklch(12% 0 0))",
+          dark: "oklch(17.5% 0.003 260)",
         },
       },
     },
@@ -211,7 +211,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96% 0 0))",
-          dark: "var(--color-kumo-neutral-950, oklch(15% 0 0))",
+          dark: "oklch(13% 0.003 260)",
         },
       },
     },
@@ -220,7 +220,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
-          dark: "var(--color-kumo-neutral-925, oklch(17% 0 0))",
+          dark: "oklch(20.5% 0.003 260)",
         },
         fedramp: {
           light: "#5b697c",
@@ -233,7 +233,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-100, oklch(97% 0 0))",
-          dark: "var(--color-kumo-neutral-800, oklch(26.9% 0 0))",
+          dark: "oklch(25% 0.003 260)",
         },
       },
     },
@@ -251,7 +251,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "oklch(25% 0.003 260)",
         },
       },
     },
@@ -260,7 +260,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
-          dark: "var(--color-neutral-900, oklch(21% 0.006 285.885))",
+          dark: "oklch(20.5% 0.003 260)",
         },
       },
     },
@@ -269,7 +269,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-300, oklch(87% 0 0))",
-          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
+          dark: "oklch(40% 0.003 260)",
         },
       },
     },
@@ -278,7 +278,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-200, oklch(92.2% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "oklch(27% 0.003 260)",
         },
       },
     },
@@ -287,7 +287,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96.5% 0 0))",
-          dark: "var(--color-neutral-800, oklch(37.1% 0 0))",
+          dark: "oklch(31% 0.003 260)",
         },
       },
     },
@@ -314,7 +314,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(14.5% 0 0 / 0.1)",
-          dark: "var(--color-kumo-neutral-750, oklch(32% 0 0))",
+          dark: "oklch(100% 0 0 / 0.12)",
         },
       },
     },
@@ -323,7 +323,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "oklch(100% 0 0 / 0.07)",
         },
         fedramp: {
           light: "#c8d4e5",
@@ -496,7 +496,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96.5% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "oklch(27% 0.003 260)",
         },
       },
     },
