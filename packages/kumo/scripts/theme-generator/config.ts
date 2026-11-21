@@ -189,7 +189,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-25, oklch(98.75% 0 0))",
-          dark: "oklch(15.5% 0 0)",
+          dark: "oklch(15.5% 0.003 260)",
         },
         fedramp: {
           light: "#5b697c",
@@ -202,7 +202,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-75, oklch(98% 0 0))",
-          dark: "oklch(17.5% 0 0)",
+          dark: "oklch(17.5% 0.003 260)",
         },
       },
     },
@@ -211,7 +211,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96% 0 0))",
-          dark: "oklch(13% 0 0)",
+          dark: "oklch(13% 0.003 260)",
         },
       },
     },
@@ -220,7 +220,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
-          dark: "oklch(20.5% 0 0)",
+          dark: "oklch(20.5% 0.003 260)",
         },
         fedramp: {
           light: "#5b697c",
@@ -233,7 +233,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-100, oklch(97% 0 0))",
-          dark: "oklch(25% 0 0)",
+          dark: "oklch(25% 0.003 260)",
         },
       },
     },
@@ -251,7 +251,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
-          dark: "oklch(23% 0 0)",
+          dark: "oklch(25% 0.003 260)",
         },
       },
     },
@@ -260,7 +260,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
-          dark: "oklch(23% 0 0)",
+          dark: "oklch(20.5% 0.003 260)",
         },
       },
     },
@@ -269,7 +269,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-300, oklch(87% 0 0))",
-          dark: "oklch(40% 0 0)",
+          dark: "oklch(40% 0.003 260)",
         },
       },
     },
@@ -278,7 +278,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-200, oklch(92.2% 0 0))",
-          dark: "oklch(27% 0 0)",
+          dark: "oklch(27% 0.003 260)",
         },
       },
     },
@@ -287,7 +287,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96.5% 0 0))",
-          dark: "oklch(31% 0 0)",
+          dark: "oklch(31% 0.003 260)",
         },
       },
     },
@@ -357,7 +357,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(0% 0 0 / 0.08)",
-          dark: "oklch(0% 0 0 / 0.5)",
+          dark: "oklch(0% 0 0 / 0.3)",
         },
       },
     },
@@ -496,7 +496,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96.5% 0 0))",
-          dark: "oklch(27% 0 0)",
+          dark: "oklch(27% 0.003 260)",
         },
       },
     },
