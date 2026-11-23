@@ -440,10 +440,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       !restProps["aria-labelledby"] &&
       titleLabel,
     );
+    // A hint like `title="Rename"` on a button already named "Rename" would
+    // otherwise be read twice.
+    const titleRepeatsName =
+      titleIsName ||
+      (titleLabel !== undefined &&
+        (titleLabel === restProps["aria-label"] || titleLabel === children));
     const isUnavailable = hasTitle(title) && Boolean(disabled || loading);
     // Screen readers don't announce the tooltip, so the title that explains why
     // the button is unavailable becomes its description.
-    const describesTitle = isUnavailable && !titleIsName;
+    const describesTitle = isUnavailable && !titleRepeatsName;
     const buttonProps = {
       ...restProps,
       ...(titleIsName && { "aria-label": titleLabel }),

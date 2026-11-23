@@ -353,11 +353,33 @@ describe("Button", () => {
       ).toBeTruthy();
     });
 
-    it("does not describe an icon-only button already named by its title", () => {
-      render(<Button shape="square" icon={Plus} title="Add" disabled />);
+    it.each([
+      [
+        "named by its title",
+        <Button shape="square" icon={Plus} title="Add" disabled />,
+      ],
+      [
+        "whose aria-label matches its title",
+        <Button
+          shape="square"
+          icon={Plus}
+          aria-label="Add"
+          title="Add"
+          disabled
+        />,
+      ],
+      [
+        "whose text matches its title",
+        <Button title="Add" disabled>
+          Add
+        </Button>,
+      ],
+    ])("does not describe a button %s", (_, button) => {
+      render(button);
 
-      const button = screen.getByRole("button", { name: "Add" });
-      expect(button.hasAttribute("aria-describedby")).toBe(false);
+      const element = screen.getByRole("button", { name: "Add" });
+      expect(element.hasAttribute("aria-describedby")).toBe(false);
+      expect(element.getAttribute("aria-disabled")).toBe("true");
     });
 
     it("does not describe an enabled button with its title", () => {
