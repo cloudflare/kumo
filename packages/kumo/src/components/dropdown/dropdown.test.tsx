@@ -1,6 +1,6 @@
 import { forwardRef, version } from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vite-plus/test";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { CopyIcon, GearIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "./dropdown";
 import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
@@ -288,5 +288,50 @@ describe("DropdownMenu.LinkItem with LinkProvider", () => {
     expect(link?.getAttribute("target")).toBe("_blank");
     expect(link?.getAttribute("rel")).toBe("noopener noreferrer");
     expect(link?.textContent).toContain("(opens in a new tab)");
+  });
+
+  it("closes the menu when a link item is clicked", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <LinkProvider router={RouterLink}>
+        <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.LinkItem
+              href="/settings"
+              onClick={(event) => event.preventDefault()}
+            >
+              Settings
+            </DropdownMenu.LinkItem>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </LinkProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Settings" }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false, expect.anything());
+  });
+
+  it("keeps the menu open when closeOnClick is false", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
+        <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.LinkItem
+            href="/settings"
+            closeOnClick={false}
+            onClick={(event) => event.preventDefault()}
+          >
+            Settings
+          </DropdownMenu.LinkItem>
+        </DropdownMenu.Content>
+      </DropdownMenu>,
+    );
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Settings" }));
+
+    expect(onOpenChange).not.toHaveBeenCalled();
   });
 });

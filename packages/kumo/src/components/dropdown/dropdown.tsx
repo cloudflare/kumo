@@ -417,6 +417,12 @@ const DropdownMenuLinkItem = React.forwardRef<
      * @default true
      */
     newTabIcon?: boolean;
+    /**
+     * Close the menu when the item is clicked. Internal links route without a
+     * page load, so the menu has to close itself.
+     * @default true
+     */
+    closeOnClick?: boolean;
   }
 >(
   (
@@ -431,6 +437,7 @@ const DropdownMenuLinkItem = React.forwardRef<
       rel,
       download,
       newTabIcon,
+      closeOnClick = true,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
       ...props
@@ -452,6 +459,7 @@ const DropdownMenuLinkItem = React.forwardRef<
         ref={ref}
         render={<Component />}
         {...linkProps}
+        closeOnClick={closeOnClick}
         data-kumo-component="DropdownMenu"
         data-kumo-part="link-item"
         className={cn(
