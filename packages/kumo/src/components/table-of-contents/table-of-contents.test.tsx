@@ -301,7 +301,7 @@ describe("TableOfContents links with LinkProvider", () => {
     const link = screen.getByRole("link", {
       name: "Spec (opens in a new tab)",
     });
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.getAttribute("rel")).toBe("noopener");
   });
 
   it("truncates the label but keeps the new-tab icon visible", () => {

@@ -30,7 +30,7 @@ describe("PoweredByCloudflare", () => {
       name: "Powered by Cloudflare (opens in a new tab)",
     });
     expect(link.getAttribute("target")).toBe("_blank");
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.getAttribute("rel")).toBe("noopener");
   });
 
   it("announces target='_blank' even when the icon is hidden", () => {
