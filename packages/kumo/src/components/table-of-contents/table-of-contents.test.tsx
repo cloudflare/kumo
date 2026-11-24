@@ -320,4 +320,34 @@ describe("TableOfContents links with LinkProvider", () => {
     renderToc();
     expect(screen.getByRole("button", { name: "Scroll" })).toBeDefined();
   });
+
+  it("hides a group link's new-tab icon with newTabIcon={false}", () => {
+    render(
+      <LinkProvider externalLinks="new-tab">
+        <TableOfContents>
+          <TableOfContents.List>
+            <TableOfContents.Group label="Shown" href="https://example.com/a">
+              <TableOfContents.Item href="#a">A</TableOfContents.Item>
+            </TableOfContents.Group>
+            <TableOfContents.Group
+              label="Hidden"
+              href="https://example.com/b"
+              newTabIcon={false}
+            >
+              <TableOfContents.Item href="#b">B</TableOfContents.Item>
+            </TableOfContents.Group>
+          </TableOfContents.List>
+        </TableOfContents>
+      </LinkProvider>,
+    );
+
+    const shown = screen.getByRole("link", {
+      name: "Shown (opens in a new tab)",
+    });
+    const hidden = screen.getByRole("link", {
+      name: "Hidden (opens in a new tab)",
+    });
+    expect(shown.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+    expect(hidden.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
+  });
 });

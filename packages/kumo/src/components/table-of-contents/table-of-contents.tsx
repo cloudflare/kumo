@@ -168,6 +168,12 @@ export interface TableOfContentsGroupProps extends Omit<
   href?: string;
   /** Whether this group's label represents the currently active section. Only applies when `href` is provided. */
   active?: boolean;
+  /**
+   * Show the visible new-tab icon when the label link opens in a new tab. The
+   * screen-reader announcement is always included.
+   * @default true
+   */
+  newTabIcon?: boolean;
 }
 
 const NESTED_UL_CLASSES =
@@ -178,10 +184,22 @@ const TableOfContentsGroup = forwardRef<
   TableOfContentsGroupProps
 >(
   (
-    { label, href, active = false, className, children, onClick, ...props },
+    {
+      label,
+      href,
+      active = false,
+      className,
+      children,
+      onClick,
+      newTabIcon,
+      ...props
+    },
     ref,
   ) => {
-    const { Component, linkProps, newTabCue } = useLink({ href });
+    const { Component, linkProps, newTabCue } = useLink({
+      href,
+      newTabIcon,
+    });
 
     if (href) {
       const stateClasses = active

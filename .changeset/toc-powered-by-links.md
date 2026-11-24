@@ -16,4 +16,4 @@
 
 ## Added
 
-- `newTabIcon` on `TableOfContents.Item` and `PoweredByCloudflare`
+- `newTabIcon` on `TableOfContents.Item`, `TableOfContents.Group`, and `PoweredByCloudflare`
