@@ -633,6 +633,11 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
  * Maps component name -> prop name -> cleaner type string.
  */
 export const PROP_TYPE_OVERRIDES: Record<string, Record<string, string>> = {
+  // A link button accepts the anchor's free-form `type` (a MIME type), which
+  // absorbs the `<button>` values when the union is merged.
+  Button: {
+    type: '"button" | "submit" | "reset"',
+  },
   Combobox: {
     items: "T[]",
     value: "T | T[]",
