@@ -168,6 +168,17 @@ describe("resolveLink", () => {
     ).toBe(false);
   });
 
+  it("skips the router only when the link downloads", () => {
+    const routes = (download?: boolean | string | null) =>
+      resolveLink({ href: "/report.csv", download }, config).useRouter;
+    expect(routes(true)).toBe(false);
+    expect(routes("")).toBe(false);
+    expect(routes("report.csv")).toBe(false);
+    expect(routes(false)).toBe(true);
+    expect(routes(null)).toBe(true);
+    expect(routes()).toBe(true);
+  });
+
   it("adds noopener to a caller's rel on new-tab links", () => {
     const newTab = (rel?: string) =>
       resolveLink({ href: "/a", target: "_blank", rel }, config).rel;

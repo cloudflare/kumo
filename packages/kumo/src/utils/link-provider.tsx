@@ -40,6 +40,9 @@ export interface LinkProviderProps {
   /**
    * Router link component used for internal routes. Receives `href` and the
    * remaining anchor props. When omitted, every link renders a plain `<a>`.
+   *
+   * Define it at module level. A component created during render is a new
+   * component type each time, so every internal link remounts and loses focus.
    */
   router?: RouterLinkComponent;
   /**
@@ -253,7 +256,7 @@ export function resolveLink(
   const useRouter =
     config.hasRouter &&
     destination?.kind === "internal" &&
-    download === undefined &&
+    (download == null || download === false) &&
     (targetKeyword === undefined || targetKeyword === "_self") &&
     (config.isClientRoute?.(destination.url) ?? true);
 

@@ -116,6 +116,12 @@ export function App() {
 ```
 
 <p>
+  Define the router component at module level, as above. A component created
+  inside another component's render is a new type on every render, so every
+  internal link remounts and loses focus.
+</p>
+
+<p>
   The provider also holds app-wide navigation policy:
 </p>
 
