@@ -122,6 +122,20 @@ export function App() {
 </p>
 
 <p>
+  Pass your router's plain link component, not a navigation link that marks
+  itself active (such as React Router's `NavLink`). Every Kumo link goes
+  through the router, so an active-state link can mark a parent breadcrumb as
+  the current page. For navigation state, use the component's own prop, such
+  as `Sidebar.MenuButton`'s `active`.
+</p>
+
+<p>
+  Render one `LinkProvider` near the root of your app. A nested
+  `LinkProvider` doesn't inherit the outer one's settings: it starts from the
+  defaults, so set every prop it needs.
+</p>
+
+<p>
   The provider also holds app-wide navigation policy:
 </p>
 

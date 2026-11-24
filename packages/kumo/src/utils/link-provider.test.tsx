@@ -288,3 +288,25 @@ describe("ResolvedLink", () => {
     expect(ref.current?.tagName).toBe("A");
   });
 });
+
+describe("nested LinkProvider", () => {
+  it("starts from the defaults instead of inheriting the outer settings", () => {
+    render(
+      <LinkProvider externalLinks="new-tab">
+        <ResolvedLink href="https://example.com/outer">Outer</ResolvedLink>
+        <LinkProvider>
+          <ResolvedLink href="https://example.com/inner">Inner</ResolvedLink>
+        </LinkProvider>
+      </LinkProvider>,
+    );
+
+    expect(
+      screen
+        .getByRole("link", { name: "Outer (opens in a new tab)" })
+        .getAttribute("target"),
+    ).toBe("_blank");
+    expect(
+      screen.getByRole("link", { name: "Inner" }).hasAttribute("target"),
+    ).toBe(false);
+  });
+});

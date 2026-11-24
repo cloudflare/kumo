@@ -43,6 +43,8 @@ export interface LinkProviderProps {
    *
    * Define it at module level. A component created during render is a new
    * component type each time, so every internal link remounts and loses focus.
+   * Pass a plain link, not one that marks itself active (such as React
+   * Router's `NavLink`).
    */
   router?: RouterLinkComponent;
   /**
@@ -90,6 +92,9 @@ const LinkConfigContext = createContext<LinkConfig>(DEFAULT_LINK_CONFIG);
  * Kumo resolves each `href` before rendering: internal routes render through
  * `router`; everything else renders a plain `<a>`. Links that open in a new
  * tab get a visible icon and a localized screen-reader announcement.
+ *
+ * Render one near the root of the app. A nested `LinkProvider` doesn't inherit
+ * the outer one's settings; it starts from the defaults.
  *
  * @example React Router
  * ```tsx
