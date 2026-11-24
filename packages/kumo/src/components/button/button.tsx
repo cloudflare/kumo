@@ -520,6 +520,7 @@ const ButtonLink = React.forwardRef<
       style,
       title,
       newTabIcon,
+      routerOptions,
       ...props
     },
     ref,
@@ -537,6 +538,7 @@ const ButtonLink = React.forwardRef<
         !props["aria-labelledby"] &&
         titleLabel && { "aria-label": titleLabel }),
       newTabIcon: newTabIcon ?? !isIconOnly,
+      routerOptions,
     });
 
     if (disabled) {

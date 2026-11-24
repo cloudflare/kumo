@@ -241,6 +241,28 @@ describe("routerOptions", () => {
     },
   );
 
+  it.each([
+    [
+      "Button",
+      <Button href="/projects/new" routerOptions={OPTIONS} disabled>
+        Go
+      </Button>,
+    ],
+    [
+      "Toolbar.Link",
+      <Toolbar>
+        <Toolbar.Link href="/projects/new" routerOptions={OPTIONS} disabled>
+          Go
+        </Toolbar.Link>
+      </Toolbar>,
+    ],
+  ])("a disabled %s drops routerOptions", (_name, ui) => {
+    renderWithRouter(ui);
+    const button = screen.getByRole("button", { name: "Go" });
+    expect(button.hasAttribute("routeroptions")).toBe(false);
+    expect(consoleError).not.toHaveBeenCalled();
+  });
+
   it("doesn't pass routerOptions to the router when the link has none", () => {
     renderWithRouter(<Link href="/projects">Projects</Link>);
     const link = screen.getByRole("link", { name: "Projects" });
