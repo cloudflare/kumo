@@ -105,7 +105,6 @@
   /* Flex links space the icon with their own gap. */
   :is(
       [data-kumo-component="Button"],
-      [data-kumo-component="LinkButton"],
       [data-kumo-component="Breadcrumbs"],
       [data-kumo-component="DropdownMenu"],
       [data-kumo-component="PoweredByCloudflare"],
