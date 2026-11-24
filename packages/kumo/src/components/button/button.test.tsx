@@ -369,6 +369,41 @@ describe("Button with href", () => {
     expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
   });
 
+  it("names icon-only link buttons from title", () => {
+    render(
+      <Button href="/settings" shape="square" icon={Plus} title="Settings" />,
+    );
+    expect(screen.getByRole("link", { name: "Settings" })).toBeTruthy();
+  });
+
+  it("adds the new-tab announcement to a title-named icon-only link button", () => {
+    render(
+      <Button
+        href="https://example.com"
+        target="_blank"
+        shape="square"
+        icon={Plus}
+        title="Docs"
+      />,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs (opens in a new tab)" }),
+    ).toBeTruthy();
+  });
+
+  it("prefers aria-label over title on link buttons", () => {
+    render(
+      <Button
+        href="/settings"
+        shape="square"
+        icon={Plus}
+        aria-label="Open settings"
+        title="Settings"
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Open settings" })).toBeTruthy();
+  });
+
   it("shows the new-tab icon on icon-only link buttons with newTabIcon", () => {
     render(
       <Button

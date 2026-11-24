@@ -57,7 +57,12 @@ export type ToolbarButtonProps = Omit<
 > &
   Pick<ToolbarBase.Button.Props, "focusableWhenDisabled">;
 
-export type ToolbarLinkProps = Omit<
+// Omit each member separately so icon-only links keep their name requirement.
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+export type ToolbarLinkProps = DistributiveOmit<
   Extract<ButtonProps, { href: string }>,
   "size" | "variant"
 >;

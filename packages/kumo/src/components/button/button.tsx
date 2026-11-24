@@ -514,8 +514,14 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     // An icon-only button keeps its square or circle shape: the new-tab icon is
     // hidden by default, but the announcement is still part of its name.
     const isIconOnly = shape !== "base" && React.Children.count(children) === 0;
+    const titleLabel = getTitleLabel(title);
     const { Component, linkProps, newTabCue } = useLink({
       ...props,
+      // Same fallback as NativeButton: `title` names an icon-only button.
+      ...(!React.Children.count(children) &&
+        !props["aria-label"] &&
+        !props["aria-labelledby"] &&
+        titleLabel && { "aria-label": titleLabel }),
       newTabIcon: newTabIcon ?? !isIconOnly,
     });
 
