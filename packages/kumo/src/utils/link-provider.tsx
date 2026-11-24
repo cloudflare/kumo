@@ -135,6 +135,21 @@ const NORMALIZED_HREF_PATTERN = /[\\\t\n\r]/;
 // is reserved, so no real link shares this origin.
 const PLACEHOLDER_ORIGIN = new URL("https://kumo.invalid");
 const SAME_CONTEXT_TARGETS = new Set(["_self", "_parent", "_top"]);
+// Tokens that already decide whether the new page gets `window.opener`.
+const OPENER_REL_TOKENS = new Set(["noopener", "noreferrer", "opener"]);
+
+/** Adds `noopener` to new-tab links, keeping any tokens the caller passed. */
+function resolveRel(
+  rel: string | undefined,
+  opensInNewTab: boolean,
+): string | undefined {
+  if (!opensInNewTab) return rel;
+  const tokens = rel?.split(/\s+/).filter(Boolean) ?? [];
+  if (tokens.some((token) => OPENER_REL_TOKENS.has(token.toLowerCase()))) {
+    return rel;
+  }
+  return [...tokens, "noopener"].join(" ");
+}
 
 function parseOrigin(origin: string | undefined): URL | undefined {
   if (!origin) return undefined;
@@ -247,7 +262,7 @@ export function resolveLink(
         ? destination.routerHref
         : href,
     target: resolvedTarget,
-    rel: rel ?? (opensInNewTab ? "noopener noreferrer" : undefined),
+    rel: resolveRel(rel, opensInNewTab),
     opensInNewTab,
   };
 }

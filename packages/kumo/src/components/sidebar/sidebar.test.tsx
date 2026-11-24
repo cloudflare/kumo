@@ -1976,6 +1976,6 @@ describe("Sidebar links with LinkProvider", () => {
       name: "Docs (opens in a new tab)",
     });
     expect(link.hasAttribute("data-router")).toBe(false);
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.getAttribute("rel")).toBe("noopener");
   });
 });

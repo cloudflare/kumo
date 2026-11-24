@@ -51,7 +51,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 
 Every link that opens in a new tab, whether from `target="_blank"` or from `externalLinks="new-tab"`, now:
 
-- gets `rel="noopener noreferrer"` unless you pass `rel`
+- gets `rel="noopener"`. A `rel` you pass is kept, and `noopener` is added to it unless it already has `noopener`, `noreferrer`, or `opener`. Add `noreferrer` yourself if the destination shouldn't see where the visit came from.
 - shows a new-tab icon (`newTabIcon={false}` hides it).
 - adds "(opens in a new tab)" to its accessible name, whether the link is named by its content, `aria-label`, or `aria-labelledby`. Translate it with `KumoLocaleProvider` (`translations.link.opensInNewTab`).
 

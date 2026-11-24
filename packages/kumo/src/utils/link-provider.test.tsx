@@ -74,7 +74,7 @@ describe("resolveLink", () => {
       useRouter: false,
       href,
       target: "_blank",
-      rel: "noopener noreferrer",
+      rel: "noopener",
       opensInNewTab: true,
     });
   });
@@ -160,11 +160,28 @@ describe("resolveLink", () => {
     ).toMatchObject({
       useRouter: false,
       opensInNewTab: true,
-      rel: "noopener noreferrer",
+      rel: "noopener",
     });
     expect(
       resolveLink({ href: "/a", target: "_top" }, config).opensInNewTab,
     ).toBe(false);
+  });
+
+  it("adds noopener to a caller's rel on new-tab links", () => {
+    const newTab = (rel?: string) =>
+      resolveLink({ href: "/a", target: "_blank", rel }, config).rel;
+    expect(newTab()).toBe("noopener");
+    expect(newTab("external nofollow")).toBe("external nofollow noopener");
+    expect(newTab("noreferrer")).toBe("noreferrer");
+    expect(newTab("NoOpener")).toBe("NoOpener");
+    expect(newTab("opener")).toBe("opener");
+  });
+
+  it("leaves rel alone on same-tab links", () => {
+    expect(resolveLink({ href: "/a" }, config).rel).toBeUndefined();
+    expect(resolveLink({ href: "/a", rel: "nofollow" }, config).rel).toBe(
+      "nofollow",
+    );
   });
 });
 

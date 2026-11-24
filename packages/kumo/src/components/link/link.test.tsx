@@ -207,7 +207,7 @@ describe("Link new-tab behaviour", () => {
       name: "Docs (opens in a new tab)",
     });
     expect(link.getAttribute("target")).toBe("_blank");
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.getAttribute("rel")).toBe("noopener");
     expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
   });
 
