@@ -60,9 +60,11 @@ export interface LinkProviderProps {
    */
   isClientRoute?: (url: URL) => boolean;
   /**
-   * The app's own origin, e.g. `"https://dash.cloudflare.com"`. Absolute URLs
-   * on this origin are treated as internal routes. Pass the same value during
-   * server rendering and hydration.
+   * The origin the app is running on, e.g. `window.location.origin` in a
+   * client-only app. Absolute URLs on this origin are treated as internal
+   * routes. Don't hardcode a production URL, or absolute links on other hosts
+   * (staging, previews, localhost) count as external. Pass the same value
+   * during server rendering and hydration.
    */
   origin?: string;
   children: ReactNode;

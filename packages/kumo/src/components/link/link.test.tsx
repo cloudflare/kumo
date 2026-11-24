@@ -154,17 +154,16 @@ describe("Link routing", () => {
   });
 
   it("sends paths rejected by isClientRoute to a plain anchor", () => {
-    const peerApp = /^\/(?:[^/]+\/)?one(?:\/|$)/;
     renderWithProvider(
       <>
-        <Link href="/abc123/one/settings">One</Link>
-        <Link href="/abc123/zones">Zones</Link>
+        <Link href="/admin/settings">Admin</Link>
+        <Link href="/zones">Zones</Link>
       </>,
-      { isClientRoute: (url) => !peerApp.test(url.pathname) },
+      { isClientRoute: (url) => !url.pathname.startsWith("/admin/") },
     );
 
     expect(
-      screen.getByRole("link", { name: "One" }).hasAttribute("data-router"),
+      screen.getByRole("link", { name: "Admin" }).hasAttribute("data-router"),
     ).toBe(false);
     expect(
       screen.getByRole("link", { name: "Zones" }).hasAttribute("data-router"),

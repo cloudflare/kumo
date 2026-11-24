@@ -33,7 +33,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 - The router component only receives internal links, and `href` is always a string. Previously it received every link, including external URLs and `mailto:`. Remove URL classification and `target`/`rel` logic from your wrapper. Use the new provider props instead:
   - `externalLinks="new-tab"` to open external links in new tabs
   - `isClientRoute(url)` to send some internal paths to a plain `<a>`, such as paths owned by another app on the same origin
-  - `origin` to treat absolute URLs on your own origin as internal. Pass the same value during server rendering and hydration.
+  - `origin` to treat absolute URLs on your own origin as internal. Use the origin the app is running on (for example `window.location.origin`), not a hardcoded production URL. Pass the same value during server rendering and hydration.
 - Kumo components never pass `to` to the router component. `Breadcrumbs.Link` used to pass only `to`, and `LinkButton`, `Sidebar`, and `DropdownMenu.Item` passed both `to` and `href`. Read `href` in your wrapper.
 - `useLinkComponent` and `LinkComponentProps` are removed. Use `useLink` and `RouterLinkProps`.
 

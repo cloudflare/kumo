@@ -120,15 +120,14 @@ export function App() {
 </p>
 
 ```tsx
-// Paths owned by another app on the same origin
-const PEER_APP_PATH = /^\/(?:[^/]+\/)?one(?:\/|$)/;
-const isClientRoute = (url: URL) => !PEER_APP_PATH.test(url.pathname);
+// Paths under /admin/ belong to another app on the same origin
+const isClientRoute = (url: URL) => !url.pathname.startsWith("/admin/");
 
 <LinkProvider
   router={RouterLink}
   externalLinks="new-tab"
   isClientRoute={isClientRoute}
-  origin="https://dash.cloudflare.com"
+  origin={window.location.origin}
 >
   <App />
 </LinkProvider>;
@@ -147,8 +146,12 @@ const isClientRoute = (url: URL) => !PEER_APP_PATH.test(url.pathname);
   </li>
   <li>
     `origin`: lets Kumo treat absolute URLs on your own origin as internal
-    routes. In server-rendered apps, pass the same value on the server and the
-    client; don't read `window.location` while rendering.
+    routes. Use the origin the app is actually running on, not a hardcoded
+    production URL; otherwise absolute links on staging, preview, or local
+    hosts count as external. Client-only apps can pass
+    `window.location.origin`. In server-rendered apps, pass the request's
+    origin on the server and the same value on the client; don't read
+    `window.location` while rendering.
   </li>
 </ul>
 
