@@ -55,6 +55,11 @@ Every link that opens in a new tab, whether from `target="_blank"` or from `exte
 - shows a new-tab icon (`newTabIcon={false}` hides it).
 - adds "(opens in a new tab)" to its accessible name, whether the link is named by its content, `aria-label`, or `aria-labelledby`. Translate it with `KumoLocaleProvider` (`translations.link.opensInNewTab`).
 
+Before upgrading:
+
+- **Remove your own new-tab icons and announcements.** If your app adds an icon or visually hidden "opens in a new tab" text to new-tab links, directly or through a wrapper component, those links now show two icons and screen readers announce the new tab twice. TypeScript won't flag this. Search for icons and screen-reader text next to `target="_blank"` and inside your own external-link wrappers.
+- **Translate the announcement.** Apps with non-English locales must add `link.opensInNewTab` to the translations passed to `KumoLocaleProvider`. Until they do, screen-reader users hear "(opens in a new tab)" in English on every new-tab link.
+
 `Link` now renders inline instead of `inline-flex`, so the icon follows the last word of wrapped text. A `Link` whose direct child is an `<svg>` or a `Badge` keeps `inline-flex` and its old alignment. If you relied on flex behavior for other content, add `className="inline-flex items-center"`.
 
 Update tests that depend on the old output:
