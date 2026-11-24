@@ -364,7 +364,8 @@ type ButtonLinkBaseProps = Omit<
   loading?: never;
 };
 
-type ButtonLinkProps = ButtonLinkBaseProps &
+/** Props for a `Button` with `href`, which renders a link. */
+export type ButtonLinkProps = ButtonLinkBaseProps &
   (
     | { shape?: "base"; size?: KumoButtonSize; variant?: KumoButtonVariant }
     | (IconOnlyButtonAccessibleNameProps & {
@@ -379,12 +380,22 @@ type NativeButtonProps = (ButtonWithTextProps | IconOnlyButtonProps) & {
 };
 
 /**
+ * Props for a `Button` without `href`, which renders a `<button>`. Build
+ * button-only wrappers on this type to keep `type`, `form`, `name`, and `value`.
+ */
+export type ButtonElementProps = NativeButtonProps;
+
+/**
  * Button props. Pass `href` to render a link styled as a button.
+ *
+ * `href` must be a string. When the URL may be missing, render a link or a
+ * button explicitly:
  *
  * @example
  * ```tsx
  * <Button variant="primary">Save</Button>
  * <Button href="/settings">Settings</Button>
+ * {url ? <Button href={url}>Open</Button> : <Button disabled>Open</Button>}
  * ```
  */
 export type ButtonProps = NativeButtonProps | ButtonLinkProps;

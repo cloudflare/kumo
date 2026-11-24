@@ -237,6 +237,21 @@ export default function Example() {
   <ButtonLinkAsButtonDemo client:visible />
 </ComponentExample>
 
+<p>
+  `href` must be a string. When the URL may be missing, choose the element
+  yourself:
+</p>
+
+```tsx
+{url ? <Button href={url}>Open</Button> : <Button disabled>Open</Button>}
+```
+
+<p>
+  For wrapper components, build on `ButtonElementProps` (button only) or
+  `ButtonLinkProps` (link only). `Omit<ButtonProps, …>` drops props that only
+  one of them has, such as `type` and `form`.
+</p>
+
 ### Link with Tooltip
 
 <p>

@@ -14,7 +14,8 @@
 - An icon-only `Button href` (`shape="square"` or `"circle"`) now requires `aria-label`, `aria-labelledby`, or `title`, like an icon-only `Button`. As on `Button`, `title` also becomes the link's `aria-label` when there's no other name. `loading` isn't accepted with `href`.
 - A disabled `Button href` still renders a disabled `<button>` instead of a link, with the same behavior as any disabled `Button`.
 - The rendered element has `data-kumo-component="Button"` and `data-kumo-part="link"`, both when enabled and when disabled. It used to have `data-kumo-component="LinkButton"`.
-- `ButtonProps` now includes the link variant. Use `Exclude<ButtonProps, { href: string }>` for button-only props. `Button`'s ref is typed `HTMLButtonElement | HTMLAnchorElement`.
+- `ButtonProps` now includes the link variant. Wrappers built on `Omit<ButtonProps, …>` lose button-only props such as `type`, `form`, `name`, and `value`. Build them on the new `ButtonElementProps` (button only) or `ButtonLinkProps` (link only) instead. `Button`'s ref is typed `HTMLButtonElement | HTMLAnchorElement`.
+- `href` must be a string. `<Button href={url}>` with a `url` that may be `undefined` doesn't compile; render `url ? <Button href={url}>…</Button> : <Button>…</Button>` instead.
 
 ### `Banner.Action` and `Toolbar.Link`
 
