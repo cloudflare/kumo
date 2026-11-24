@@ -22,6 +22,7 @@
 - `external` is removed. Use the provider's `externalLinks="new-tab"`, or `target="_blank"`.
 - `Banner.Action` links render `data-kumo-component="Button"` instead of `"LinkButton"`. `Toolbar.Link` keeps `data-kumo-component="Toolbar.Link"`; both have `data-kumo-part="link"`.
 - `ToolbarLinkProps` is now derived from the `Button` link props, so an icon-only `Toolbar.Link` with `shape="square"` or `"circle"` requires `aria-label`, `aria-labelledby`, or `title`.
+- `ToolbarButtonProps` keeps the same rule: an icon-only `Toolbar.Button` with `shape="square"` or `"circle"` now requires `aria-label`, `aria-labelledby`, or `title`, like `Button`. Without one, screen readers announced it as just "button". This is a type-only change.
 
 ## New-tab behavior
 

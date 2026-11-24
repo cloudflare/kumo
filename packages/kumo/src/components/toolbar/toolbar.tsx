@@ -51,16 +51,17 @@ export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
   size?: ToolbarSize;
 }
 
-export type ToolbarButtonProps = Omit<
+// Omit each member separately so icon-only buttons and links keep their name
+// requirement.
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+export type ToolbarButtonProps = DistributiveOmit<
   Exclude<ButtonProps, { href: string }>,
   "size" | "variant"
 > &
   Pick<ToolbarBase.Button.Props, "focusableWhenDisabled">;
-
-// Omit each member separately so icon-only links keep their name requirement.
-type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
-  ? Omit<T, K>
-  : never;
 
 export type ToolbarLinkProps = DistributiveOmit<
   Extract<ButtonProps, { href: string }>,
