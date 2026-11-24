@@ -74,7 +74,8 @@ export default function Example() {
   Set `target="_blank"` to open a link in a new tab. Kumo adds
   `rel="noopener"` (keeping any `rel` you pass), a visible icon, and a screen-reader announcement
   such as "Visit Cloudflare (opens in a new tab)". Don't add the icon or the
-  announcement yourself.
+  announcement yourself. A `rel` that already has `noopener`, `noreferrer`, or
+  `opener` is left as you wrote it.
 </p>
 
 ```tsx

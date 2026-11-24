@@ -41,6 +41,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 
 - `to` is removed. Use `href`.
 - `render` is removed. For custom link UI, use `ResolvedLink`, an unstyled link that resolves like `Link`. When another component renders the element, use `useLink`, which returns `Component`, `linkProps`, and `newTabCue`; render all three.
+- `render` was also how a single link passed router props such as `state` or `replace`. Those move to `routerOptions`, covered in its own entry.
 - `Link.ExternalIcon` is removed. Remove manual icons; links that open in a new tab show the icon automatically. Hide it with `newTabIcon={false}`; the announcement stays.
 
 ### `Sidebar` and `Breadcrumbs`
@@ -50,7 +51,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 
 ## New-tab behavior (all link components)
 
-Every link that opens in a new tab, whether from `target="_blank"` or from `externalLinks="new-tab"`, now:
+Every link that resolves through `LinkProvider` (`Link`, `ResolvedLink`, `useLink`, and the components above) and opens in a new tab, whether from `target="_blank"` or from `externalLinks="new-tab"`, now:
 
 - gets `rel="noopener"`. A `rel` you pass is kept, and `noopener` is added to it unless it already has `noopener`, `noreferrer`, or `opener`. Add `noreferrer` yourself if the destination shouldn't see where the visit came from.
 - shows a new-tab icon (`newTabIcon={false}` hides it).
