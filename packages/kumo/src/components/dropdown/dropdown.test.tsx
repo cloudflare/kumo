@@ -286,7 +286,7 @@ describe("DropdownMenu.LinkItem with LinkProvider", () => {
     const link = screen.getByText("Docs").closest("a");
     expect(link?.hasAttribute("data-router")).toBe(false);
     expect(link?.getAttribute("target")).toBe("_blank");
-    expect(link?.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link?.getAttribute("rel")).toBe("noopener");
     expect(link?.textContent).toContain("(opens in a new tab)");
   });
 
