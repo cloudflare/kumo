@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "2.19.0",
+  "version": "2.19.1",
   "private": false,
   "description": "Kumo - Cloudflare's component library for building modern web applications",
   "keywords": [
