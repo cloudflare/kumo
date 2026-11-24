@@ -318,7 +318,7 @@ describe("Button with href", () => {
     expect(link.classList.contains("select-none")).toBe(false);
   });
 
-  it("target='_blank' adds rel='noopener noreferrer' and a new-tab cue", () => {
+  it("target='_blank' adds rel='noopener' and a new-tab cue", () => {
     render(
       <Button href="https://example.com" target="_blank">
         Docs
@@ -328,7 +328,7 @@ describe("Button with href", () => {
       name: "Docs (opens in a new tab)",
     });
     expect(link.getAttribute("target")).toBe("_blank");
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.getAttribute("rel")).toBe("noopener");
   });
 
   it("defaults to the secondary variant, like Button", () => {
