@@ -110,6 +110,7 @@
       [data-kumo-component="DropdownMenu"],
       [data-kumo-component="PoweredByCloudflare"],
       [data-kumo-component="Sidebar"],
+      [data-kumo-component="Toolbar.Link"],
       [data-kumo-component="Link"]:has(> svg, > [data-kumo-component="Badge"])
     )[data-kumo-new-tab-icon]::after {
     margin-inline-start: 0;
