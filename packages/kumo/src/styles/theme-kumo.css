@@ -34,7 +34,7 @@
 
   --text-color-kumo-placeholder: light-dark(
     var(--color-neutral-400, oklch(70.8% 0 0)),
-    var(--color-neutral-500, oklch(55.6% 0 0))
+    var(--color-neutral-400, oklch(70.8% 0 0))
   );
 
   --text-color-kumo-brand: light-dark(#f6821f, #f6821f);
@@ -88,27 +88,27 @@
 @theme {
   --color-kumo-canvas: light-dark(
     var(--color-kumo-neutral-25, oklch(98.75% 0 0)),
-    var(--color-kumo-neutral-1000, oklch(10% 0 0))
+    oklch(15.5% 0.003 260)
   );
 
   --color-kumo-elevated: light-dark(
     var(--color-kumo-neutral-75, oklch(98% 0 0)),
-    var(--color-kumo-neutral-975, oklch(12% 0 0))
+    oklch(17.5% 0.003 260)
   );
 
   --color-kumo-recessed: light-dark(
     var(--color-kumo-neutral-125, oklch(96% 0 0)),
-    var(--color-kumo-neutral-950, oklch(15% 0 0))
+    oklch(13% 0.003 260)
   );
 
   --color-kumo-base: light-dark(
     var(--color-white, #fff),
-    var(--color-kumo-neutral-925, oklch(17% 0 0))
+    oklch(20.5% 0.003 260)
   );
 
   --color-kumo-tint: light-dark(
     var(--color-neutral-100, oklch(97% 0 0)),
-    var(--color-kumo-neutral-800, oklch(26.9% 0 0))
+    oklch(28% 0.003 260)
   );
 
   --color-kumo-contrast: light-dark(
@@ -118,27 +118,27 @@
 
   --color-kumo-overlay: light-dark(
     var(--color-kumo-neutral-50, oklch(97.5% 0 0)),
-    var(--color-neutral-800, oklch(26.9% 0 0))
+    oklch(25% 0.003 260)
   );
 
   --color-kumo-control: light-dark(
     var(--color-white, #fff),
-    var(--color-neutral-900, oklch(21% 0.006 285.885))
+    oklch(23% 0.003 260)
   );
 
   --color-kumo-interact: light-dark(
     var(--color-neutral-300, oklch(87% 0 0)),
-    var(--color-neutral-700, oklch(37.1% 0 0))
+    oklch(40% 0.003 260)
   );
 
   --color-kumo-fill: light-dark(
     var(--color-neutral-200, oklch(92.2% 0 0)),
-    var(--color-neutral-800, oklch(26.9% 0 0))
+    oklch(27% 0.003 260)
   );
 
   --color-kumo-fill-hover: light-dark(
     var(--color-kumo-neutral-125, oklch(96.5% 0 0)),
-    var(--color-neutral-800, oklch(37.1% 0 0))
+    oklch(31% 0.003 260)
   );
 
   --color-kumo-brand: light-dark(
@@ -151,14 +151,11 @@
     var(--color-blue-700, oklch(48.8% 0.243 264.376))
   );
 
-  --color-kumo-line: light-dark(
-    oklch(14.5% 0 0 / 0.1),
-    var(--color-kumo-neutral-750, oklch(32% 0 0))
-  );
+  --color-kumo-line: light-dark(oklch(14.5% 0 0 / 0.1), oklch(100% 0 0 / 0.12));
 
   --color-kumo-hairline: light-dark(
     var(--color-kumo-neutral-150, oklch(93.5% 0 0)),
-    var(--color-neutral-800, oklch(26.9% 0 0))
+    oklch(100% 0 0 / 0.07)
   );
 
   --color-kumo-focus: light-dark(
@@ -235,7 +232,7 @@
 
   --color-kumo-badge-secondary: light-dark(
     var(--color-kumo-neutral-125, oklch(96.5% 0 0)),
-    var(--color-neutral-800, oklch(26.9% 0 0))
+    oklch(27% 0.003 260)
   );
 
   --color-kumo-badge-red: light-dark(
@@ -388,7 +385,7 @@
     --text-color-kumo-strong: var(--color-neutral-50, oklch(98.5% 0 0));
     --text-color-kumo-subtle: var(--color-neutral-400, oklch(70.8% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-600, oklch(43.9% 0 0));
-    --text-color-kumo-placeholder: var(--color-neutral-500, oklch(55.6% 0 0));
+    --text-color-kumo-placeholder: var(--color-neutral-400, oklch(70.8% 0 0));
     --text-color-kumo-brand: #f6821f;
     --text-color-kumo-link: var(--color-blue-400, oklch(70.7% 0.165 254.624));
     --text-color-kumo-info: var(--color-blue-400, oklch(70.7% 0.165 254.624));
@@ -411,25 +408,25 @@
       oklch(92.2% 0 0)
     );
     --text-color-kumo-badge-inverted: var(--color-black, #000);
-    --color-kumo-canvas: var(--color-kumo-neutral-1000, oklch(10% 0 0));
-    --color-kumo-elevated: var(--color-kumo-neutral-975, oklch(12% 0 0));
-    --color-kumo-recessed: var(--color-kumo-neutral-950, oklch(15% 0 0));
-    --color-kumo-base: var(--color-kumo-neutral-925, oklch(17% 0 0));
-    --color-kumo-tint: var(--color-kumo-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-canvas: oklch(15.5% 0.003 260);
+    --color-kumo-elevated: oklch(17.5% 0.003 260);
+    --color-kumo-recessed: oklch(13% 0.003 260);
+    --color-kumo-base: oklch(20.5% 0.003 260);
+    --color-kumo-tint: oklch(28% 0.003 260);
     --color-kumo-contrast: var(--color-kumo-neutral-25, oklch(98.5% 0 0));
-    --color-kumo-overlay: var(--color-neutral-800, oklch(26.9% 0 0));
-    --color-kumo-control: var(--color-neutral-900, oklch(21% 0.006 285.885));
-    --color-kumo-interact: var(--color-neutral-700, oklch(37.1% 0 0));
-    --color-kumo-fill: var(--color-neutral-800, oklch(26.9% 0 0));
-    --color-kumo-fill-hover: var(--color-neutral-800, oklch(37.1% 0 0));
+    --color-kumo-overlay: oklch(25% 0.003 260);
+    --color-kumo-control: oklch(23% 0.003 260);
+    --color-kumo-interact: oklch(40% 0.003 260);
+    --color-kumo-fill: oklch(27% 0.003 260);
+    --color-kumo-fill-hover: oklch(31% 0.003 260);
     --color-kumo-brand: color-mix(
       in oklch,
       oklch(0.5772 0.2324 260),
       black 10%
     );
     --color-kumo-brand-hover: var(--color-blue-700, oklch(48.8% 0.243 264.376));
-    --color-kumo-line: var(--color-kumo-neutral-750, oklch(32% 0 0));
-    --color-kumo-hairline: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-line: oklch(100% 0 0 / 0.12);
+    --color-kumo-hairline: oklch(100% 0 0 / 0.07);
     --color-kumo-focus: var(--color-kumo-neutral-150, oklch(93.5% 0 0));
     --color-kumo-shadow-edge: oklch(100% 0 0 / 0.1);
     --color-kumo-shadow-drop: oklch(0% 0 0 / 0.3);
@@ -445,7 +442,7 @@
     --color-kumo-success: var(--color-emerald-400, oklch(76.5% 0.177 163.223));
     --color-kumo-banner-info: oklch(37.9% 0.146 265.522 / 0.5);
     --color-kumo-banner-warning: oklch(55.4% 0.135 66.442 / 0.5);
-    --color-kumo-badge-secondary: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-badge-secondary: oklch(27% 0.003 260);
     --color-kumo-badge-red: var(--color-red-700, oklch(50.5% 0.213 27.518));
     --color-kumo-badge-green: var(
       --color-emerald-700,
