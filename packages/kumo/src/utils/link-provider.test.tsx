@@ -3,6 +3,7 @@ import { forwardRef } from "react";
 import { render, screen } from "@testing-library/react";
 import {
   LinkProvider,
+  ResolvedLink,
   resolveLink,
   useLink,
   type RouterLinkProps,
@@ -227,5 +228,52 @@ describe("useLink", () => {
     });
     expect(link.hasAttribute("data-router")).toBe(false);
     expect(link.getAttribute("target")).toBe("_blank");
+  });
+});
+
+describe("ResolvedLink", () => {
+  const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+    function RouterLink(props, ref) {
+      // oxlint-disable-next-line anchor-has-content
+      return <a ref={ref} data-router="" {...props} />;
+    },
+  );
+
+  it("renders internal routes through the router without Kumo styles", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <ResolvedLink href="/zones/1" className="card">
+          example.com
+        </ResolvedLink>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", { name: "example.com" });
+    expect(link.hasAttribute("data-router")).toBe(true);
+    expect(link.className).toBe("card");
+  });
+
+  it("includes the new-tab announcement", () => {
+    render(
+      <LinkProvider router={RouterLink} externalLinks="new-tab">
+        <ResolvedLink href="https://example.com">example.com</ResolvedLink>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "example.com (opens in a new tab)",
+    });
+    expect(link.hasAttribute("data-router")).toBe(false);
+    expect(link.getAttribute("target")).toBe("_blank");
+  });
+
+  it("forwards its ref to the anchor", () => {
+    const ref = { current: null as HTMLAnchorElement | null };
+    render(
+      <ResolvedLink ref={ref} href="https://example.com">
+        Docs
+      </ResolvedLink>,
+    );
+    expect(ref.current?.tagName).toBe("A");
   });
 });

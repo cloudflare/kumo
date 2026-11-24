@@ -380,8 +380,17 @@ export function useLink({
 }
 
 /**
- * @internal Renders children through `useLink`. Used by Kumo's link-like
- * components; not part of the public API.
+ * Unstyled link that resolves through `LinkProvider` like `Link`, including
+ * the new-tab announcement. Use it for custom link UI such as cards. Use
+ * `useLink` instead when the link is rendered by another component, such as a
+ * Base UI `render` prop.
+ *
+ * @example
+ * ```tsx
+ * <ResolvedLink href={`/zones/${id}`} className="block rounded-lg p-4">
+ *   {name}
+ * </ResolvedLink>
+ * ```
  */
 export const ResolvedLink = forwardRef<HTMLAnchorElement, UseLinkOptions>(
   function ResolvedLink({ children, ...props }, ref) {

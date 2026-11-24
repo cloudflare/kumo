@@ -40,7 +40,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 ### `Link`
 
 - `to` is removed. Use `href`.
-- `render` is removed. For custom link UI, use `useLink`, which returns `Component`, `linkProps`, and `newTabCue`. Render all three.
+- `render` is removed. For custom link UI, use `ResolvedLink`, an unstyled link that resolves like `Link`. When another component renders the element, use `useLink`, which returns `Component`, `linkProps`, and `newTabCue`; render all three.
 - `Link.ExternalIcon` is removed. Remove manual icons; links that open in a new tab show the icon automatically. Hide it with `newTabIcon={false}`; the announcement stays.
 
 ### `Sidebar` and `Breadcrumbs`
@@ -66,6 +66,6 @@ Update tests that depend on the old output:
 
 ## Added
 
-- `useLink` hook, plus the `RouterLinkProps`, `RouterLinkComponent`, `LinkProviderProps`, `ExternalLinksPolicy`, `UseLinkOptions`, `UseLinkResult`, and `LinkElementType` types
+- `ResolvedLink` component and `useLink` hook, plus the `RouterLinkProps`, `RouterLinkComponent`, `LinkProviderProps`, `ExternalLinksPolicy`, `UseLinkOptions`, `UseLinkResult`, and `LinkElementType` types
 - `newTabIcon` on `Link`
 - `link.opensInNewTab` in `KumoTranslations`

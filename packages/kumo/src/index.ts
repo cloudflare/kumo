@@ -376,6 +376,7 @@ export {
 export { cn, safeRandomId } from "./utils/cn";
 export {
   LinkProvider,
+  ResolvedLink,
   useLink,
   type ExternalLinksPolicy,
   type LinkElementType,

@@ -162,19 +162,39 @@ const isClientRoute = (url: URL) => !url.pathname.startsWith("/admin/");
   `target` other than `_self` don't use client-side routing.
 </p>
 
-### Custom link UI (useLink)
+### Custom link UI (ResolvedLink and useLink)
 
 <p>
-  For cards or other custom links, use `useLink`. It returns the element to
-  render, the resolved anchor props, and the new-tab cue. Render all three.
-  The new-tab icon is drawn by Kumo's CSS from `linkProps`, so keep it as the
-  last thing in the element; the cue is a visually hidden announcement.
+  For cards or other custom links, use `ResolvedLink`. It's an unstyled link
+  that resolves through `LinkProvider` like `Link`, including the new-tab icon
+  and announcement.
+</p>
+
+```tsx
+import { ResolvedLink } from "@cloudflare/kumo";
+
+function ProjectCard({ href, name }: { href: string; name: string }) {
+  return (
+    <ResolvedLink href={href} className="block rounded-lg bg-kumo-elevated p-4">
+      {name}
+    </ResolvedLink>
+  );
+}
+```
+
+<p>
+  When another component renders the element, such as a Base UI `render`
+  prop, use `useLink`. It returns the element to render, the resolved anchor
+  props, and the new-tab cue. Render all three: the cue is the visually hidden
+  announcement, and leaving it out hides the new tab from screen readers. The
+  new-tab icon is drawn by Kumo's CSS from `linkProps`, so keep it as the last
+  thing in the element.
 </p>
 
 ```tsx
 import { useLink } from "@cloudflare/kumo";
 
-function ZoneCard({ href, name }: { href: string; name: string }) {
+function ProjectCard({ href, name }: { href: string; name: string }) {
   const { Component, linkProps, newTabCue } = useLink({ href });
   return (
     <Component {...linkProps} className="block rounded-lg bg-kumo-elevated p-4">
@@ -402,7 +422,7 @@ function ZoneCard({ href, name }: { href: string; name: string }) {
           destination prop (e.g. React Router's `to`)
         </li>
         <li>
-          Use `useLink` for custom link UI such as cards
+          Use `ResolvedLink` (or `useLink`) for custom link UI such as cards
         </li>
       </ul>
     </div>
