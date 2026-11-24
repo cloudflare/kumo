@@ -100,7 +100,7 @@ describe("Toolbar.Link interactions", () => {
       .toHaveAttribute("data-kumo-component", "Toolbar.Link");
     await expect.element(link).toHaveAttribute("href", "#docs");
     await expect.element(link).toHaveAttribute("target", "_blank");
-    await expect.element(link).toHaveAttribute("rel", "noopener noreferrer");
+    await expect.element(link).toHaveAttribute("rel", "noopener");
 
     await before.click();
     await userEvent.keyboard("{ArrowRight}");
