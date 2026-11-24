@@ -12,17 +12,48 @@ import {
 import { useKumoLocale } from "./locale-provider";
 
 /**
+ * Register your router's per-link options to type `routerOptions` on every
+ * Kumo link component.
+ *
+ * @example React Router
+ * ```ts
+ * import type { LinkProps } from "react-router-dom";
+ *
+ * declare module "@cloudflare/kumo" {
+ *   interface Register {
+ *     routerOptions: Pick<LinkProps, "state" | "replace" | "preventScrollReset" | "viewTransition">;
+ *   }
+ * }
+ * ```
+ */
+export interface Register {}
+
+/**
+ * Per-link router options. Typed by `Register["routerOptions"]` when an app
+ * registers it, otherwise a plain object.
+ */
+export type RouterOptions = Register extends { routerOptions: infer Options }
+  ? Options
+  : Record<string, unknown>;
+
+/**
  * Props received by the router component passed to `LinkProvider`.
  *
  * Kumo only renders the router component for internal routes, so `href` is
  * always a string. Map it to your router's destination prop (e.g. React
- * Router's `to`) and forward everything else.
+ * Router's `to`), spread `routerOptions` onto your router's link, and forward
+ * everything else.
  */
 export type RouterLinkProps = Omit<
   AnchorHTMLAttributes<HTMLAnchorElement>,
   "href"
 > & {
   href: string;
+  /**
+   * The link's `routerOptions`, such as React Router's `state` or `replace`.
+   * Only set when the link passed some.
+   */
+  routerOptions?: RouterOptions;
 };
 
 export type RouterLinkComponent = ComponentType<
@@ -284,6 +315,13 @@ export type UseLinkOptions = AnchorHTMLAttributes<HTMLAnchorElement> & {
    * @default true
    */
   newTabIcon?: boolean;
+  /**
+   * Options for your router, such as React Router's `state` or `replace`.
+   * Passed to the `LinkProvider` router component, and dropped when the link
+   * renders a plain `<a>` (external URLs, new tabs, downloads). Type it with
+   * `Register`.
+   */
+  routerOptions?: RouterOptions;
 };
 
 /** Element returned by `useLink`: the provider's router component or `"a"`. */
@@ -300,6 +338,7 @@ export interface UseLinkResult {
    * Resolved anchor props, including `href`, `target`, `rel`, and
    * accessible-name props. Links that open in a new tab also get
    * `data-kumo-new-tab-icon`, which Kumo's stylesheet uses to draw the icon.
+   * When `Component` is the router, they also carry `routerOptions`.
    */
   linkProps: AnchorHTMLAttributes<HTMLAnchorElement>;
   /**
@@ -329,6 +368,7 @@ export interface UseLinkResult {
  */
 export function useLink({
   newTabIcon = true,
+  routerOptions,
   ...props
 }: UseLinkOptions): UseLinkResult {
   const config = useContext(LinkConfigContext);
@@ -349,8 +389,15 @@ export function useLink({
     ...rest
   } = props;
 
+  const usesRouter = resolved.useRouter && config.router !== undefined;
+
   const linkProps: AnchorHTMLAttributes<HTMLAnchorElement> = {
     ...rest,
+    // Only the router understands these; a plain <a> would render them as an
+    // unknown attribute.
+    ...(usesRouter && routerOptions !== undefined
+      ? ({ routerOptions } as AnchorHTMLAttributes<HTMLAnchorElement>)
+      : {}),
     href: resolved.href,
     target: resolved.target,
     rel: resolved.rel,
@@ -377,10 +424,7 @@ export function useLink({
   ) : null;
 
   return {
-    Component:
-      resolved.useRouter && config.router
-        ? (config.router as LinkElementType)
-        : "a",
+    Component: usesRouter ? (config.router as LinkElementType) : "a",
     linkProps,
     newTabCue,
     opensInNewTab: resolved.opensInNewTab,

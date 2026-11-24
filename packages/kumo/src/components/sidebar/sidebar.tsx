@@ -17,7 +17,7 @@ import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
-import { ResolvedLink } from "../../utils/link-provider";
+import { ResolvedLink, type RouterOptions } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -1433,6 +1433,8 @@ export interface SidebarMenuButtonProps extends Omit<
    * @default true
    */
   newTabIcon?: boolean;
+  /** Options for your router, passed through `LinkProvider`. Only used with `href`. */
+  routerOptions?: RouterOptions;
   tooltip?: string;
   /** Anchor id for `useSidebar().scrollToItem(id)`. */
   itemId?: string;
@@ -1475,6 +1477,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       href,
       target,
       newTabIcon,
+      routerOptions,
       tooltip,
       itemId,
       children,
@@ -1581,6 +1584,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           href={href}
           target={target}
           newTabIcon={newTabIcon}
+          routerOptions={routerOptions}
           data-active={active || undefined}
           data-sidebar="menu-button"
           data-sidebar-item-id={itemIdOnButton}
@@ -1769,6 +1773,8 @@ export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"but
    * @default true
    */
   newTabIcon?: boolean;
+  /** Options for your router, passed through `LinkProvider`. Only used with `href`. */
+  routerOptions?: RouterOptions;
 }
 
 /**
@@ -1790,7 +1796,16 @@ const SidebarMenuSubButton = forwardRef<
   SidebarMenuSubButtonProps
 >(
   (
-    { className, active = false, href, target, newTabIcon, children, ...props },
+    {
+      className,
+      active = false,
+      href,
+      target,
+      newTabIcon,
+      routerOptions,
+      children,
+      ...props
+    },
     ref,
   ) => {
     const isInsideMenuSubItem = useContext(MenuSubItemContext);
@@ -1828,6 +1843,7 @@ const SidebarMenuSubButton = forwardRef<
           href={href}
           target={target}
           newTabIcon={newTabIcon}
+          routerOptions={routerOptions}
           data-active={active || undefined}
           data-sidebar="menu-sub-button"
           data-kumo-component="Sidebar"

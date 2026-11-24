@@ -9,7 +9,7 @@ import {
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { Button } from "../../components/button";
 import { SkeletonLine } from "../../components/loader/skeleton-line";
-import { ResolvedLink } from "../../utils/link-provider";
+import { ResolvedLink, type RouterOptions } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
 import { useKumoLocale } from "../../utils/locale-provider";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -67,12 +67,15 @@ export interface BreadcrumbsItemProps {
    * @default true
    */
   newTabIcon?: boolean;
+  /** Options for your router, passed through `LinkProvider`. */
+  routerOptions?: RouterOptions;
 }
 
 const Link = ({
   href,
   icon,
   newTabIcon,
+  routerOptions,
   children,
 }: PropsWithChildren<BreadcrumbsItemProps>) => {
   return (
@@ -81,6 +84,7 @@ const Link = ({
       data-kumo-part="link"
       href={href}
       newTabIcon={newTabIcon}
+      routerOptions={routerOptions}
       // Ancestors do not shrink. Letting every crumb truncate proportionally
       // turns the whole trail into unreadable stubs ("Com… › Anal… › Acco…");
       // the current page is the only crumb allowed to give up width.

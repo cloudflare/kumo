@@ -183,6 +183,53 @@ const isClientRoute = (url: URL) => !url.pathname.startsWith("/admin/");
   `target` other than `_self` don't use client-side routing.
 </p>
 
+### Router options (routerOptions)
+
+<p>
+  Some routers take options on a single link, such as React Router's `state`
+  and `replace`. Pass them as `routerOptions`. Kumo's link components
+  accept it, including `Button href`, `DropdownMenu.LinkItem`, and `Sidebar`
+  links.
+</p>
+
+```tsx
+<Link href="/projects/new" routerOptions={{ state: { from: "list" } }}>
+  New project
+</Link>
+```
+
+<p>
+  Kumo passes `routerOptions` to your router component only when the link goes
+  through the router. When a link renders a plain `&lt;a&gt;` (another origin,
+  a new tab, or a download), the options are dropped, so they never reach the
+  HTML. Spread them onto your router's link:
+</p>
+
+```tsx
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  ({ href, routerOptions, ...props }, ref) => (
+    <ReactRouterLink ref={ref} to={href} {...routerOptions} {...props} />
+  ),
+);
+```
+
+<p>
+  Register your router's options once to type `routerOptions` on every link:
+</p>
+
+```ts
+import type { LinkProps } from "react-router-dom";
+
+declare module "@cloudflare/kumo" {
+  interface Register {
+    routerOptions: Pick<
+      LinkProps,
+      "state" | "replace" | "preventScrollReset" | "viewTransition"
+    >;
+  }
+}
+```
+
 ### Custom link UI (ResolvedLink and useLink)
 
 <p>
