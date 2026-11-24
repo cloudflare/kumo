@@ -504,7 +504,10 @@ export const RefreshButton = ({
   </Button>
 );
 
-const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
+const ButtonLink = React.forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ButtonLinkProps
+>(
   (
     {
       children,
@@ -537,9 +540,10 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     });
 
     if (disabled) {
-      // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
+      // A disabled link renders a <button>, so the ref points at it.
       return (
         <NativeButton
+          ref={ref as React.Ref<HTMLButtonElement>}
           {...toDisabledButtonProps(props)}
           className={cn("select-text", className)}
           data-kumo-part="link"
@@ -570,7 +574,7 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       );
     const link = (
       <Component
-        ref={ref}
+        ref={ref as React.Ref<HTMLAnchorElement>}
         data-kumo-component="Button"
         data-kumo-part="link"
         {...linkProps}
@@ -613,7 +617,7 @@ export const Button = React.forwardRef<
   ButtonProps
 >((props, ref) =>
   props.href !== undefined ? (
-    <ButtonLink ref={ref as React.Ref<HTMLAnchorElement>} {...props} />
+    <ButtonLink ref={ref} {...props} />
   ) : (
     <NativeButton ref={ref as React.Ref<HTMLButtonElement>} {...props} />
   ),

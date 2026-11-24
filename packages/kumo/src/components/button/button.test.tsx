@@ -430,6 +430,16 @@ describe("Button with href", () => {
     expect(ref.current).toBe(screen.getByRole("link"));
   });
 
+  it("forwards ref to the <button> when disabled", () => {
+    const ref = React.createRef<HTMLButtonElement | HTMLAnchorElement>();
+    render(
+      <Button ref={ref} href="/home" disabled>
+        Home
+      </Button>,
+    );
+    expect(ref.current).toBe(screen.getByRole("button", { name: "Home" }));
+  });
+
   it("title prop wraps the anchor in a Tooltip and removes the native title attribute", () => {
     render(
       <Button href="/home" title="Go to the home page">
