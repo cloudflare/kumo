@@ -116,4 +116,33 @@ describe("Breadcrumbs links with LinkProvider", () => {
       expect(link.hasAttribute("to")).toBe(false);
     }
   });
+
+  it("hides the visible new-tab icon with newTabIcon={false}", () => {
+    render(
+      <LinkProvider externalLinks="new-tab">
+        <Breadcrumbs>
+          <Breadcrumbs.Link href="https://example.com/a">
+            Shown
+          </Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Link href="https://example.com/b" newTabIcon={false}>
+            Hidden
+          </Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Current>Here</Breadcrumbs.Current>
+        </Breadcrumbs>
+      </LinkProvider>,
+    );
+
+    for (const link of screen.getAllByRole("link", {
+      name: "Shown (opens in a new tab)",
+    })) {
+      expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+    }
+    for (const link of screen.getAllByRole("link", {
+      name: "Hidden (opens in a new tab)",
+    })) {
+      expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
+    }
+  });
 });

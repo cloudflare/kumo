@@ -1978,4 +1978,40 @@ describe("Sidebar links with LinkProvider", () => {
     expect(link.hasAttribute("data-router")).toBe(false);
     expect(link.getAttribute("rel")).toBe("noopener");
   });
+
+  it.each([
+    ["MenuButton", SidebarMenuButton],
+    ["MenuSubButton", SidebarMenuSubButton],
+  ] as const)(
+    "%s hides the visible new-tab icon with newTabIcon={false}",
+    (_name, Button) => {
+      render(
+        <TestSidebar defaultOpen>
+          <SidebarContent>
+            <SidebarMenu>
+              <Button href="https://example.com" target="_blank">
+                Shown
+              </Button>
+              <Button
+                href="https://example.com"
+                target="_blank"
+                newTabIcon={false}
+              >
+                Hidden
+              </Button>
+            </SidebarMenu>
+          </SidebarContent>
+        </TestSidebar>,
+      );
+
+      const shown = screen.getByRole("link", {
+        name: "Shown (opens in a new tab)",
+      });
+      const hidden = screen.getByRole("link", {
+        name: "Hidden (opens in a new tab)",
+      });
+      expect(shown.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+      expect(hidden.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
+    },
+  );
 });

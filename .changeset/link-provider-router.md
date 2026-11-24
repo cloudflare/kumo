@@ -46,6 +46,7 @@ Links now resolve navigation in one place. `LinkProvider` decides whether a link
 ### `Sidebar` and `Breadcrumbs`
 
 - `Sidebar.MenuButton` and `Sidebar.MenuSubButton` with `href`, and `Breadcrumbs.Link`, resolve through `LinkProvider`. External URLs and links with `target="_blank"` no longer reach your router component.
+- They accept `newTabIcon` like `Link`. A collapsed sidebar hides the new-tab icon so only the item icons show; the announcement stays.
 
 ## New-tab behavior (all link components)
 

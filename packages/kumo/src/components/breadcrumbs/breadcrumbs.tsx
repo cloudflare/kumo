@@ -61,11 +61,18 @@ export function breadcrumbsVariants({
 export interface BreadcrumbsItemProps {
   href: string;
   icon?: React.ReactNode;
+  /**
+   * Show the visible new-tab icon when the link opens in a new tab. The
+   * screen-reader announcement is always included.
+   * @default true
+   */
+  newTabIcon?: boolean;
 }
 
 const Link = ({
   href,
   icon,
+  newTabIcon,
   children,
 }: PropsWithChildren<BreadcrumbsItemProps>) => {
   return (
@@ -73,6 +80,7 @@ const Link = ({
       data-kumo-component="Breadcrumbs"
       data-kumo-part="link"
       href={href}
+      newTabIcon={newTabIcon}
       // Ancestors do not shrink. Letting every crumb truncate proportionally
       // turns the whole trail into unreadable stubs ("Com… › Anal… › Acco…");
       // the current page is the only crumb allowed to give up width.
