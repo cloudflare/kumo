@@ -398,3 +398,68 @@ export function ToastPromiseDemo() {
     </Toasty>
   );
 }
+
+function ToastTimeoutBarButtons() {
+  const toastManager = useKumoToastManager();
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        onClick={() =>
+          toastManager.add({
+            title: "Settings saved",
+            description: "Hover to pause the timer.",
+          })
+        }
+      >
+        Default (5s)
+      </Button>
+      <Button
+        onClick={() =>
+          toastManager.add({
+            title: "Worker deployed",
+            description: "my-worker is now live.",
+            variant: "success",
+          })
+        }
+      >
+        Success
+      </Button>
+      <Button
+        onClick={() =>
+          toastManager.add({
+            title: "Deployment failed",
+            description: "Check your build logs and try again.",
+            variant: "error",
+            timeout: 10000,
+          })
+        }
+      >
+        Error (10s)
+      </Button>
+      <Button
+        onClick={() =>
+          toastManager.promise(
+            new Promise((resolve) => setTimeout(resolve, 1500)),
+            {
+              loading: { title: "Deploying..." },
+              success: { title: "Deployed!", variant: "success" },
+              error: { title: "Failed", variant: "error" },
+            },
+          )
+        }
+      >
+        Promise
+      </Button>
+    </div>
+  );
+}
+
+/** Every toast shows a bar that depletes with its timeout and pauses on hover. */
+export function ToastTimeoutBarDemo() {
+  return (
+    <Toasty>
+      <ToastTimeoutBarButtons />
+    </Toasty>
+  );
+}

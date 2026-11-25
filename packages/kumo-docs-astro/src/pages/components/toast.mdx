@@ -22,6 +22,7 @@ import {
   ToastActionsDemo,
   ToastPromiseDemo,
   ToastFunctionalUpdateDemo,
+  ToastTimeoutBarDemo,
 } from "~/components/demos/ToastDemo";
 
 {/* Hero Demo */}
@@ -126,6 +127,14 @@ export function Layout({ children }) {
 <p>A complete toast with both title and description.</p>
 <ComponentExample demo="ToastBasicDemo">
   <ToastBasicDemo client:visible />
+</ComponentExample>
+
+### Timeout Bar
+
+Every toast shows a bar along its bottom edge that depletes as its timeout runs out. It pauses whenever the timer pauses: while toasts are hovered or focused, and while the window is in the background. Loading toasts and toasts with `timeout: 0` show no bar.
+
+<ComponentExample demo="ToastTimeoutBarDemo">
+  <ToastTimeoutBarDemo client:visible />
 </ComponentExample>
 
 ### Title Only

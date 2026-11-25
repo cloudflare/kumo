@@ -5,6 +5,7 @@ import {
   ToastObject,
 } from "@base-ui/react/toast";
 import { useDirection } from "@base-ui/react/direction-provider";
+import { useEffect, useState } from "react";
 import type React from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -193,6 +194,9 @@ export interface ToastyProps extends KumoToastVariantsProps {
   toastManager?: ReturnType<typeof createKumoToastManager>;
 }
 
+/** Base UI's `Toast.Provider` default; Toasty does not override it. */
+const DEFAULT_TOAST_TIMEOUT = 5000;
+
 type KumoToastOptionsBase = {
   variant?: KumoToastVariant;
   content?: React.ReactNode;
@@ -205,8 +209,14 @@ type KumoToastOptionsBase = {
 // increments `updateKey` for duplicate adds and explicit updates alike.
 const KUMO_TOAST_AUTO_BUMP = Symbol("kumo-toast-auto-bump");
 
+// Changes whenever an operation passes `timeout`, which is exactly when Base
+// UI restarts the timer, so the timeout bar can restart its animation too.
+const KUMO_TOAST_TIMER_RESET = Symbol("kumo-toast-timer-reset");
+let timerResetCounter = 0;
+
 type KumoToastInternalOptions = {
   [KUMO_TOAST_AUTO_BUMP]?: boolean;
+  [KUMO_TOAST_TIMER_RESET]?: number;
 };
 
 export type KumoToastOptions<Data extends object> = ToastObject<Data> &
@@ -228,6 +238,9 @@ function withBumpIntent<T extends KumoToastOptionsBase>(
     // through Base UI's partial update merge.
     bump: options.bump,
     [KUMO_TOAST_AUTO_BUMP]: autoBump,
+    ...("timeout" in options && {
+      [KUMO_TOAST_TIMER_RESET]: ++timerResetCounter,
+    }),
   };
 }
 
@@ -395,6 +408,7 @@ function useToastSwipeDirection(): Array<"down" | "left" | "right"> {
 function ToastList() {
   const { toasts } = useKumoToastManager();
   const swipeDirection = useToastSwipeDirection();
+  const windowFocused = useWindowFocused();
 
   return toasts.map((toast) => (
     <Toast.Root
@@ -426,6 +440,7 @@ function ToastList() {
         )}
       >
         <ToastBackground variant={toast.variant} />
+        <ToastTimeoutBar toast={toast} paused={!windowFocused} />
         <Toast.Content
           data-kumo-part="content"
           className="isolate flex flex-col gap-1 pe-6 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100"
@@ -488,6 +503,65 @@ const TOAST_BACKGROUND_CLASSES: Record<string, string> = {
   warning: "bg-kumo-warning-tint/50",
   info: "bg-kumo-info-tint/50",
 };
+
+/**
+ * Mirrors Base UI's pause rules: timers pause while the viewport is hovered
+ * or focused (`data-expanded` on the root) and while the window is blurred.
+ */
+function useWindowFocused() {
+  const [focused, setFocused] = useState(true);
+  useEffect(() => {
+    const onFocus = () => setFocused(true);
+    const onBlur = () => setFocused(false);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
+  return focused;
+}
+
+function ToastTimeoutBar({
+  toast,
+  paused,
+}: {
+  toast: KumoToastOptions<any>;
+  paused: boolean;
+}) {
+  const timeout = toast.timeout ?? DEFAULT_TOAST_TIMEOUT;
+  // No timer runs for loading toasts or `timeout: 0`.
+  if (toast.type === "loading" || timeout <= 0) return null;
+
+  const internalToast: KumoToastOptions<any> & KumoToastInternalOptions =
+    toast;
+  // Remount (and so restart the animation) exactly when Base UI restarts the
+  // timer: a new timeout value, an explicit `timeout` update, or leaving the
+  // loading state. The bar is not focusable, so remounting is safe.
+  const timerKey = `${timeout}-${toast.type ?? ""}-${internalToast[KUMO_TOAST_TIMER_RESET] ?? 0}`;
+
+  return (
+    <div
+      aria-hidden
+      data-kumo-part="timeout-bar"
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+    >
+      <div
+        key={timerKey}
+        data-paused={paused || undefined}
+        style={{ animationDuration: `${timeout}ms` }}
+        className={cn(
+          "animate-toast-timeout absolute inset-x-0 bottom-0 h-0.5 origin-left bg-current opacity-50 rtl:origin-right",
+          "data-[paused]:[animation-play-state:paused] [[data-expanded]_&]:[animation-play-state:paused]",
+          toast.variant && toast.variant !== "default"
+            ? TOAST_CLOSE_CLASSES[toast.variant]
+            : "text-kumo-subtle",
+        )}
+      />
+    </div>
+  );
+}
 
 function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
   const background = variant && TOAST_BACKGROUND_CLASSES[variant];
