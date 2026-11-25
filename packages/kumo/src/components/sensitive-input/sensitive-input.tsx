@@ -90,6 +90,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       value: controlledValue,
       defaultValue = "",
       onChange,
+      onBlur,
       onValueChange,
       onCopy,
       size = KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS.size,
@@ -274,6 +275,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
 
     const handleBlur = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
+        onBlur?.(e);
         // Don't mask if focus is moving to a button inside the container (copy/eye buttons)
         if (
           containerRef.current &&
@@ -286,7 +288,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           setMode("masked");
         }
       },
-      [hasValue],
+      [hasValue, onBlur],
     );
 
     const handleContainerKeyDown = useCallback(
