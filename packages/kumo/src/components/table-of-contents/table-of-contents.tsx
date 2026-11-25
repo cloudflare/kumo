@@ -1,6 +1,6 @@
 import { cloneElement, forwardRef, isValidElement } from "react";
 import { cn } from "../../utils/cn";
-import { useLink } from "../../utils/link-provider";
+import { useLink, type RouterOptions } from "../../utils/link-provider";
 
 /** TableOfContents item state variant definitions. */
 export const KUMO_TABLE_OF_CONTENTS_VARIANTS = {
@@ -93,6 +93,8 @@ export interface TableOfContentsItemProps extends React.AnchorHTMLAttributes<HTM
    * ```
    */
   render?: React.ReactElement;
+  /** Options for your router, passed through `LinkProvider`. */
+  routerOptions?: RouterOptions;
 }
 
 const TableOfContentsItem = forwardRef<
@@ -100,12 +102,21 @@ const TableOfContentsItem = forwardRef<
   TableOfContentsItemProps
 >(
   (
-    { active = false, className, children, render, newTabIcon, ...props },
+    {
+      active = false,
+      className,
+      children,
+      render,
+      newTabIcon,
+      routerOptions,
+      ...props
+    },
     ref,
   ) => {
     const { Component, linkProps, newTabCue } = useLink({
       ...props,
       newTabIcon,
+      routerOptions,
     });
     const stateClasses = active
       ? KUMO_TABLE_OF_CONTENTS_VARIANTS.state.active.classes
@@ -174,6 +185,8 @@ export interface TableOfContentsGroupProps extends Omit<
    * @default true
    */
   newTabIcon?: boolean;
+  /** Options for your router, passed through `LinkProvider`. */
+  routerOptions?: RouterOptions;
 }
 
 const NESTED_UL_CLASSES =
@@ -192,6 +205,7 @@ const TableOfContentsGroup = forwardRef<
       children,
       onClick,
       newTabIcon,
+      routerOptions,
       ...props
     },
     ref,
@@ -199,6 +213,7 @@ const TableOfContentsGroup = forwardRef<
     const { Component, linkProps, newTabCue } = useLink({
       href,
       newTabIcon,
+      routerOptions,
     });
 
     if (href) {

@@ -381,8 +381,10 @@ export {
   type ExternalLinksPolicy,
   type LinkElementType,
   type LinkProviderProps,
+  type Register,
   type RouterLinkComponent,
   type RouterLinkProps,
+  type RouterOptions,
   type UseLinkOptions,
   type UseLinkResult,
 } from "./utils/link-provider";

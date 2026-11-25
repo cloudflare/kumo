@@ -2,7 +2,7 @@ import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { useLink } from "../../utils/link-provider";
+import { useLink, type RouterOptions } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import {
   usePortalContainer,
@@ -417,6 +417,8 @@ const DropdownMenuLinkItem = React.forwardRef<
      * @default true
      */
     newTabIcon?: boolean;
+    /** Options for your router, passed through `LinkProvider`. */
+    routerOptions?: RouterOptions;
     /**
      * Close the menu when the item is clicked. Internal links route without a
      * page load, so the menu has to close itself.
@@ -437,6 +439,7 @@ const DropdownMenuLinkItem = React.forwardRef<
       rel,
       download,
       newTabIcon,
+      routerOptions,
       closeOnClick = true,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
@@ -450,6 +453,7 @@ const DropdownMenuLinkItem = React.forwardRef<
       rel,
       download,
       newTabIcon,
+      routerOptions,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
     });
