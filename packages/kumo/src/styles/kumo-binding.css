@@ -183,6 +183,23 @@
   }
 }
 
+@keyframes toast-timeout {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Duration is set inline from the toast's timeout. */
+.animate-toast-timeout {
+  animation-name: toast-timeout;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
 .animate-toast-bump {
   animation: toast-bump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center;
