@@ -2,7 +2,7 @@ import type { CDPSession } from "vite-plus/test/browser-playwright";
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import { cdp, userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
-import { Button, LinkButton } from "./button";
+import { Button } from "./button";
 import { Input } from "../input/input";
 import { InputArea } from "../input/input-area";
 import { InputGroup } from "../input-group/input-group";
@@ -30,7 +30,7 @@ describe("Keyboard focus in forced colors", () => {
   const controls = [
     ["Button", <Button>Save</Button>],
     ["InlineCopyText", <InlineCopyText>account-id</InlineCopyText>],
-    ["LinkButton", <LinkButton href="#settings">Settings</LinkButton>],
+    ["Button href", <Button href="#settings">Settings</Button>],
     ["Input", <Input aria-label="Name" />],
     ["InputArea", <InputArea aria-label="Notes" />],
     ["Checkbox", <Checkbox label="Subscribe" />],

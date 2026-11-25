@@ -1,8 +1,8 @@
 export {
   Button,
   RefreshButton,
-  LinkButton,
   buttonVariants,
+  type ButtonElementProps,
+  type ButtonLinkProps,
   type ButtonProps,
-  type LinkButtonProps,
 } from "./button";

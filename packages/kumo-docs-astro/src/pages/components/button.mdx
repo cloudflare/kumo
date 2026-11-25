@@ -223,9 +223,11 @@ export default function Example() {
 ### Link as Button
 
 <p>
-  Use `LinkButton` when the interaction should navigate somewhere but still look
-  like a button. Use `Button` for in-place actions like submitting, opening, or
-  toggling UI.
+  Pass `href` when the interaction should navigate somewhere but still look
+  like a button. It resolves through
+  [`LinkProvider`](/components/link#framework-integration-linkprovider) like
+  `Link`, including the new-tab icon and announcement. Use `Button` without
+  `href` for in-place actions like submitting, opening, or toggling UI.
 </p>
 <ComponentExample
   demo="ButtonLinkAsButtonDemo"
@@ -235,10 +237,25 @@ export default function Example() {
   <ButtonLinkAsButtonDemo client:visible />
 </ComponentExample>
 
+<p>
+  `href` must be a string. When the URL may be missing, choose the element
+  yourself:
+</p>
+
+```tsx
+{url ? <Button href={url}>Open</Button> : <Button disabled>Open</Button>}
+```
+
+<p>
+  For wrapper components, build on `ButtonElementProps` (button only) or
+  `ButtonLinkProps` (link only). `Omit<ButtonProps, …>` drops props that only
+  one of them has, such as `type` and `form`.
+</p>
+
 ### Link with Tooltip
 
 <p>
-  Pass `title` to a `LinkButton` to wrap it in a tooltip, just like `Button`.
+  Pass `title` to a link `Button` to wrap it in a tooltip, as with any `Button`.
   This surfaces extra context on hover and focus.
 </p>
 <ComponentExample
@@ -252,7 +269,7 @@ export default function Example() {
 ### Disabled Link
 
 <p>
-  Set `disabled` on a `LinkButton` to render a non-interactive button styled like
+  Set `disabled` on a link `Button` to render a disabled `<button>` instead of
   the link. Pass `title` to explain why it's unavailable via a tooltip.
 </p>
 <ComponentExample

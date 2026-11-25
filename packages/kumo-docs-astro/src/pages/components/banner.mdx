@@ -126,7 +126,7 @@ export default function Example() {
 
 ### With link actions
 
-Pass `href` to render a `Banner.Action` as a link. It renders through your app's [`LinkProvider`](/components/link#framework-integration-linkprovider) component, so it uses client-side routing once `LinkProvider` is configured with your router's link. Use `external` to open the link in a new tab.
+Pass `href` to render a `Banner.Action` as a link. It resolves through [`LinkProvider`](/components/link#framework-integration-linkprovider) like `Button href`, so it uses your router for internal routes. Set `target="_blank"` to open it in a new tab.
 
 <ComponentExample demo="BannerWithLinksDemo">
   <BannerWithLinksDemo client:visible />

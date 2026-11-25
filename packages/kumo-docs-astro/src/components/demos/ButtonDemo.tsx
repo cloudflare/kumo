@@ -1,5 +1,5 @@
-import { Button, LinkButton } from "@cloudflare/kumo";
-import { ArrowSquareOutIcon, PlusIcon } from "@phosphor-icons/react";
+import { Button } from "@cloudflare/kumo";
+import { PlusIcon } from "@phosphor-icons/react";
 
 export function ButtonBasicDemo() {
   return (
@@ -130,53 +130,52 @@ export function ButtonTitleDemo() {
   );
 }
 
-/** Demonstrates using LinkButton for navigation actions that should look like buttons. */
+/** Pass `href` to render a link that looks like a button. */
 export function ButtonLinkAsButtonDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <LinkButton href="/components/link" variant="secondary">
+      <Button href="/components/link" variant="secondary">
         Read Link docs
-      </LinkButton>
-      <LinkButton
+      </Button>
+      <Button
         href="https://developers.cloudflare.com"
         variant="ghost"
-        icon={ArrowSquareOutIcon}
-        external
+        target="_blank"
       >
         Cloudflare Docs
-      </LinkButton>
+      </Button>
     </div>
   );
 }
 
-/** Demonstrates a title tooltip on an enabled LinkButton. */
+/** Demonstrates a title tooltip on a link Button. */
 export function ButtonLinkTooltipDemo() {
   return (
-    <LinkButton
+    <Button
       href="/components/link"
       variant="secondary"
       title="Opens the Link component docs"
     >
       Read Link docs
-    </LinkButton>
+    </Button>
   );
 }
 
-/** Demonstrates the disabled LinkButton, including a title tooltip explaining why. */
+/** Demonstrates a disabled link Button, including a title tooltip explaining why. */
 export function ButtonDisabledLinkDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <LinkButton href="/components/link" variant="secondary" disabled>
+      <Button href="/components/link" variant="secondary" disabled>
         Disabled link
-      </LinkButton>
-      <LinkButton
+      </Button>
+      <Button
         href="/components/link"
         variant="secondary"
         disabled
         title="You need edit access to continue"
       >
         Disabled with tooltip
-      </LinkButton>
+      </Button>
     </div>
   );
 }
