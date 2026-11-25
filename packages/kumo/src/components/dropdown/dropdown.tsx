@@ -2,7 +2,7 @@ import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { ResolvedLink } from "../../utils/link-provider";
+import { useLink } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import {
   usePortalContainer,
@@ -323,11 +323,6 @@ const DropdownMenuItem = React.forwardRef<
     inset?: boolean;
     icon?: Icon | React.ReactNode;
     selected?: boolean;
-    /**
-     * @deprecated Use `DropdownMenu.LinkItem` instead for navigation links.
-     * This prop will be removed in a future major version.
-     */
-    href?: string;
     variant?: "default" | "danger";
   }
 >(
@@ -339,7 +334,6 @@ const DropdownMenuItem = React.forwardRef<
       children,
       selected,
       render,
-      href,
       variant = "default",
       ...props
     },
@@ -361,45 +355,6 @@ const DropdownMenuItem = React.forwardRef<
       [IconComponent, children, selected],
     );
 
-    // Legacy href support (deprecated)
-    const linkContent = React.useMemo(() => {
-      if (!href) return undefined;
-
-      // Matches http://, https://, or protocol-relative //
-      const isExternal = /^(https?:)?\/\//.test(href);
-      const styles = cn(
-        "flex items-center gap-2",
-        variant === "danger" &&
-          "text-kumo-danger data-highlighted:bg-kumo-danger/5 data-highlighted:text-kumo-danger",
-      );
-      if (isExternal) {
-        return (
-          <a
-            className={cn(styles, "w-full text-inherit! no-underline!")}
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {innerContent}
-          </a>
-        );
-      }
-      return (
-        <ResolvedLink
-          className={cn(styles, "w-full text-inherit! no-underline!")}
-          href={href}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {innerContent}
-        </ResolvedLink>
-      );
-    }, [href, innerContent, variant]);
-
-    // When href is provided, use linkContent as render prop
-    // When render prop is provided, caller controls children rendering
-    const useRenderProp = href || render;
-
     return (
       <DropdownMenuPrimitive.Item
         ref={ref}
@@ -411,10 +366,10 @@ const DropdownMenuItem = React.forwardRef<
           dropdownVariants({ variant }),
           className,
         )}
-        render={href ? linkContent : render}
+        render={render}
         {...props}
       >
-        {useRenderProp ? undefined : innerContent}
+        {render ? undefined : innerContent}
       </DropdownMenuPrimitive.Item>
     );
   },
@@ -425,8 +380,9 @@ DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 /**
  * DropdownMenuLinkItem — a menu item that navigates to a URL.
  *
- * Use this instead of `DropdownMenu.Item` with `href` for navigation links.
- * Provides full control over link attributes like `target` and `rel`.
+ * Resolves `href` through `LinkProvider` like `Link`: internal routes render
+ * your router's link and everything else renders an `<a>`. Items that open in
+ * a new tab show an icon and announce it to screen readers.
  *
  * @example
  * ```tsx
@@ -448,10 +404,25 @@ DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
  */
 const DropdownMenuLinkItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.LinkItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.LinkItem> & {
+  Omit<
+    React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.LinkItem>,
+    "render"
+  > & {
     inset?: boolean;
     icon?: Icon | React.ReactNode;
     variant?: "default" | "danger";
+    /**
+     * Show the visible new-tab icon. The screen-reader announcement is always
+     * included when the link opens in a new tab.
+     * @default true
+     */
+    newTabIcon?: boolean;
+    /**
+     * Close the menu when the item is clicked. Internal links route without a
+     * page load, so the menu has to close itself.
+     * @default true
+     */
+    closeOnClick?: boolean;
   }
 >(
   (
@@ -461,13 +432,34 @@ const DropdownMenuLinkItem = React.forwardRef<
       icon: IconComponent,
       children,
       variant = "default",
+      href,
+      target,
+      rel,
+      download,
+      newTabIcon,
+      closeOnClick = true,
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
       ...props
     },
     ref,
   ) => {
+    const { Component, linkProps, newTabCue } = useLink({
+      href,
+      target,
+      rel,
+      download,
+      newTabIcon,
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
+    });
+
     return (
       <DropdownMenuPrimitive.LinkItem
         ref={ref}
+        render={<Component />}
+        {...linkProps}
+        closeOnClick={closeOnClick}
         data-kumo-component="DropdownMenu"
         data-kumo-part="link-item"
         className={cn(
@@ -481,6 +473,7 @@ const DropdownMenuLinkItem = React.forwardRef<
       >
         {IconComponent && renderIconNode(IconComponent)}
         {children}
+        {newTabCue}
       </DropdownMenuPrimitive.LinkItem>
     );
   },

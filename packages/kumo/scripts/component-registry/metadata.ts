@@ -481,12 +481,14 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
     },
     target: {
       type: "string",
-      description: 'Link target attribute (e.g. "_blank" for new tab).',
-    },
-    render: {
-      type: "ReactElement | ((props, state) => ReactElement)",
       description:
-        "Custom element to render as the link. Use to integrate with framework routers (e.g. Next.js Link).",
+        'Overrides the LinkProvider new-tab policy. "_blank" opens a new tab; "_self" keeps the current tab.',
+    },
+    newTabIcon: {
+      type: "boolean",
+      description:
+        "Shows the new-tab icon when the item opens in a new tab. The screen-reader announcement is always included.",
+      default: "true",
     },
   },
   "DropdownMenu.Content": {

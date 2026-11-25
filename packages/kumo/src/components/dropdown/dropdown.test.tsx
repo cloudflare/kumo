@@ -1,8 +1,9 @@
-import { version } from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vite-plus/test";
+import { forwardRef, version } from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { CopyIcon, GearIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "./dropdown";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 function renderMenu(children: React.ReactNode) {
   return render(
@@ -237,5 +238,100 @@ describe("DropdownMenu", () => {
       expect(popup.className).toContain("bg-kumo-control");
       expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
     });
+  });
+});
+
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLink(props, ref) {
+    // oxlint-disable-next-line anchor-has-content
+    return <a ref={ref} data-router="" {...props} />;
+  },
+);
+
+describe("DropdownMenu.LinkItem with LinkProvider", () => {
+  it("renders internal hrefs through the router with href", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <DropdownMenu open>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.LinkItem href="/settings">
+              Settings
+            </DropdownMenu.LinkItem>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByText("Settings").closest("a");
+    expect(link?.hasAttribute("data-router")).toBe(true);
+    expect(link?.getAttribute("href")).toBe("/settings");
+    expect(link?.getAttribute("data-kumo-part")).toBe("link-item");
+  });
+
+  it("applies the new-tab policy to external hrefs", () => {
+    render(
+      <LinkProvider router={RouterLink} externalLinks="new-tab">
+        <DropdownMenu open>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.LinkItem href="https://developers.cloudflare.com">
+              Docs
+            </DropdownMenu.LinkItem>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByText("Docs").closest("a");
+    expect(link?.hasAttribute("data-router")).toBe(false);
+    expect(link?.getAttribute("target")).toBe("_blank");
+    expect(link?.getAttribute("rel")).toBe("noopener");
+    expect(link?.textContent).toContain("(opens in a new tab)");
+  });
+
+  it("closes the menu when a link item is clicked", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <LinkProvider router={RouterLink}>
+        <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.LinkItem
+              href="/settings"
+              onClick={(event) => event.preventDefault()}
+            >
+              Settings
+            </DropdownMenu.LinkItem>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </LinkProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Settings" }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false, expect.anything());
+  });
+
+  it("keeps the menu open when closeOnClick is false", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
+        <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.LinkItem
+            href="/settings"
+            closeOnClick={false}
+            onClick={(event) => event.preventDefault()}
+          >
+            Settings
+          </DropdownMenu.LinkItem>
+        </DropdownMenu.Content>
+      </DropdownMenu>,
+    );
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Settings" }));
+
+    expect(onOpenChange).not.toHaveBeenCalled();
   });
 });

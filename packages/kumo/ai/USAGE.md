@@ -45,7 +45,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Combobox`         | Input      | Autocomplete input with dropdown      | `items`, `value`, `onValueChange`, `multiple`, `label`                                                                         |
 | `CommandPalette`   | Navigation | Spotlight-style search overlay        | `.Root`, `.Input`, `.List`, `.Item`, `.ResultItem`                                                                             |
 | `Dialog`           | Overlay    | Modal dialog with backdrop            | `size`: sm, base, lg, xl; uses `.Root`, `.Trigger`, `.Title`, `.Close`                                                         |
-| `DropdownMenu`     | Overlay    | Context/action menu                   | `.Trigger`, `.Content`, `.Item`; item `variant`: default, danger                                                               |
+| `DropdownMenu`     | Overlay    | Context/action menu                   | `.Trigger`, `.Content`, `.Item`, `.LinkItem`; item `variant`: default, danger                                                  |
 | `Empty`            | Display    | Empty state placeholder               | `icon`, `title`, `description`, `commandLine`, `contents`                                                                      |
 | `Field`            | Input      | Form field wrapper with label/error   | `label`, `description`, `error`, `required`, `labelTooltip`                                                                    |
 | `Grid`             | Layout     | Responsive CSS grid                   | `variant`: 2up, side-by-side, 2-1, 1-2, 1-3up, 3up, 4up, 1-2-4up; `gap`: none, sm, base, lg                                    |
