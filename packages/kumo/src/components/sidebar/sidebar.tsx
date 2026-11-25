@@ -17,7 +17,7 @@ import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
-import { useLinkComponent } from "../../utils/link-provider";
+import { ResolvedLink } from "../../utils/link-provider";
 import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -1427,6 +1427,12 @@ export interface SidebarMenuButtonProps extends Omit<
   href?: string;
   /** Link target — only meaningful when `href` is provided. */
   target?: React.HTMLAttributeAnchorTarget;
+  /**
+   * Show the visible new-tab icon when the link opens in a new tab. The
+   * screen-reader announcement is always included.
+   * @default true
+   */
+  newTabIcon?: boolean;
   tooltip?: string;
   /** Anchor id for `useSidebar().scrollToItem(id)`. */
   itemId?: string;
@@ -1468,6 +1474,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       size = "base",
       href,
       target,
+      newTabIcon,
       tooltip,
       itemId,
       children,
@@ -1476,7 +1483,6 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     ref,
   ) => {
     const { state, peekable, registerItem } = useSidebar();
-    const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
 
     const registerAutoWrap = useCallback(
@@ -1568,13 +1574,13 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     if (href) {
       button = (
-        <LinkComponent
+        <ResolvedLink
           ref={registerInteractive}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           className={cn(buttonClasses, "no-underline!")}
           href={href}
-          to={href}
           target={target}
+          newTabIcon={newTabIcon}
           data-active={active || undefined}
           data-sidebar="menu-button"
           data-sidebar-item-id={itemIdOnButton}
@@ -1583,7 +1589,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           data-size={size}
         >
           {content}
-        </LinkComponent>
+        </ResolvedLink>
       );
     } else {
       button = (
@@ -1757,6 +1763,12 @@ export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"but
   href?: string;
   /** Link target — only meaningful when `href` is provided. */
   target?: React.HTMLAttributeAnchorTarget;
+  /**
+   * Show the visible new-tab icon when the link opens in a new tab. The
+   * screen-reader announcement is always included.
+   * @default true
+   */
+  newTabIcon?: boolean;
 }
 
 /**
@@ -1776,79 +1788,83 @@ export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"but
 const SidebarMenuSubButton = forwardRef<
   HTMLButtonElement,
   SidebarMenuSubButtonProps
->(({ className, active = false, href, target, children, ...props }, ref) => {
-  const LinkComponent = useLinkComponent();
-  const isInsideMenuSubItem = useContext(MenuSubItemContext);
+>(
+  (
+    { className, active = false, href, target, newTabIcon, children, ...props },
+    ref,
+  ) => {
+    const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
-  const buttonClasses = cn(
-    "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-sm font-medium outline-none",
-    "before:absolute before:inset-x-0 before:-inset-y-px",
-    "text-kumo-default transition-[color] duration-150",
-    !active && "hover:bg-(--sidebar-active-bg)",
-    active && "bg-(--sidebar-active-bg)",
-    "focus:outline-hidden focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
-    className,
-  );
-
-  const content = (
-    <span className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden text-left">
-      {React.Children.map(children, (child) =>
-        typeof child === "string" || typeof child === "number" ? (
-          <span className="truncate">{child}</span>
-        ) : (
-          child
-        ),
-      )}
-    </span>
-  );
-
-  let button: React.ReactNode;
-
-  if (href) {
-    button = (
-      <LinkComponent
-        ref={ref as React.Ref<HTMLAnchorElement>}
-        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-        className={cn(buttonClasses, "no-underline!")}
-        href={href}
-        to={href}
-        target={target}
-        data-active={active || undefined}
-        data-sidebar="menu-sub-button"
-        data-kumo-component="Sidebar"
-        data-kumo-part="menu-sub-button-link"
-      >
-        {content}
-      </LinkComponent>
+    const buttonClasses = cn(
+      "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-sm font-medium outline-none",
+      "before:absolute before:inset-x-0 before:-inset-y-px",
+      "text-kumo-default transition-[color] duration-150",
+      !active && "hover:bg-(--sidebar-active-bg)",
+      active && "bg-(--sidebar-active-bg)",
+      "focus:outline-hidden focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
+      className,
     );
-  } else {
-    button = (
-      <button
-        ref={ref}
-        type="button"
-        className={buttonClasses}
-        data-active={active || undefined}
-        data-sidebar="menu-sub-button"
-        data-kumo-component="Sidebar"
-        data-kumo-part="menu-sub-button"
-        {...props}
-      >
-        {content}
-      </button>
-    );
-  }
 
-  // Auto-wrap in <li> when not already inside a MenuSubItem
-  if (!isInsideMenuSubItem) {
-    return (
-      <li data-sidebar="menu-sub-item" className="relative">
-        {button}
-      </li>
+    const content = (
+      <span className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden text-left">
+        {React.Children.map(children, (child) =>
+          typeof child === "string" || typeof child === "number" ? (
+            <span className="truncate">{child}</span>
+          ) : (
+            child
+          ),
+        )}
+      </span>
     );
-  }
 
-  return button;
-});
+    let button: React.ReactNode;
+
+    if (href) {
+      button = (
+        <ResolvedLink
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+          className={cn(buttonClasses, "no-underline!")}
+          href={href}
+          target={target}
+          newTabIcon={newTabIcon}
+          data-active={active || undefined}
+          data-sidebar="menu-sub-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-sub-button-link"
+        >
+          {content}
+        </ResolvedLink>
+      );
+    } else {
+      button = (
+        <button
+          ref={ref}
+          type="button"
+          className={buttonClasses}
+          data-active={active || undefined}
+          data-sidebar="menu-sub-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-sub-button"
+          {...props}
+        >
+          {content}
+        </button>
+      );
+    }
+
+    // Auto-wrap in <li> when not already inside a MenuSubItem
+    if (!isInsideMenuSubItem) {
+      return (
+        <li data-sidebar="menu-sub-item" className="relative">
+          {button}
+        </li>
+      );
+    }
+
+    return button;
+  },
+);
 
 SidebarMenuSubButton.displayName = "Sidebar.MenuSubButton";
 

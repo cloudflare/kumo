@@ -1,7 +1,7 @@
 ---
 layout: ~/layouts/MdxDocLayout.astro
 title: "Link"
-description: "A styled anchor component for inline text links with multiple variants and composition support."
+description: "A styled text link that routes internal URLs through your app's router and announces links that open in a new tab."
 sourceFile: "components/link"
 ---
 
@@ -12,7 +12,8 @@ import {
   LinkInParagraphDemo,
   LinkExternalDemo,
   LinkCurrentVariantDemo,
-  LinkRenderDemo,
+  LinkNewTabPolicyDemo,
+  LinkUseLinkDemo,
 } from "~/components/demos/LinkDemo";
 
 {/* Hero Demo */}
@@ -67,94 +68,160 @@ export default function Example() {
 }
 ```
 
-### External Links
+### Opening links in a new tab
 
 <p>
-  Use the `Link.ExternalIcon` subcomponent to indicate links that open in a new
-  tab.
+  Set `target="_blank"` to open a link in a new tab. Kumo adds
+  `rel="noopener"` (keeping any `rel` you pass), a visible icon, and a screen-reader announcement
+  such as "Visit Cloudflare (opens in a new tab)". Don't add the icon or the
+  announcement yourself. A `rel` that already has `noopener`, `noreferrer`, or
+  `opener` is left as you wrote it.
 </p>
 
 ```tsx
-import { Link } from "@cloudflare/kumo";
-
-export default function Example() {
-  return (
-    <Link
-      href="https://cloudflare.com"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Visit Cloudflare <Link.ExternalIcon />
-    </Link>
-  );
-}
+<Link href="https://cloudflare.com" target="_blank">
+  Visit Cloudflare
+</Link>
 ```
 
 ### Framework Integration (LinkProvider)
 
 <p>
-  For app-wide router integration, configure a `LinkProvider` at your app root.
-  Your wrapper component receives `href` and is responsible for bridging to your
-  router's API. This lets engineers use `<Link href="...">` everywhere without
-  thinking about routing internals.
+  Configure a `LinkProvider` once at your app root. Call sites then only need
+  an `href`. Kumo resolves each link before rendering: internal routes render
+  your router's link component, and everything else (other origins, `mailto:`,
+  `tel:`, downloads, and in-page fragments like `#section`) renders a plain
+  `&lt;a&gt;`.
 </p>
 
 ```tsx
 import { forwardRef } from "react";
-import { LinkProvider } from "@cloudflare/kumo";
-import { Link as RouterLink } from "react-router-dom";
+import { LinkProvider, type RouterLinkProps } from "@cloudflare/kumo";
+import { Link as ReactRouterLink } from "react-router-dom";
 
-// Your app's wrapper maps href to the router's navigation prop
-// and handles external URLs with a plain <a>
-const AppLink = forwardRef(({ href, to, ...rest }, ref) => {
-  const destination = href ?? to;
-  const isExternal =
-    destination?.startsWith("http") &&
-    new URL(destination).origin !== window.location.origin;
+// Receives internal links only. Map href to the router's destination prop.
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  ({ href, ...props }, ref) => (
+    <ReactRouterLink ref={ref} to={href} {...props} />
+  ),
+);
+RouterLink.displayName = "RouterLink";
 
-  if (isExternal) {
-    return <a ref={ref} href={destination} {...rest} />;
-  }
-  return <RouterLink ref={ref} to={destination} {...rest} />;
-});
-
-// Wrap your app once
 export function App() {
   return (
-    <LinkProvider component={AppLink}>
-      {/* All <Link href="..."> calls go through AppLink */}
+    <LinkProvider router={RouterLink}>
       <YourApp />
     </LinkProvider>
   );
 }
 ```
 
-### Composition with render prop
+<p>
+  Define the router component at module level, as above. A component created
+  inside another component's render is a new type on every render, so every
+  internal link remounts and loses focus.
+</p>
 
 <p>
-  For exceptional cases where you need direct control over the rendered element,
-  use the `render` prop. This bypasses the `LinkProvider` entirely — all other
-  props (`href`, `target`, `className`, etc.) are merged onto the provided element
-  automatically.
+  Pass your router's plain link component, not a navigation link that marks
+  itself active (such as React Router's `NavLink`). Every Kumo link goes
+  through the router, so an active-state link can mark a parent breadcrumb as
+  the current page. For navigation state, use the component's own prop, such
+  as `Sidebar.MenuButton`'s `active`.
+</p>
+
+<p>
+  Render one `LinkProvider` near the root of your app. A nested
+  `LinkProvider` doesn't inherit the outer one's settings: it starts from the
+  defaults, so set every prop it needs.
+</p>
+
+<p>
+  The provider also holds app-wide navigation policy:
 </p>
 
 ```tsx
-import { Link } from "@cloudflare/kumo";
-import { Link as RouterLink } from "react-router-dom";
+// Paths under /admin/ belong to another app on the same origin
+const isClientRoute = (url: URL) => !url.pathname.startsWith("/admin/");
 
-export default function Example() {
+<LinkProvider
+  router={RouterLink}
+  externalLinks="new-tab"
+  isClientRoute={isClientRoute}
+  origin={window.location.origin}
+>
+  <App />
+</LinkProvider>;
+```
+
+<ul class="ml-4 list-disc space-y-1">
+  <li>
+    `externalLinks`: `"same-tab"` (default) or `"new-tab"` for links to other
+    origins. Opening new tabs can be disorienting, so only opt in when your app
+    needs it.
+  </li>
+  <li>
+    `isClientRoute`: return `false` to send an internal URL to a plain
+    `&lt;a&gt;` instead of the router. Define it outside the component (or
+    with `useCallback`) so it stays stable between renders.
+  </li>
+  <li>
+    `origin`: lets Kumo treat absolute URLs on your own origin as internal
+    routes. Use the origin the app is actually running on, not a hardcoded
+    production URL; otherwise absolute links on staging, preview, or local
+    hosts count as external. Client-only apps can pass
+    `window.location.origin`. In server-rendered apps, pass the request's
+    origin on the server and the same value on the client; don't read
+    `window.location` while rendering.
+  </li>
+</ul>
+
+<p>
+  A link's own `target` always wins. `target="_blank"` opens any link in a new
+  tab, including an internal path, and `target="_self"` keeps it in the current
+  tab even when the provider opens external links in new tabs. Links with a
+  `target` other than `_self` don't use client-side routing.
+</p>
+
+### Custom link UI (ResolvedLink and useLink)
+
+<p>
+  For cards or other custom links, use `ResolvedLink`. It's an unstyled link
+  that resolves through `LinkProvider` like `Link`, including the new-tab icon
+  and announcement.
+</p>
+
+```tsx
+import { ResolvedLink } from "@cloudflare/kumo";
+
+function ProjectCard({ href, name }: { href: string; name: string }) {
   return (
-    <>
-      {/* Force a specific router link (bypasses LinkProvider) */}
-      <Link render={<RouterLink to="/dashboard" />} variant="inline">
-        Dashboard
-      </Link>
+    <ResolvedLink href={href} className="block rounded-lg bg-kumo-elevated p-4">
+      {name}
+    </ResolvedLink>
+  );
+}
+```
 
-      {/* Force a plain anchor (bypasses LinkProvider) */}
-      <Link render={<a />} href="https://example.com" target="_blank" rel="noopener noreferrer">
-        External Site <Link.ExternalIcon />
-      </Link>
-    </>
+<p>
+  When another component renders the element, such as a Base UI `render`
+  prop, use `useLink`. It returns the element to render, the resolved anchor
+  props, and the new-tab cue. Render all three: the cue is the visually hidden
+  announcement, and leaving it out hides the new tab from screen readers. The
+  new-tab icon is drawn by Kumo's CSS from `linkProps`, so keep it as the last
+  thing in the element.
+</p>
+
+```tsx
+import { useLink } from "@cloudflare/kumo";
+
+function ProjectCard({ href, name }: { href: string; name: string }) {
+  const { Component, linkProps, newTabCue } = useLink({ href });
+  return (
+    <Component {...linkProps} className="block rounded-lg bg-kumo-elevated p-4">
+      {name}
+      {newTabCue}
+    </Component>
   );
 }
 ```
@@ -174,11 +241,10 @@ export default function Example() {
   <LinkInParagraphDemo client:visible />
 </ComponentExample>
 
-### External Link with Icon
+### Opening in a new tab
 
 <p>
-  Use `Link.ExternalIcon` to visually indicate links that navigate away from
-  your site.
+  Links that open in a new tab show an icon and announce it to screen readers.
 </p>
 <ComponentExample demo="LinkExternalDemo">
   <LinkExternalDemo client:visible />
@@ -194,14 +260,23 @@ export default function Example() {
   <LinkCurrentVariantDemo client:visible />
 </ComponentExample>
 
-### Composition with render prop
+### New-tab policy
 
 <p>
-  The `render` prop lets you compose Link styling onto any element, enabling
-  integration with framework routing components.
+  With `externalLinks="new-tab"`, links to other origins open in a new tab.
+  Internal links and links with `target="_self"` stay in the current tab.
 </p>
-<ComponentExample demo="LinkRenderDemo">
-  <LinkRenderDemo client:visible />
+<ComponentExample demo="LinkNewTabPolicyDemo">
+  <LinkNewTabPolicyDemo client:visible />
+</ComponentExample>
+
+### Custom link UI
+
+<p>
+  `useLink` applies the same resolution to custom elements.
+</p>
+<ComponentExample demo="LinkUseLinkDemo">
+  <LinkUseLinkDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>
@@ -235,30 +310,30 @@ export default function Example() {
         <td class="px-4 py-3 text-xs">Visual style variant</td>
       </tr>
       <tr class="border-b border-kumo-hairline">
-        <td class="px-4 py-3 font-mono text-xs">render</td>
-        <td class="px-4 py-3 font-mono text-xs">ReactElement</td>
-        <td class="px-4 py-3 font-mono text-xs">-</td>
-        <td class="px-4 py-3 text-xs">
-          Element to render with Link props merged onto it
-        </td>
-      </tr>
-      <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono text-xs">href</td>
         <td class="px-4 py-3 font-mono text-xs">string</td>
         <td class="px-4 py-3 font-mono text-xs">-</td>
         <td class="px-4 py-3 text-xs">
-          Link destination URL. Use this for all links — both internal and
-          external. Configure a `LinkProvider` to bridge `href` to your
-          router.
+          Link destination. Use this for all links, internal and external.
+          `LinkProvider` decides whether it renders through your router.
         </td>
       </tr>
       <tr class="border-b border-kumo-hairline">
-        <td class="px-4 py-3 font-mono text-xs">to</td>
+        <td class="px-4 py-3 font-mono text-xs">target</td>
         <td class="px-4 py-3 font-mono text-xs">string</td>
         <td class="px-4 py-3 font-mono text-xs">-</td>
         <td class="px-4 py-3 text-xs">
-          <strong>Deprecated.</strong> Use `href` instead. This prop will
-          be removed in a future major version.
+          Overrides the provider's new-tab policy. `"_blank"` opens a new tab;
+          `"_self"` keeps the current tab.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">newTabIcon</td>
+        <td class="px-4 py-3 font-mono text-xs">boolean</td>
+        <td class="px-4 py-3 font-mono text-xs">true</td>
+        <td class="px-4 py-3 text-xs">
+          Shows the new-tab icon. The screen-reader announcement is always
+          included.
         </td>
       </tr>
       <tr class="border-b border-kumo-hairline">
@@ -312,19 +387,6 @@ export default function Example() {
   </table>
 </div>
 
-### Link.ExternalIcon
-
-<p>
-  SVG icon component to indicate external links. Accepts all SVG element
-  attributes.
-</p>
-
-```tsx
-<Link href="https://example.com" target="_blank" rel="noopener noreferrer">
-  External Site <Link.ExternalIcon />
-</Link>
-```
-
 </ComponentSection>
 
 {/* Design Guidelines */}
@@ -354,15 +416,17 @@ export default function Example() {
     </div>
     <div>
 
-      ### External Link Indicators
+      ### New Tabs
 
       <ul class="ml-4 list-disc space-y-1">
-        <li>Always use `Link.ExternalIcon` for links that open in new tabs</li>
+        <li>Prefer the current tab. New tabs can be disorienting.</li>
         <li>
-          Set `target="_blank"` and `rel="noopener noreferrer"` for security
+          Set new-tab policy once with `externalLinks` on `LinkProvider`, not
+          per link
         </li>
         <li>
-          The icon provides a visual cue that users will leave the current site
+          Don't add icons, `rel`, or "(opens in a new tab)" text yourself; Kumo
+          adds them
         </li>
       </ul>
     </div>
@@ -372,23 +436,14 @@ export default function Example() {
 
       <ul class="ml-4 list-disc space-y-1">
         <li>
-          Configure a `LinkProvider` at your app root to integrate with your
-          client-side router
+          Pass your router's link component to `LinkProvider` as `router`
         </li>
         <li>
-          Your wrapper receives `href` and maps it to your router's
-          navigation prop (e.g. React Router's `to`)
+          The router component only receives internal links; map `href` to its
+          destination prop (e.g. React Router's `to`)
         </li>
         <li>
-          The wrapper should handle external URLs by rendering a plain
-          `&lt;a&gt;` instead of routing them
-        </li>
-        <li>
-          Use the `render` prop as an escape hatch for exceptional cases
-          that need direct control over the rendered element
-        </li>
-        <li>
-          The `to` prop is deprecated — use `href` for all link destinations
+          Use `ResolvedLink` (or `useLink`) for custom link UI such as cards
         </li>
       </ul>
     </div>
@@ -399,8 +454,12 @@ export default function Example() {
       <ul class="ml-4 list-disc space-y-1">
         <li>Links are keyboard focusable by default</li>
         <li>
-          The external icon has `aria-hidden="true"` - add descriptive text for
-          screen readers
+          Links that open in a new tab announce it, whether they're named by
+          their content, `aria-label`, or `aria-labelledby`
+        </li>
+        <li>
+          Translate the announcement with `KumoLocaleProvider`
+          (`link.opensInNewTab`)
         </li>
         <li>Ensure sufficient color contrast for all variants</li>
         <li>Use descriptive link text (avoid "click here")</li>

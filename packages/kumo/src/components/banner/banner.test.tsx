@@ -3,10 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Banner, bannerVariants } from "./banner";
 import { Link } from "../link/link";
-import {
-  LinkProvider,
-  type LinkComponentProps,
-} from "../../utils/link-provider";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 describe("Banner", () => {
   it("supports secondary variant", () => {
@@ -117,7 +114,9 @@ describe("Banner", () => {
       />,
     );
 
-    const link = screen.getByRole("link", { name: "View docs" });
+    const link = screen.getByRole("link", {
+      name: "View docs (opens in a new tab)",
+    });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
     expect(link.className).toContain("ring-kumo-danger/50");
@@ -125,13 +124,13 @@ describe("Banner", () => {
   });
 
   it("routes link actions through LinkProvider", () => {
-    const AppLink = forwardRef<HTMLAnchorElement, LinkComponentProps>(
-      function AppLink({ to: _to, ...props }, ref) {
+    const AppLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+      function AppLink(props, ref) {
         return <a ref={ref} data-app-link="" {...props} />;
       },
     );
     render(
-      <LinkProvider component={AppLink}>
+      <LinkProvider router={AppLink}>
         <Banner.Action href="/billing">Manage payments</Banner.Action>
       </LinkProvider>,
     );

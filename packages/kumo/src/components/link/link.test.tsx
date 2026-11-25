@@ -1,24 +1,35 @@
-import { describe, it, expect, vi, afterEach } from "vite-plus/test";
-import { createElement, forwardRef } from "react";
+import { describe, it, expect } from "vite-plus/test";
+import { createRef, forwardRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { Link, KUMO_LINK_VARIANTS, linkVariants } from "./link";
 import { Badge } from "../badge/badge";
-import { LinkProvider } from "../../utils/link-provider";
+import {
+  LinkProvider,
+  type LinkProviderProps,
+  type RouterLinkProps,
+} from "../../utils/link-provider";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 
-describe("Link", () => {
-  it("should be defined", () => {
-    expect(Link).toBeDefined();
-  });
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLink({ href, ...props }, ref) {
+    // oxlint-disable-next-line anchor-has-content
+    return <a ref={ref} href={href} data-router="" {...props} />;
+  },
+);
 
-  it("should render with default props", () => {
-    const props = {
-      href: "#",
-      children: "Learn more",
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
-  });
+function renderWithProvider(
+  ui: React.ReactNode,
+  props: Omit<LinkProviderProps, "children"> = {},
+) {
+  return render(
+    <LinkProvider router={RouterLink} {...props}>
+      {ui}
+    </LinkProvider>,
+  );
+}
 
-  it("should apply inline variant classes", () => {
+describe("Link variants", () => {
+  it("applies inline variant classes", () => {
     expect(KUMO_LINK_VARIANTS.variant.inline.classes).toContain(
       "text-kumo-link",
     );
@@ -26,363 +37,296 @@ describe("Link", () => {
     expect(KUMO_LINK_VARIANTS.variant.inline.classes).toContain("link-current");
   });
 
-  it("should apply current variant classes", () => {
+  it("applies current variant classes", () => {
     expect(KUMO_LINK_VARIANTS.variant.current.classes).toContain(
       "text-current",
     );
     expect(KUMO_LINK_VARIANTS.variant.current.classes).toContain("underline");
-    expect(KUMO_LINK_VARIANTS.variant.current.classes).toContain(
-      "link-current",
-    );
   });
 
-  it("should apply plain variant classes", () => {
-    expect(KUMO_LINK_VARIANTS.variant.plain.classes).toContain(
-      "text-kumo-link",
-    );
+  it("applies plain variant classes", () => {
     expect(KUMO_LINK_VARIANTS.variant.plain.classes).not.toContain("underline");
   });
 
-  it("should render with inline variant", () => {
-    const props = {
-      href: "#",
-      variant: "inline" as const,
-      children: "Inline link",
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
+  it("generates classes via linkVariants and defaults to inline", () => {
+    expect(linkVariants({ variant: "current" })).toContain("text-current");
+    expect(linkVariants()).toContain("underline");
   });
 
-  it("should render with current variant", () => {
-    const props = {
-      href: "#",
-      variant: "current" as const,
-      children: "Current link",
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
-  });
-
-  it("should render with plain variant", () => {
-    const props = {
-      href: "#",
-      variant: "plain" as const,
-      children: "Plain link",
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
-  });
-
-  it("should accept className prop", () => {
-    const props = {
-      href: "#",
-      className: "custom-class",
-      children: "Custom link",
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
-  });
-
-  it("matches the pill shape of a direct Badge child", () => {
+  it("merges className and keeps the Badge pill shape", () => {
     render(
-      <Link href="/changelog" variant="plain">
+      <Link href="/changelog" variant="plain" className="custom-class">
         <Badge variant="outline">View changelog</Badge>
       </Link>,
     );
 
-    expect(screen.getByRole("link").classList).toContain(
+    const link = screen.getByRole("link");
+    expect(link.classList).toContain("custom-class");
+    expect(link.classList).toContain(
       "has-[>[data-kumo-component=Badge]]:rounded-full",
     );
   });
 
-  it("should generate variant classes via linkVariants helper", () => {
-    expect(linkVariants({ variant: "inline" })).toContain("text-kumo-link");
-    expect(linkVariants({ variant: "current" })).toContain("text-current");
-    expect(linkVariants({ variant: "plain" })).toContain("text-kumo-link");
-  });
-
-  it("should default to inline variant", () => {
-    expect(linkVariants()).toContain("text-kumo-link");
-    expect(linkVariants()).toContain("underline");
-  });
-
-  it("should have ExternalIcon subcomponent", () => {
-    expect(Link.ExternalIcon).toBeDefined();
-  });
-
-  it("should render with ExternalIcon as child", () => {
-    const props = {
-      href: "https://cloudflare.com",
-      target: "_blank",
-      rel: "noopener noreferrer",
-      children: [
-        "Visit Cloudflare ",
-        createElement(Link.ExternalIcon, { key: "icon" }),
-      ],
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
-  });
-
-  it("should render with render prop for composition", () => {
-    const customAnchor = createElement("a", { href: "/dashboard" });
-    const props = {
-      render: customAnchor,
-      variant: "inline" as const,
-      children: "Dashboard",
-    };
-    expect(() => createElement(Link, props)).not.toThrow();
+  it("forwards refs to the anchor", () => {
+    const ref = createRef<HTMLAnchorElement>();
+    render(
+      <Link ref={ref} href="/docs">
+        Docs
+      </Link>,
+    );
+    expect(ref.current?.tagName).toBe("A");
   });
 });
 
-// ---------------------------------------------------------------------------
-// href behavior — the standard, framework-agnostic prop
-// ---------------------------------------------------------------------------
-describe("Link with href (standard usage)", () => {
-  it("renders an anchor with the correct href", () => {
-    render(<Link href="/docs">Docs</Link>);
-    const anchor = screen.getByRole("link", { name: "Docs" });
-    expect(anchor.getAttribute("href")).toBe("/docs");
+describe("Link without a LinkProvider", () => {
+  it("renders a plain anchor for internal and external URLs", () => {
+    render(
+      <>
+        <Link href="/docs">Docs</Link>
+        <Link href="https://example.com">Example</Link>
+      </>,
+    );
+
+    expect(
+      screen.getByRole("link", { name: "Docs" }).getAttribute("href"),
+    ).toBe("/docs");
+    const external = screen.getByRole("link", { name: "Example" });
+    expect(external.getAttribute("href")).toBe("https://example.com");
+    expect(external.hasAttribute("target")).toBe(false);
+  });
+});
+
+describe("Link routing", () => {
+  it("renders internal paths through the router with href", () => {
+    renderWithProvider(<Link href="/zones?page=2#top">Zones</Link>);
+
+    const link = screen.getByRole("link", { name: "Zones" });
+    expect(link.hasAttribute("data-router")).toBe(true);
+    expect(link.getAttribute("href")).toBe("/zones?page=2#top");
   });
 
-  it("renders external URLs correctly with the default LinkProvider", () => {
+  it("renders external URLs as plain anchors in the same tab by default", () => {
+    renderWithProvider(
+      <Link href="https://developers.cloudflare.com">Docs</Link>,
+    );
+
+    const link = screen.getByRole("link", { name: "Docs" });
+    expect(link.hasAttribute("data-router")).toBe(false);
+    expect(link.hasAttribute("target")).toBe(false);
+  });
+
+  it("renders mailto:, tel:, and download links as plain anchors", () => {
+    renderWithProvider(
+      <>
+        <Link href="mailto:a@example.com">Email</Link>
+        <Link href="tel:+15555555555">Call</Link>
+        <Link href="/report.csv" download>
+          Report
+        </Link>
+      </>,
+    );
+
+    for (const name of ["Email", "Call", "Report"]) {
+      expect(
+        screen.getByRole("link", { name }).hasAttribute("data-router"),
+      ).toBe(false);
+    }
+  });
+
+  it("treats same-origin absolute URLs as internal routes when origin is set", () => {
+    renderWithProvider(
+      <Link href="https://dash.cloudflare.com/zones?x=1">Zones</Link>,
+      { origin: "https://dash.cloudflare.com" },
+    );
+
+    const link = screen.getByRole("link", { name: "Zones" });
+    expect(link.hasAttribute("data-router")).toBe(true);
+    expect(link.getAttribute("href")).toBe("/zones?x=1");
+  });
+
+  it("treats absolute URLs as external without origin", () => {
+    renderWithProvider(
+      <Link href="https://dash.cloudflare.com/zones">Zones</Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Zones" }).hasAttribute("data-router"),
+    ).toBe(false);
+  });
+
+  it("sends paths rejected by isClientRoute to a plain anchor", () => {
+    renderWithProvider(
+      <>
+        <Link href="/admin/settings">Admin</Link>
+        <Link href="/zones">Zones</Link>
+      </>,
+      { isClientRoute: (url) => !url.pathname.startsWith("/admin/") },
+    );
+
+    expect(
+      screen.getByRole("link", { name: "Admin" }).hasAttribute("data-router"),
+    ).toBe(false);
+    expect(
+      screen.getByRole("link", { name: "Zones" }).hasAttribute("data-router"),
+    ).toBe(true);
+  });
+
+  it("does not route links with an explicit target other than _self", () => {
+    renderWithProvider(
+      <>
+        <Link href="/zones" target="_blank">
+          New
+        </Link>
+        <Link href="/zones" target="_self">
+          Same
+        </Link>
+      </>,
+    );
+
+    expect(
+      screen
+        .getByRole("link", { name: "New (opens in a new tab)" })
+        .hasAttribute("data-router"),
+    ).toBe(false);
+    expect(
+      screen.getByRole("link", { name: "Same" }).hasAttribute("data-router"),
+    ).toBe(true);
+  });
+});
+
+describe("Link new-tab behaviour", () => {
+  it("opens external links in a new tab with externalLinks='new-tab'", () => {
+    renderWithProvider(
+      <Link href="https://developers.cloudflare.com">Docs</Link>,
+      {
+        externalLinks: "new-tab",
+      },
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener");
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+  });
+
+  it("keeps internal links in the same tab with externalLinks='new-tab'", () => {
+    renderWithProvider(<Link href="/zones">Zones</Link>, {
+      externalLinks: "new-tab",
+    });
+
+    const link = screen.getByRole("link", { name: "Zones" });
+    expect(link.hasAttribute("target")).toBe(false);
+  });
+
+  it("lets target='_self' override the new-tab policy", () => {
+    renderWithProvider(
+      <Link href="https://developers.cloudflare.com" target="_self">
+        Docs
+      </Link>,
+      { externalLinks: "new-tab" },
+    );
+
+    const link = screen.getByRole("link", { name: "Docs" });
+    expect(link.getAttribute("target")).toBe("_self");
+    expect(link.hasAttribute("rel")).toBe(false);
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
+  });
+
+  it("respects an explicit rel", () => {
+    render(
+      <Link href="https://example.com" target="_blank" rel="noopener">
+        Example
+      </Link>,
+    );
+    expect(
+      screen
+        .getByRole("link", { name: "Example (opens in a new tab)" })
+        .getAttribute("rel"),
+    ).toBe("noopener");
+  });
+
+  it("renders inline so the new-tab icon wraps with the last word", () => {
+    render(<Link href="/a">Docs</Link>);
+    expect(screen.getByRole("link").className).not.toMatch(
+      /(^| )inline-flex( |$)/,
+    );
+  });
+
+  it("keeps inline-flex alignment for links that wrap an icon or Badge", () => {
+    render(<Link href="/a">Docs</Link>);
+    const { className } = screen.getByRole("link");
+    expect(className).toContain("has-[>svg]:inline-flex");
+    expect(className).toContain(
+      "has-[>[data-kumo-component=Badge]]:inline-flex",
+    );
+  });
+
+  it("hides the icon with newTabIcon={false} but keeps the announcement", () => {
+    render(
+      <Link href="https://example.com" target="_blank" newTabIcon={false}>
+        Example
+      </Link>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Example (opens in a new tab)",
+    });
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
+  });
+
+  it("appends the announcement to aria-label", () => {
     render(
       <Link
         href="https://example.com"
         target="_blank"
-        rel="noopener noreferrer"
+        aria-label="Documentation"
       >
-        External
+        Docs
       </Link>,
     );
-    const anchor = screen.getByRole("link", { name: "External" });
-    expect(anchor.getAttribute("href")).toBe("https://example.com");
-    expect(anchor.getAttribute("target")).toBe("_blank");
+
+    expect(
+      screen.getByRole("link", { name: "Documentation (opens in a new tab)" }),
+    ).toBeDefined();
   });
 
-  it("passes href through to a custom LinkProvider component", () => {
-    const CustomLink = forwardRef<
-      HTMLAnchorElement,
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
-    >(({ href, ...rest }, ref) => (
-      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
-      <a ref={ref} href={href} data-testid="custom-link" {...rest} />
-    ));
-    CustomLink.displayName = "CustomLink";
-
+  it("appends the announcement to aria-labelledby", () => {
     render(
-      <LinkProvider component={CustomLink}>
-        <Link href="https://example.com">External</Link>
-      </LinkProvider>,
+      <>
+        <h2 id="title">Billing guide</h2>
+        <Link
+          href="https://example.com"
+          target="_blank"
+          aria-labelledby="title"
+        >
+          Read
+        </Link>
+      </>,
     );
 
-    const anchor = screen.getByTestId("custom-link");
-    expect(anchor.getAttribute("href")).toBe("https://example.com");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// LinkProvider — application-layer routing integration
-// ---------------------------------------------------------------------------
-describe("LinkProvider", () => {
-  it("uses the default <a> element when no provider is configured", () => {
-    render(<Link href="/about">About</Link>);
-    const el = screen.getByRole("link", { name: "About" });
-    expect(el.tagName).toBe("A");
-    expect(el.getAttribute("href")).toBe("/about");
+    expect(
+      screen.getByRole("link", { name: "Billing guide (opens in a new tab)" }),
+    ).toBeDefined();
   });
 
-  it("renders the custom component from LinkProvider", () => {
-    const RouterLink = forwardRef<
-      HTMLAnchorElement,
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
-    >(({ href, children, ...rest }, ref) => (
-      <a ref={ref} href={href} data-router="true" {...rest}>
-        {children}
-      </a>
-    ));
-    RouterLink.displayName = "RouterLink";
-
+  it("translates the announcement through KumoLocaleProvider", () => {
     render(
-      <LinkProvider component={RouterLink}>
-        <Link href="/dashboard">Dashboard</Link>
-      </LinkProvider>,
+      <KumoLocaleProvider
+        translations={{
+          link: { opensInNewTab: "(s'ouvre dans un nouvel onglet)" },
+        }}
+      >
+        <Link href="https://example.com" target="_blank">
+          Docs
+        </Link>
+      </KumoLocaleProvider>,
     );
 
-    const anchor = screen.getByRole("link", { name: "Dashboard" });
-    expect(anchor.getAttribute("data-router")).toBe("true");
-    expect(anchor.getAttribute("href")).toBe("/dashboard");
-  });
-
-  it("the custom LinkProvider component receives href for external URLs", () => {
-    /**
-     * This test documents the correct integration pattern: the LinkProvider
-     * component should handle href correctly for both internal and external URLs.
-     * If the consumer's router mishandles external URLs via href, the fix belongs
-     * in the LinkProvider wrapper — not in Kumo's Link component.
-     */
-    const AppLink = forwardRef<
-      HTMLAnchorElement,
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
-    >(({ href, ...rest }, ref) => {
-      // A well-written LinkProvider wrapper detects external URLs
-      // and renders a plain <a> for them.
-      const isExternal = href?.startsWith("http");
-      if (isExternal) {
-        // oxlint-disable-next-line anchor-has-content, control-has-associated-label
-        return <a ref={ref} href={href} {...rest} />;
-      }
-      // Internal URLs get routed via the framework
-      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
-      return <a ref={ref} href={href} data-routed="true" {...rest} />;
-    });
-    AppLink.displayName = "AppLink";
-
-    render(
-      <LinkProvider component={AppLink}>
-        <Link href="https://example.com">External</Link>
-        <Link href="/internal">Internal</Link>
-      </LinkProvider>,
-    );
-
-    const external = screen.getByRole("link", { name: "External" });
-    expect(external.getAttribute("href")).toBe("https://example.com");
-    expect(external.getAttribute("data-routed")).toBeNull();
-
-    const internal = screen.getByRole("link", { name: "Internal" });
-    expect(internal.getAttribute("href")).toBe("/internal");
-    expect(internal.getAttribute("data-routed")).toBe("true");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// render prop — bypasses LinkProvider entirely
-// ---------------------------------------------------------------------------
-describe("Link with render prop", () => {
-  it("bypasses LinkProvider when render is provided", () => {
-    const SpyLink = forwardRef<
-      HTMLAnchorElement,
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
-    >((props, ref) => (
-      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
-      <a ref={ref} data-spy="true" {...props} />
-    ));
-    SpyLink.displayName = "SpyLink";
-
-    render(
-      <LinkProvider component={SpyLink}>
-        {/* oxlint-disable anchor-has-content, control-has-associated-label */}
-        <Link render={<a href="/direct" />}>Direct</Link>
-        {/* oxlint-enable anchor-has-content, control-has-associated-label */}
-      </LinkProvider>,
-    );
-
-    const anchor = screen.getByRole("link", { name: "Direct" });
-    // render prop element is used instead of LinkProvider's component
-    expect(anchor.getAttribute("data-spy")).toBeNull();
-    expect(anchor.getAttribute("href")).toBe("/direct");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// `to` prop deprecation
-// ---------------------------------------------------------------------------
-describe("Link `to` prop deprecation", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("still renders when `to` is used (backwards compatibility)", () => {
-    // Suppress the expected deprecation warning
-    vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    render(<Link to="/legacy">Legacy</Link>);
-    const anchor = screen.getByRole("link", { name: "Legacy" });
-    // DefaultLinkComponent resolves href ?? to, so `to` still works
-    expect(anchor.getAttribute("href")).toBe("/legacy");
-  });
-
-  it("emits a deprecation warning in development when `to` is used", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    render(<Link to="/old-style">Old</Link>);
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("The `to` prop is deprecated"),
-    );
-  });
-
-  it("does not emit a deprecation warning when only `href` is used", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    render(<Link href="/new-style">New</Link>);
-
-    expect(warnSpy).not.toHaveBeenCalled();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Documents the recommended LinkProvider integration pattern
-// ---------------------------------------------------------------------------
-describe("LinkProvider integration patterns", () => {
-  it("a well-written wrapper maps href to the router's navigation prop", () => {
-    /**
-     * The correct pattern: the LinkProvider wrapper receives `href` (the
-     * web-standard prop) and maps it to whatever the router expects.
-     * This keeps Kumo framework-agnostic — routing logic stays in the app.
-     */
-    const AppRouterLink = forwardRef<
-      HTMLAnchorElement,
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
-    >(({ href, to, children, ...rest }, ref) => (
-      <a ref={ref} href={href ?? to} data-routed="true" {...rest}>
-        {children}
-      </a>
-    ));
-    AppRouterLink.displayName = "AppRouterLink";
-
-    render(
-      <LinkProvider component={AppRouterLink}>
-        <Link href="https://example.com">External</Link>
-        <Link href="/internal">Internal</Link>
-      </LinkProvider>,
-    );
-
-    const external = screen.getByRole("link", { name: "External" });
-    expect(external.getAttribute("href")).toBe("https://example.com");
-
-    const internal = screen.getByRole("link", { name: "Internal" });
-    expect(internal.getAttribute("href")).toBe("/internal");
-    expect(internal.getAttribute("data-routed")).toBe("true");
-  });
-
-  it("a wrapper that only reads `to` will not receive the destination from href", () => {
-    /**
-     * This test documents the footgun: if a LinkProvider component only
-     * destructures `to` and ignores `href`, then <Link href="..."> will
-     * not navigate correctly. Router components (e.g. React Router's <Link>)
-     * typically read `to` for navigation and ignore `href`.
-     *
-     * The solution is NOT to add `to` to Kumo's Link API. Instead, the
-     * LinkProvider wrapper must map `href` → `to` at the application layer.
-     */
-    const ToOnlyLink = forwardRef<
-      HTMLAnchorElement,
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
-    >(({ to, children, ...rest }, ref) => (
-      // Simulates a router component that only reads `to` for navigation.
-      // `href` falls through via ...rest here, but a real router component
-      // would not pass unknown props to the DOM — it would be silently lost.
-      <a ref={ref} data-navigated-to={to ?? "none"} {...rest}>
-        {children}
-      </a>
-    ));
-    ToOnlyLink.displayName = "ToOnlyLink";
-
-    render(
-      <LinkProvider component={ToOnlyLink}>
-        <Link href="https://example.com">Test Link</Link>
-      </LinkProvider>,
-    );
-
-    const anchor = screen.getByText("Test Link");
-    // The wrapper never saw the URL via `to` — it was passed as `href`
-    // which the wrapper ignores for navigation purposes.
-    expect(anchor.getAttribute("data-navigated-to")).toBe("none");
+    expect(
+      screen.getByRole("link", {
+        name: "Docs (s'ouvre dans un nouvel onglet)",
+      }),
+    ).toBeDefined();
   });
 });

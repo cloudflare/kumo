@@ -185,4 +185,4 @@ classes: "bg-kumo-elevated hover:bg-kumo-base focus:ring-kumo-hairline disabled:
 - **Discriminated union props**: ButtonWithTextProps vs IconOnlyButtonProps pattern for conditional required props
 - **A11y dev warnings**: Components log console.warn in dev if missing accessible name
 - **Descendants hook**: `flow/use-children.tsx` uses `claimRenderOrder()` and `measurementEpoch` for deterministic connector drawing
-- **LinkProvider**: `utils/link-provider.tsx` abstracts framework-specific links (wrap app with custom Link component)
+- **LinkProvider**: `utils/link-provider.tsx` resolves links (router vs `<a>`, target, rel, new-tab cue). Link-like components render through `ResolvedLink`/`useLink` (both public) and must not infer whether a URL is external. An explicit `target` prop passed through by the caller is fine; the provider applies everything else.

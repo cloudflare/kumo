@@ -12,7 +12,7 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { version } from "react";
+import { forwardRef, version } from "react";
 import { renderToString } from "react-dom/server";
 import { hydrateRoot } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
@@ -46,6 +46,7 @@ import {
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
 } from "./sidebar";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -1922,4 +1923,95 @@ describe("Sidebar scrollToItem", () => {
     expect(readScrollTop(viewportB)).toBe(800);
     expect(readScrollTop(viewportA)).toBe(0);
   });
+});
+
+const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLink(props, ref) {
+    // oxlint-disable-next-line anchor-has-content
+    return <a ref={ref} data-router="" {...props} />;
+  },
+);
+
+describe("Sidebar links with LinkProvider", () => {
+  it("renders menu button links through the router with href", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <TestSidebar defaultOpen>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuButton href="/home">Home</SidebarMenuButton>
+            </SidebarMenu>
+          </SidebarContent>
+        </TestSidebar>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", { name: "Home" });
+    expect(link.hasAttribute("data-router")).toBe(true);
+    expect(link.getAttribute("href")).toBe("/home");
+    expect(link.hasAttribute("to")).toBe(false);
+  });
+
+  it("announces sub-button links that open in a new tab", () => {
+    render(
+      <LinkProvider router={RouterLink}>
+        <TestSidebar defaultOpen>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuSub>
+                <SidebarMenuSubButton
+                  href="https://developers.cloudflare.com"
+                  target="_blank"
+                >
+                  Docs
+                </SidebarMenuSubButton>
+              </SidebarMenuSub>
+            </SidebarMenu>
+          </SidebarContent>
+        </TestSidebar>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.hasAttribute("data-router")).toBe(false);
+    expect(link.getAttribute("rel")).toBe("noopener");
+  });
+
+  it.each([
+    ["MenuButton", SidebarMenuButton],
+    ["MenuSubButton", SidebarMenuSubButton],
+  ] as const)(
+    "%s hides the visible new-tab icon with newTabIcon={false}",
+    (_name, Button) => {
+      render(
+        <TestSidebar defaultOpen>
+          <SidebarContent>
+            <SidebarMenu>
+              <Button href="https://example.com" target="_blank">
+                Shown
+              </Button>
+              <Button
+                href="https://example.com"
+                target="_blank"
+                newTabIcon={false}
+              >
+                Hidden
+              </Button>
+            </SidebarMenu>
+          </SidebarContent>
+        </TestSidebar>,
+      );
+
+      const shown = screen.getByRole("link", {
+        name: "Shown (opens in a new tab)",
+      });
+      const hidden = screen.getByRole("link", {
+        name: "Hidden (opens in a new tab)",
+      });
+      expect(shown.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+      expect(hidden.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
+    },
+  );
 });
