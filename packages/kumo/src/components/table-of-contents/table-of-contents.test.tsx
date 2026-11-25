@@ -1,4 +1,6 @@
+import { forwardRef } from "react";
 import { render, screen } from "@testing-library/react";
+import { LinkProvider, type RouterLinkProps } from "../../utils/link-provider";
 import { describe, it, expect } from "vite-plus/test";
 import { createElement } from "react";
 import {
@@ -245,5 +247,107 @@ describe("TableOfContents", () => {
     expect(button).toBeTruthy();
     const li = button!.parentElement;
     expect(li?.tagName).toBe("LI");
+  });
+});
+
+describe("TableOfContents links with LinkProvider", () => {
+  const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+    function RouterLink(props, ref) {
+      // oxlint-disable-next-line anchor-has-content
+      return <a ref={ref} data-router="" {...props} />;
+    },
+  );
+
+  function renderToc() {
+    return render(
+      <LinkProvider router={RouterLink}>
+        <TableOfContents>
+          <TableOfContents.List>
+            <TableOfContents.Item href="#intro">Intro</TableOfContents.Item>
+            <TableOfContents.Item href="/guide">Guide</TableOfContents.Item>
+            <TableOfContents.Group label="API" href="/api">
+              <TableOfContents.Item href="https://example.com" target="_blank">
+                Spec
+              </TableOfContents.Item>
+            </TableOfContents.Group>
+            <TableOfContents.Item render={<button type="button" />}>
+              Scroll
+            </TableOfContents.Item>
+          </TableOfContents.List>
+        </TableOfContents>
+      </LinkProvider>,
+    );
+  }
+
+  it("keeps in-page fragments as plain anchors", () => {
+    renderToc();
+    const link = screen.getByRole("link", { name: "Intro" });
+    expect(link.hasAttribute("data-router")).toBe(false);
+    expect(link.getAttribute("href")).toBe("#intro");
+  });
+
+  it("renders items and group links for internal routes through the router", () => {
+    renderToc();
+    expect(
+      screen.getByRole("link", { name: "Guide" }).hasAttribute("data-router"),
+    ).toBe(true);
+    expect(
+      screen.getByRole("link", { name: "API" }).hasAttribute("data-router"),
+    ).toBe(true);
+  });
+
+  it("announces items that open in a new tab", () => {
+    renderToc();
+    const link = screen.getByRole("link", {
+      name: "Spec (opens in a new tab)",
+    });
+    expect(link.getAttribute("rel")).toBe("noopener");
+  });
+
+  it("truncates the label but keeps the new-tab icon visible", () => {
+    renderToc();
+    const link = screen.getByRole("link", {
+      name: "Spec (opens in a new tab)",
+    });
+    const label = screen.getByText("Spec");
+    expect(label.className).toContain("truncate");
+    // The icon is the link's ::after, a flex item that doesn't shrink.
+    expect(link.className).toContain("flex");
+    expect(link.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+  });
+
+  it("still renders a custom element via render", () => {
+    renderToc();
+    expect(screen.getByRole("button", { name: "Scroll" })).toBeDefined();
+  });
+
+  it("hides a group link's new-tab icon with newTabIcon={false}", () => {
+    render(
+      <LinkProvider externalLinks="new-tab">
+        <TableOfContents>
+          <TableOfContents.List>
+            <TableOfContents.Group label="Shown" href="https://example.com/a">
+              <TableOfContents.Item href="#a">A</TableOfContents.Item>
+            </TableOfContents.Group>
+            <TableOfContents.Group
+              label="Hidden"
+              href="https://example.com/b"
+              newTabIcon={false}
+            >
+              <TableOfContents.Item href="#b">B</TableOfContents.Item>
+            </TableOfContents.Group>
+          </TableOfContents.List>
+        </TableOfContents>
+      </LinkProvider>,
+    );
+
+    const shown = screen.getByRole("link", {
+      name: "Shown (opens in a new tab)",
+    });
+    const hidden = screen.getByRole("link", {
+      name: "Hidden (opens in a new tab)",
+    });
+    expect(shown.hasAttribute("data-kumo-new-tab-icon")).toBe(true);
+    expect(hidden.hasAttribute("data-kumo-new-tab-icon")).toBe(false);
   });
 });

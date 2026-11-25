@@ -1,5 +1,6 @@
 import { cloneElement, forwardRef, isValidElement } from "react";
 import { cn } from "../../utils/cn";
+import { useLink } from "../../utils/link-provider";
 
 /** TableOfContents item state variant definitions. */
 export const KUMO_TABLE_OF_CONTENTS_VARIANTS = {
@@ -73,13 +74,20 @@ export interface TableOfContentsItemProps extends React.AnchorHTMLAttributes<HTM
   /** Whether this item represents the currently active section. */
   active?: boolean;
   /**
-   * Custom element to render as the link. Use this to integrate with
-   * framework routers (e.g., Next.js `<Link>`, React Router `<NavLink>`).
-   * The element receives all anchor props including `href`, `className`, and `children`.
+   * Show the visible new-tab icon. The screen-reader announcement is always
+   * included when the item opens in a new tab.
+   * @default true
+   */
+  newTabIcon?: boolean;
+  /**
+   * Custom element to render instead of a link, such as a `<button>` that
+   * scrolls to a section. The element receives the item's props, `className`,
+   * and `children` as-is. Links don't need this: an `href` resolves through
+   * `LinkProvider`.
    *
    * @example
    * ```tsx
-   * <TableOfContents.Item render={<Link />} href="/intro" active>
+   * <TableOfContents.Item render={<button type="button" />} onClick={scrollToIntro}>
    *   Introduction
    * </TableOfContents.Item>
    * ```
@@ -90,40 +98,65 @@ export interface TableOfContentsItemProps extends React.AnchorHTMLAttributes<HTM
 const TableOfContentsItem = forwardRef<
   HTMLAnchorElement,
   TableOfContentsItemProps
->(({ active = false, className, children, render, ...props }, ref) => {
-  const stateClasses = active
-    ? KUMO_TABLE_OF_CONTENTS_VARIANTS.state.active.classes
-    : KUMO_TABLE_OF_CONTENTS_VARIANTS.state.default.classes;
-
-  const combinedClassName = cn(ITEM_BASE, stateClasses, className);
-
-  const innerContent = (
-    <span className="block min-w-0 leading-5">{children}</span>
-  );
-
-  const sharedProps = {
+>(
+  (
+    { active = false, className, children, render, newTabIcon, ...props },
     ref,
-    "aria-current": active ? ("true" as const) : undefined,
-    "data-kumo-component": "TableOfContents",
-    "data-kumo-part": "item",
-    className: combinedClassName,
-    children: innerContent,
-    ...props,
-  };
+  ) => {
+    const { Component, linkProps, newTabCue } = useLink({
+      ...props,
+      newTabIcon,
+    });
+    const stateClasses = active
+      ? KUMO_TABLE_OF_CONTENTS_VARIANTS.state.active.classes
+      : KUMO_TABLE_OF_CONTENTS_VARIANTS.state.default.classes;
 
-  // If a render prop is provided, clone it with our props
-  if (render && isValidElement(render)) {
-    return <li className="-ml-0.5">{cloneElement(render, sharedProps)}</li>;
-  }
+    const combinedClassName = cn(ITEM_BASE, stateClasses, className);
 
-  // Default to anchor tag
-  return (
-    <li className="-ml-0.5">
-      {/* oxlint-disable-next-line anchor-has-content -- children are in sharedProps */}
-      <a {...sharedProps} />
-    </li>
-  );
-});
+    const innerContent = (
+      <span className="block min-w-0 leading-5">{children}</span>
+    );
+
+    const sharedProps = {
+      ref,
+      "aria-current": active ? ("true" as const) : undefined,
+      "data-kumo-component": "TableOfContents",
+      "data-kumo-part": "item",
+      className: combinedClassName,
+      children: innerContent,
+      ...props,
+    };
+
+    // If a render prop is provided, clone it with our props
+    if (render && isValidElement(render)) {
+      return <li className="-ml-0.5">{cloneElement(render, sharedProps)}</li>;
+    }
+
+    return (
+      <li className="-ml-0.5">
+        <Component
+          {...sharedProps}
+          {...linkProps}
+          ref={ref}
+          className={cn(
+            combinedClassName,
+            // Keep the new-tab icon (a ::after) visible when a long label truncates.
+            newTabCue !== null && "flex items-center",
+          )}
+        >
+          {newTabCue === null ? (
+            innerContent
+          ) : (
+            <>
+              <span className="min-w-0 truncate leading-5">{children}</span>
+              {newTabCue}
+            </>
+          )}
+        </Component>
+      </li>
+    );
+  },
+);
 
 export interface TableOfContentsGroupProps extends Omit<
   React.HTMLAttributes<HTMLLIElement>,
@@ -135,6 +168,12 @@ export interface TableOfContentsGroupProps extends Omit<
   href?: string;
   /** Whether this group's label represents the currently active section. Only applies when `href` is provided. */
   active?: boolean;
+  /**
+   * Show the visible new-tab icon when the label link opens in a new tab. The
+   * screen-reader announcement is always included.
+   * @default true
+   */
+  newTabIcon?: boolean;
 }
 
 const NESTED_UL_CLASSES =
@@ -145,9 +184,23 @@ const TableOfContentsGroup = forwardRef<
   TableOfContentsGroupProps
 >(
   (
-    { label, href, active = false, className, children, onClick, ...props },
+    {
+      label,
+      href,
+      active = false,
+      className,
+      children,
+      onClick,
+      newTabIcon,
+      ...props
+    },
     ref,
   ) => {
+    const { Component, linkProps, newTabCue } = useLink({
+      href,
+      newTabIcon,
+    });
+
     if (href) {
       const stateClasses = active
         ? KUMO_TABLE_OF_CONTENTS_VARIANTS.state.active.classes
@@ -162,16 +215,29 @@ const TableOfContentsGroup = forwardRef<
           {/* onClick goes on the label link, not the <li>: the <li> also wraps
             the nested items, so a handler there would fire for child clicks
             too and override the child's own selection. */}
-          <a
-            href={href}
-            onClick={onClick as React.MouseEventHandler | undefined}
+          <Component
+            {...linkProps}
+            onClick={
+              onClick as React.MouseEventHandler<HTMLAnchorElement> | undefined
+            }
             aria-current={active ? ("true" as const) : undefined}
             data-kumo-component="TableOfContents"
             data-kumo-part="group-link"
-            className={cn(ITEM_BASE, stateClasses)}
+            className={cn(
+              ITEM_BASE,
+              stateClasses,
+              newTabCue !== null && "flex items-center",
+            )}
           >
-            <span className="block min-w-0 leading-5">{label}</span>
-          </a>
+            {newTabCue === null ? (
+              <span className="block min-w-0 leading-5">{label}</span>
+            ) : (
+              <>
+                <span className="min-w-0 truncate leading-5">{label}</span>
+                {newTabCue}
+              </>
+            )}
+          </Component>
           <ul className={cn(NESTED_UL_CLASSES)}>{children}</ul>
         </li>
       );
