@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import {
   KumoLocaleProvider,
@@ -40,6 +40,18 @@ describe("Label", () => {
     expect(
       screen.getByRole("button", { name: "Mais informações" }),
     ).toBeTruthy();
+  });
+
+  it("makes the info button a tooltip trigger once the tooltip code loads", async () => {
+    render(<Label tooltip="Help">Name</Label>);
+
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("button", { name: "More information" })
+          .hasAttribute("data-base-ui-tooltip-trigger"),
+      ).toBe(true);
+    });
   });
 
   it("accepts existing full translation objects without label translations", () => {
