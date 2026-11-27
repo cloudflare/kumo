@@ -156,6 +156,8 @@ export {
   Toast,
   useKumoToastManager,
   createKumoToastManager,
+  type KumoToastPosition,
+  type ToastyProps,
 } from "./components/toast";
 export { Tooltip, TooltipProvider } from "./components/tooltip";
 export {

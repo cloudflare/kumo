@@ -118,6 +118,35 @@ export const KUMO_TOAST_STYLING = {
 // Derived types from KUMO_TOAST_VARIANTS
 export type KumoToastVariant = keyof typeof KUMO_TOAST_VARIANTS.variant;
 
+export type KumoToastPosition =
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right";
+
+const TOAST_VIEWPORT_POSITION_CLASSES: Record<KumoToastPosition, string> = {
+  "top-left": "top-4 left-4 sm:top-8 sm:left-8",
+  "top-center": "top-4 left-1/2 -translate-x-1/2 sm:top-8",
+  "top-right": "top-4 right-4 sm:top-8 sm:right-8",
+  "bottom-left": "bottom-4 left-4 sm:bottom-8 sm:left-8",
+  "bottom-center": "bottom-4 left-1/2 -translate-x-1/2 sm:bottom-8",
+  "bottom-right": "right-4 bottom-4 sm:right-8 sm:bottom-8",
+};
+
+const TOAST_SWIPE_DIRECTIONS: Record<
+  KumoToastPosition,
+  Array<"up" | "down" | "left" | "right">
+> = {
+  "top-left": ["up", "left"],
+  "top-center": ["up"],
+  "top-right": ["up", "right"],
+  "bottom-left": ["down", "left"],
+  "bottom-center": ["down"],
+  "bottom-right": ["down", "right"],
+};
+
 export interface KumoToastVariantsProps {
   variant?: KumoToastVariant;
 }
@@ -173,6 +202,12 @@ export function toastVariants({
 export interface ToastyProps extends KumoToastVariantsProps {
   /** Application content. Toasts render via a portal above this. */
   children: React.ReactNode;
+  /**
+   * Placement of the toast viewport. Left and right refer to physical edges
+   * in both LTR and RTL layouts. When omitted, toasts appear at the bottom
+   * inline end: bottom-right in LTR and bottom-left in RTL.
+   */
+  position?: KumoToastPosition;
   /**
    * Container element for the portal. Use this to render toasts inside
    * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
@@ -332,7 +367,8 @@ export const createKumoToastManager = () => {
 /**
  * Toasty — toast notification provider and viewport.
  *
- * Renders a `Toast.Provider` with a fixed-position viewport at the bottom inline end.
+ * Renders a `Toast.Provider` with a configurable fixed-position viewport.
+ * Defaults to the bottom inline end when `position` is omitted.
  * Toasts stack with smooth enter/exit animations, swipe-to-dismiss, and expand-on-hover.
  *
  * Built on `@base-ui/react/toast`.
@@ -346,9 +382,13 @@ export const createKumoToastManager = () => {
  */
 export function Toasty({
   children,
+  position,
   container: containerProp,
   toastManager,
 }: ToastyProps) {
+  const direction = useDirection();
+  const resolvedPosition =
+    position ?? (direction === "rtl" ? "bottom-left" : "bottom-right");
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
 
@@ -356,8 +396,16 @@ export function Toasty({
     <Toast.Provider toastManager={toastManager}>
       {children}
       <Toast.Portal container={container}>
-        <Toast.Viewport className="fixed top-auto end-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:end-8 sm:bottom-8 sm:w-[340px]">
-          <ToastList />
+        <Toast.Viewport
+          data-kumo-toast-position={resolvedPosition}
+          className={cn(
+            "fixed z-1 mx-auto flex w-[calc(100%-2rem)] sm:w-[340px]",
+            position === undefined
+              ? "top-auto end-4 bottom-4 sm:end-8 sm:bottom-8"
+              : TOAST_VIEWPORT_POSITION_CLASSES[position],
+          )}
+        >
+          <ToastList position={resolvedPosition} />
         </Toast.Viewport>
       </Toast.Portal>
     </Toast.Provider>
@@ -385,16 +433,12 @@ function getBumpAnimation(toast: KumoToastOptions<any>) {
   );
 }
 
-function useToastSwipeDirection(): Array<"down" | "left" | "right"> {
-  const direction = useDirection();
-  return direction === "rtl" ? ["down", "left"] : ["down", "right"];
-}
-
 // The root owns the slide transition and the inner surface owns the bump,
 // so a bump never cancels an in-progress slide-in.
-function ToastList() {
+function ToastList({ position }: { position: KumoToastPosition }) {
   const { toasts } = useKumoToastManager();
-  const swipeDirection = useToastSwipeDirection();
+  const swipeDirection = TOAST_SWIPE_DIRECTIONS[position];
+  const isTop = position.startsWith("top");
 
   return toasts.map((toast) => (
     <Toast.Root
@@ -405,16 +449,19 @@ function ToastList() {
         ? { "data-kumo-swipe-direction": swipeDirection.join(" ") }
         : undefined)}
       className={cn(
-        "absolute end-0 bottom-0 start-auto z-[calc(1000-var(--toast-index))] me-0 h-[var(--height)] w-full origin-bottom rounded-xl select-none motion-reduce:[transition-property:opacity]",
-        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
-        "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
-        "after:absolute after:top-full after:start-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
-        "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
+        "absolute end-0 start-auto z-[calc(1000-var(--toast-index))] me-0 h-[var(--height)] w-full rounded-xl select-none motion-reduce:[transition-property:opacity]",
+        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
+        isTop
+          ? "top-0 bottom-auto origin-top [--offset-y:calc(var(--toast-offset-y)+calc(var(--toast-index)*var(--gap))+var(--toast-swipe-movement-y))] [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)+(var(--toast-index)*var(--peek))+(var(--shrink)*var(--height))))_scale(var(--scale))] data-[starting-style]:[transform:translateY(-150%)] [&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(-150%)]"
+          : "top-auto bottom-0 origin-bottom [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] data-[starting-style]:[transform:translateY(150%)] [&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
+        "[transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
+        "after:absolute after:start-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
+        isTop ? "after:bottom-full" : "after:top-full",
+        "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0",
         "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
         "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
         "data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
         "data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
-        "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
       )}
     >
       <div

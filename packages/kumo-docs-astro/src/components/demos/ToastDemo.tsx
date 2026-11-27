@@ -1,4 +1,12 @@
-import { Button, Toasty, useKumoToastManager, Link } from "@cloudflare/kumo";
+import { useState } from "react";
+import {
+  Button,
+  Toasty,
+  useKumoToastManager,
+  Link,
+  Select,
+  cn,
+} from "@cloudflare/kumo";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 function ToastTriggerButton() {
@@ -22,6 +30,58 @@ export function ToastBasicDemo() {
   return (
     <Toasty>
       <ToastTriggerButton />
+    </Toasty>
+  );
+}
+
+function ToastPositionButton({ position }: { position: string }) {
+  const toastManager = useKumoToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toastManager.add({
+          title: `Toast at ${position}`,
+          description:
+            "All toasts in this provider share the selected position.",
+        })
+      }
+    >
+      Show toast
+    </Button>
+  );
+}
+
+/** Choose one of six positions for the provider's entire toast stack. */
+export function ToastPositionDemo() {
+  const [position, setPosition] = useState<
+    | "top-left"
+    | "top-center"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-center"
+    | "bottom-right"
+  >("top-right");
+
+  return (
+    <Toasty position={position}>
+      <div className={cn("flex flex-wrap items-end gap-3")}>
+        <Select<typeof position>
+          label="Toast position"
+          className={cn("w-48")}
+          value={position}
+          onValueChange={(value) => setPosition(value ?? "top-right")}
+          items={{
+            "top-left": "Top left",
+            "top-center": "Top center",
+            "top-right": "Top right",
+            "bottom-left": "Bottom left",
+            "bottom-center": "Bottom center",
+            "bottom-right": "Bottom right",
+          }}
+        />
+        <ToastPositionButton position={position} />
+      </div>
     </Toasty>
   );
 }
