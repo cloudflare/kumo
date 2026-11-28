@@ -16,19 +16,19 @@ import {
 export const KUMO_INPUT_VARIANTS = {
   size: {
     xs: {
-      classes: "h-5 gap-1 rounded-sm px-1.5 text-xs",
+      classes: "h-5 gap-1 rounded-sm px-1.5 text-[16px] sm:text-xs",
       description: "Extra small input for compact UIs",
     },
     sm: {
-      classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
+      classes: "h-6.5 gap-1 rounded-md px-2 text-[16px] sm:text-xs",
       description: "Small input for secondary fields",
     },
     base: {
-      classes: "h-9 gap-1.5 rounded-lg px-3 text-base",
+      classes: "h-9 gap-1.5 rounded-lg px-3 text-[16px] sm:text-base",
       description: "Default input size",
     },
     lg: {
-      classes: "h-10 gap-2 rounded-lg px-4 text-base",
+      classes: "h-10 gap-2 rounded-lg px-4 text-[16px] sm:text-base",
       description: "Large input for prominent fields",
     },
   },
