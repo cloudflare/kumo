@@ -136,7 +136,7 @@ export function buttonVariants({
 
   return cn(
     // Base styles
-    "group flex w-max shrink-0 items-center font-medium select-none",
+    "group inline-flex w-max shrink-0 items-center font-medium select-none",
     "border-0 shadow-xs",
     "focus:ring-kumo-focus/50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
@@ -532,7 +532,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         className={cn(
           buttonVariants({ variant, size, shape }),
           getIconPaddingClasses(shape, size, iconNode, children),
-          "flex items-center no-underline! select-text",
+          "no-underline! select-text",
           className,
         )}
         href={href}
