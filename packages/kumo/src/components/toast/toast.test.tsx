@@ -1,8 +1,14 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
-import { Toasty, createKumoToastManager, useKumoToastManager } from "./toast";
+import {
+  Toasty,
+  createKumoToastManager,
+  useKumoToastManager,
+  type KumoToastPosition,
+} from "./toast";
+import { KumoPortalProvider } from "../../utils/portal-provider";
 
 const surfaceOf = (text: string) =>
   screen
@@ -222,4 +228,85 @@ describe("Toasty", () => {
 
     expect(root.getAttribute("data-kumo-swipe-direction")).toBe("down left");
   });
+
+  it("preserves toast identity and updates swipe directions when position changes", async () => {
+    const mgr = createKumoToastManager();
+    const positions: Array<[KumoToastPosition, string]> = [
+      ["top-left", "up left"],
+      ["top-center", "up"],
+      ["top-right", "up right"],
+      ["bottom-left", "down left"],
+      ["bottom-center", "down"],
+      ["bottom-right", "down right"],
+    ];
+    const view = render(
+      <Toasty position="top-left" toastManager={mgr}>
+        <div />
+      </Toasty>,
+    );
+
+    act(() => {
+      mgr.add({ title: "Positioned toast" });
+    });
+
+    await screen.findByText("Positioned toast");
+    const root = rootOf("Positioned toast");
+
+    for (const [position, swipeDirections] of positions) {
+      view.rerender(
+        <Toasty position={position} toastManager={mgr}>
+          <div />
+        </Toasty>,
+      );
+
+      expect(rootOf("Positioned toast")).toBe(root);
+      expect(root.getAttribute("data-kumo-swipe-direction")).toBe(
+        swipeDirections,
+      );
+    }
+  });
+
+  it.each([false, true])(
+    "preserves portal containers while positioned (explicit override: %s)",
+    async (useExplicitContainer) => {
+      const contextContainer = document.createElement("div");
+      const explicitContainer = document.createElement("div");
+      document.body.append(contextContainer, explicitContainer);
+      const mgr = createKumoToastManager();
+      const view = render(
+        <KumoPortalProvider container={contextContainer}>
+          <Toasty
+            position="top-center"
+            container={useExplicitContainer ? explicitContainer : undefined}
+            toastManager={mgr}
+          >
+            <div />
+          </Toasty>
+        </KumoPortalProvider>,
+      );
+
+      try {
+        act(() => {
+          mgr.add({ title: "Toast in custom container" });
+        });
+
+        const target = useExplicitContainer
+          ? explicitContainer
+          : contextContainer;
+        const other = useExplicitContainer
+          ? contextContainer
+          : explicitContainer;
+        expect(
+          await within(target).findByText("Toast in custom container"),
+        ).toBeTruthy();
+        expect(
+          within(other).queryByText("Toast in custom container"),
+        ).toBeNull();
+      } finally {
+        view.unmount();
+        contextContainer.remove();
+        explicitContainer.remove();
+      }
+    },
+  );
 });

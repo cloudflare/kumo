@@ -22,6 +22,7 @@ import {
   ToastActionsDemo,
   ToastPromiseDemo,
   ToastFunctionalUpdateDemo,
+  ToastPositionDemo,
 } from "~/components/demos/ToastDemo";
 
 {/* Hero Demo */}
@@ -120,6 +121,31 @@ export function Layout({ children }) {
 <ComponentSection>
 
 ## Examples
+
+### Position
+
+<p>
+  Set <code>position</code> on <code>Toasty</code> to place the entire toast
+  stack at the top or bottom, aligned left, center, or right. Choose a position,
+  then click repeatedly to preview stacking. Changing the position moves all
+  toasts in this provider together.
+</p>
+
+```tsx
+<Toasty position="top-right">
+  <App />
+</Toasty>
+```
+
+<ComponentExample demo="ToastPositionDemo">
+  <ToastPositionDemo client:visible />
+</ComponentExample>
+
+<p>
+  Left and right refer to physical viewport edges, including in RTL layouts.
+  When <code>position</code> is omitted, the existing default is preserved:
+  bottom-right in LTR and bottom-left in RTL.
+</p>
 
 ### Title and Description
 
@@ -237,6 +263,17 @@ export function Layout({ children }) {
 
 <p>The provider component that wraps your app and manages the toast system.</p>
 <PropsTable component="Toasty" />
+
+<p>
+  The optional <code>position</code> prop accepts <code>"top-left"</code>,
+  <code>"top-center"</code>, <code>"top-right"</code>,
+  <code>"bottom-left"</code>, <code>"bottom-center"</code>, or
+  <code>"bottom-right"</code>. It controls the entire provider's toast stack;
+  it is not an option for individual <code>toastManager.add()</code> calls.
+  Omitting it keeps the bottom inline-end default: bottom-right in LTR and
+  bottom-left in RTL. Existing <code>container</code> and
+  <code>toastManager</code> props work with every position.
+</p>
 
 ### useKumoToastManager()
 
