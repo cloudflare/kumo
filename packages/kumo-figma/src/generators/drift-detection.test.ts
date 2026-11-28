@@ -403,7 +403,7 @@ describe("Figma Plugin - Registry Sync Validation", () => {
     // Expected compact sizes from Button COMPACT_SIZE_MAP (derived from registry)
     const expectedSizes: Record<string, number> = {
       xs: 14, // size-3.5 = 3.5 * 4 = 14px
-      sm: 26, // size-6.5 = 6.5 * 4 = 26px
+      sm: 30, // size-7.5 = 7.5 * 4 = 30px
       base: 36, // size-9 = 9 * 4 = 36px
       lg: 40, // size-10 = 10 * 4 = 40px
     };
@@ -816,10 +816,10 @@ describe("Figma Plugin - Phase 6 Magic Number Enforcement", () => {
           content,
         );
 
-      // Check for explicit hardcoded COMPACT_SIZE_MAP definition: { xs: 14, sm: 26, base: 36, lg: 40 }
+      // Check for explicit hardcoded COMPACT_SIZE_MAP definition: { xs: 14, sm: 30, base: 36, lg: 40 }
       // This is the most drift-prone pattern - explicit recreation of button compact sizes
       const hasHardcodedCompactMap =
-        /(?:const|let|var)\s+COMPACT_SIZE_MAP[^=]*=\s*\{[^}]*xs:\s*14[^}]*sm:\s*26/.test(
+        /(?:const|let|var)\s+COMPACT_SIZE_MAP[^=]*=\s*\{[^}]*xs:\s*14[^}]*sm:\s*\d+/.test(
           content,
         );
 
@@ -840,7 +840,7 @@ describe("Figma Plugin - Phase 6 Magic Number Enforcement", () => {
           `     - const COMPACT_SIZE_MAP = FALLBACK_VALUES.buttonCompactSize;\n` +
           `  Or reference values directly:\n` +
           `     - FALLBACK_VALUES.buttonCompactSize.xs  (14px)\n` +
-          `     - FALLBACK_VALUES.buttonCompactSize.sm  (26px)\n` +
+          `     - FALLBACK_VALUES.buttonCompactSize.sm  (30px)\n` +
           `     - FALLBACK_VALUES.buttonCompactSize.base (36px)\n` +
           `     - FALLBACK_VALUES.buttonCompactSize.lg  (40px)\n`,
       );
@@ -1220,7 +1220,7 @@ describe("Figma Plugin - CSS Theme Sync Validation", () => {
 
     // Verify expected values
     expect(themeData.kumo.buttonCompactSize.xs).toBe(14); // size-3.5 = 14px
-    expect(themeData.kumo.buttonCompactSize.sm).toBe(26); // size-6.5 = 26px
+    expect(themeData.kumo.buttonCompactSize.sm).toBe(30); // size-7.5 = 30px
     expect(themeData.kumo.buttonCompactSize.base).toBe(36); // size-9 = 36px
     expect(themeData.kumo.buttonCompactSize.lg).toBe(40); // size-10 = 40px
   });
